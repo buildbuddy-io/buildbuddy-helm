@@ -1,4 +1,4 @@
-# BuildBuddy Helm Charts 
+# BuildBuddy Helm Charts ![Build Status](https://img.shields.io/github/workflow/status/buildbuddy-io/buildbuddy-helm/Release%20Charts)
 
 This repository collects a set of [Helm](https://helm.sh) charts curated by [BuildBuddy](https://www.buildbuddy.io).
 
