@@ -5,6 +5,7 @@ This repository collects a set of [Helm](https://helm.sh) charts curated by [Bui
 Click on the following links to see installation instructions for each chart:
 
 - [buildbuddy](charts/buildbuddy/)
+- [buildbuddy-enterprise](charts/buildbuddy-enterprise/)
 
 ## Usage
 
