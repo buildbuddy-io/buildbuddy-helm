@@ -1,7 +1,7 @@
 apiVersion: v1
-description: BuildBuddy Open Source
-name: buildbuddy
-version: 0.0.3 # Chart version
+description: BuildBuddy Enterprise
+name: buildbuddy-enterprise
+version: 0.0.1 # Chart version
 appVersion: 1.1.4 # Version of deployed app
 keywords:
 - buildbuddy
@@ -10,6 +10,7 @@ keywords:
 - test
 - remote-cache
 - rbe
+- enterprise
 home: https://buildbuddy.io
 icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
 source:

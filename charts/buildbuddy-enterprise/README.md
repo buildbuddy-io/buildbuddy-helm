@@ -1,19 +1,19 @@
-# BuildBuddy Open Source
+# BuildBuddy Enterprise
 
-[BuildBuddy](https://buildbuddy.io) is an open source Bazel build event viewer, result store, and remote cache.
+[BuildBuddy Enterprise](https://buildbuddy.io) is an open source Bazel build event viewer, result store, remote cache, and remote build execution platform.
 
 ## TL;DR
 
 ```
 helm repo add buildbuddy https://helm.buildbuddy.io
-helm install buildbuddy buildbuddy/buildbuddy \
+helm install buildbuddy buildbuddy/buildbuddy-enterprise \
   --set mysql.mysqlUser=sampleUser \
   --set mysql.mysqlPassword=samplePassword \
 ```
 
 ## Introduction
 
-This chart creates a [BuildBuddy Open Source](https://github.com/buildbuddy-io/buildbuddy/) deployment on a [Kubernetes](https://kubernetes.io/) cluster using the [Helm](https://helm.sh/) package manager.
+This chart creates a [BuildBuddy Enterprise](https://www.buildbuddy.io/pricing) deployment on a [Kubernetes](https://kubernetes.io/) cluster using the [Helm](https://helm.sh/) package manager.
 
 ## Prerequisites
 
@@ -27,11 +27,11 @@ This chart creates a [BuildBuddy Open Source](https://github.com/buildbuddy-io/b
 To install the chart with the release name `my-release`:
 
 ```bash
-$ helm install my-release buildbuddy/buildbuddy
+$ helm install my-release buildbuddy/buildbuddy-enterprise
 ```
  **Helm v2 command**
 ```bash
-$ helm install --name my-release buildbuddy/buildbuddy
+$ helm install --name my-release buildbuddy/buildbuddy-enterprise
 ```
 
 The command deploys BuildBuddy on the Kubernetes cluster in the default configuration. The [configuration](#configuration)
@@ -60,7 +60,7 @@ $ helm upgrade my-release -f my-values.yaml buildbuddy/buildbuddy-enterprise
 You can write your Kubernetes deployment configuration to a file release name `my-release`:
 
 ```bash
-$ helm template my-release buildbuddy/buildbuddy > buildbuddy-deploy.yaml
+$ helm template my-release buildbuddy/buildbuddy-enterprise > buildbuddy-deploy.yaml
 ```
 
 You can then check this configuration in to your source repository, or manually apply it to your cluster with:
@@ -103,6 +103,7 @@ The following table lists the configurable parameters of the BuildBuddy Open Sou
 | `mysql.mysqlUser`                    | Username for Mysql (Required)                                                                                                                                                                                                                                                                                              | ""                                                                                                                        |
 | `mysql.mysqlPassword`                | User Password for Mysql (Required)                                                                                                                                                                                                                                                                                         | ""                                                                                                                        |
 | `mysql.mysqlDatabase`                | Database name (Required)                                                                                                                                                                                                                                                                                                   | "buildbuddy"                                                                                                              |
+| `memcached.enabled`                  | Enables deployment of a memcached as a caching layer for smaller artifacts server                                                                                                                                                                                                                                          | `false`                                                                                                                   |
 | `extraPodAnnotations`                | Extra pod annotations to be used in the deployments                                                                                                                                                                                                                                                                        | `[]`                                                                                                                      |
 | `extraEnvVars`                       | Extra environments variables to be used in the deployments                                                                                                                                                                                                                                                                 | `[]`                                                                                                                      |
 | `extraInitContainers`                | Additional init containers                                                                                                                                                                                                                                                                                                 | `[]`                                                                                                                      |
@@ -117,13 +118,13 @@ $ helm install my-release \
   --set image.tag=server-image-v1.1.4 \
   --set mysql.mysqlUser=sampleUser \
   --set mysql.mysqlPassword=samplePassword \
-  buildbuddy/buildbuddy
+  buildbuddy/buildbuddy-enterprise
 ```
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
 ```bash
-$ helm install my-release -f values.yaml buildbuddy/buildbuddy
+$ helm install my-release -f values.yaml buildbuddy/buildbuddy-enterprise
 ```
 
 ### Example configurations
@@ -178,6 +179,44 @@ config:
     build_buddy_url: "https://buildbuddy.example.com"
     events_api_url: "grpcs://buildbuddy-grpc.example.com"
     cache_api_url: "grpcs://buildbuddy-grpc.example.com"
+  ssl:
+    enable_ssl: true
+```
+
+## Example with auth (required for enterprise features)
+
+Auth can be configured with any provider that supports OpenID Connect (OIDC) including Google GSuite, Okta, Auth0 and others.
+
+```yaml
+ingress:
+  enabled: true
+  sslEnabled: true
+  httpHost: buildbuddy.example.com
+  grpcHost: buildbuddy-grpc.example.com
+
+mysql:
+  enabled: true
+  mysqlUser: "sampleUser"
+  mysqlPassword: "samplePassword"
+
+certmanager:
+  enabled: true
+  emailAddress: your-email@gmail.com
+
+config:
+  app:
+    build_buddy_url: "https://buildbuddy.example.com"
+    events_api_url: "grpcs://buildbuddy-grpc.example.com"
+    cache_api_url: "grpcs://buildbuddy-grpc.example.com"
+  auth:
+    ## To use Google auth, get client_id and client_secret here: 
+    ## https://console.developers.google.com/apis/credentials
+    oauth_providers:
+      - issuer_url: "https://accounts.google.com" # OpenID Connect Discovery URL
+        client_id: "MY_CLIENT_ID"
+        client_secret: "MY_CLIENT_SECRET"
+  ssl:
+    enable_ssl: true
 ```
 
 ## More examples

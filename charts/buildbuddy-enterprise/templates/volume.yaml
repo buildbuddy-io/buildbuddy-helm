@@ -1,0 +1,28 @@
+{{- if and .Values.disk.data.enabled (not .Values.disk.data.existingClaim) -}}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+  annotations:
+  {{- range $key, $value := .Values.disk.data.annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+spec:
+  accessModes:
+  - {{ .Values.disk.data.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.disk.data.size | quote }}
+{{- if .Values.disk.data.storageClass }}
+{{- if (eq "-" .Values.disk.data.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.disk.data.storageClass }}"
+{{- end }}
+{{- end }}
+{{- end }}
