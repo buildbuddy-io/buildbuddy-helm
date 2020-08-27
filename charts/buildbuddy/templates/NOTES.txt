@@ -32,4 +32,8 @@ To expose BuildBuddy via an Ingress you need to set hosts and enable ingress.
 
   helm install {{ .Release.Name }} --set ingress.httpHost=buildbuddy.yourdomain.com --set ingress.grpcHost=buildbuddy-grpc.yourdomain.com --set ingress.enabled=true buildbuddy/buildbuddy
 {{ end }}
+
+If you have any questions - join our Slack channel at:
+  https://slack.buildbuddy.io/
+
 Happy Building!
