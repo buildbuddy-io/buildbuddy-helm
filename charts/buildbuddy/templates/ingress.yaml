@@ -1,0 +1,75 @@
+{{ if .Values.ingress.enabled }}
+apiVersion: {{ include "buildbuddy.ingress.apiVersion" . }}
+kind: Ingress
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}-grpc
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/backend-protocol: "grpc"
+    {{- if .Values.ingress.sslEnabled }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | default "letsencrypt-prod"}}
+    {{- else }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    {{- end }}
+    {{- with .Values.ingress.annotations }}
+    {{- . | toYaml | nindent 4 }}
+    {{- end }}
+spec:
+  rules:
+  - host: {{ .Values.ingress.grpcHost }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ include "buildbuddy.name" . }}
+          servicePort: grpc
+  {{ if .Values.ingress.sslEnabled }}
+  tls:
+    - secretName: {{ .Values.ingress.grpcHost }}-tls
+      hosts:
+        - {{ .Values.ingress.grpcHost }}
+  {{ end }}
+---
+apiVersion: {{ include "buildbuddy.ingress.apiVersion" . }}
+kind: Ingress
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}-http
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    {{- if .Values.ingress.sslEnabled }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | default "letsencrypt-prod"}}
+    {{- else }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/configuration-snippet: proxy_set_header X-Forwarded-Proto ""; # TODO(siggisim): remove when redirect is driven by ssl flag.
+    {{- end }}
+    {{- with .Values.ingress.annotations }}
+    {{- . | toYaml | nindent 4 }}
+    {{- end }}
+spec:
+  rules:
+  - host: {{ .Values.ingress.httpHost }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ include "buildbuddy.name" . }}
+          servicePort: http
+  {{ if .Values.ingress.sslEnabled }}
+  tls:
+    - secretName: {{ .Values.ingress.httpHost }}-tls
+      hosts:
+        - {{ .Values.ingress.httpHost }}
+  {{ end }}
+{{ end }}

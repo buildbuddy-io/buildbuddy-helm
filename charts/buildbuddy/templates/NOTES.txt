@@ -1,0 +1,35 @@
+Thank you for installing BuildBuddy open source.
+{{ if eq .Values.service.type "LoadBalancer"}}
+{{- if .Values.service.loadBalancerIP }}
+BuildBuddy will be available at:
+
+  HTTP:
+  {{ .Values.service.loadBalancerIP }}:{{ .Values.service.externalHTTPPort }}
+
+  GRPC:
+  {{ .Values.service.loadBalancerIP }}:{{ .Values.service.externalGRPCPort }}
+
+{{ else }}
+You can connect to BuildBuddy by using the IP printed by this command on port {{ .Values.service.externalHTTPPort }}:
+
+  echo `kubectl get --namespace {{ .Release.Namespace }} service {{  include "buildbuddy.name" . }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+{{ end -}}
+{{ end -}}
+{{ if .Values.ingress.enabled }}
+Update your DNS settings and add A records that point {{ .Values.ingress.httpHost }} and {{ .Values.ingress.grpcHost }} at the IP printed when you run the following command:
+
+  echo `kubectl get --namespace default service {{ .Release.Name }}-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+
+Once you configure your DNS, BuildBuddy will be available at the URL:
+
+{{ if .Values.ingress.sslEnabled }}
+  https://{{ .Values.ingress.httpHost }}
+{{ else }}
+  http://{{ .Values.ingress.httpHost }}
+{{ end }}
+{{ else }}
+To expose BuildBuddy via an Ingress you need to set hosts and enable ingress.
+
+  helm install {{ .Release.Name }} --set ingress.httpHost=buildbuddy.yourdomain.com --set ingress.grpcHost=buildbuddy-grpc.yourdomain.com --set ingress.enabled=true buildbuddy/buildbuddy
+{{ end }}
+Happy Building!

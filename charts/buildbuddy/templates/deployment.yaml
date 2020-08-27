@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+spec:
+  replicas: {{ .Values.replicas | default 1 }}
+  strategy:
+    type: Recreate
+    rollingUpdate: null
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/managed-by: {{ .Release.Service }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
+        {{- if .Values.extraPodAnnotations }}
+        {{- .Values.extraPodAnnotations | toYaml | nindent 8 }}
+        {{- end }}
+
+      labels:
+        app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        helm.sh/chart: {{ include "buildbuddy.chart" . }}      
+    spec:
+      initContainers:
+      {{- if .Values.mysql.enabled }}
+      - name: "init-mysql"
+        image: "{{ .Values.initContainerImage.repository }}:{{ .Values.initContainerImage.tag }}"
+        imagePullPolicy: {{ .Values.initContainerImage.imagePullPolicy }}
+        command: ["sh", "-c", "until curl --max-time 10 http://{{ .Release.Name }}-mysql:3306; do echo waiting for {{ .Release.Name }}-mysql; sleep 5; done;"]
+      {{- end }}
+      {{- if .Values.extraInitContainers }}
+      {{- .Values.extraInitContainers | toYaml | nindent 6 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          env:
+          {{- if .Values.extraEnvVars }}
+            {{- .Values.extraEnvVars | toYaml | nindent 10 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.internalHTTPPort }}
+            - name: grpc
+              containerPort: {{ .Values.service.internalGRPCPort }}
+            {{ if .Values.service.internalHTTPSPort }}
+            - name: https
+              containerPort: {{ .Values.service.internalHTTPSPort }}
+            {{ end }}
+            {{ if .Values.service.internalGRPCSPort }}
+            - name: grpcs
+              containerPort: {{ .Values.service.internalGRPCSPort }}
+            {{ end }}
+          livenessProbe:
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: http
+              httpHeaders:
+                - name: server-type
+                  value: dev-buildbuddy-server
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+              httpHeaders:
+                - name: server-type
+                  value: dev-buildbuddy-server
+          volumeMounts:
+            - mountPath: /data
+              name: data
+            - mountPath: /config.yaml
+              name: config
+              subPath: config.yaml
+            {{- if .Values.extraVolumeMounts -}}
+            {{ .Values.extraVolumeMounts | toYaml | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: config
+          secret:
+            secretName: {{ include "buildbuddy.fullname" . }}-config
+        - name: data
+        {{ if .Values.disk.data.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.disk.data.existingClaim | default (include "buildbuddy.fullname" .) }}
+        {{ else }}
+          emptyDir: {}
+        {{ end }}
+        {{- if .Values.extraVolumes -}}
+        {{ .Values.extraVolumes | toYaml | nindent 8 }}
+        {{- end }}

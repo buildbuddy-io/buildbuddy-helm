@@ -1,0 +1,194 @@
+## Default values for BuildBuddy.
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
+
+## The BuildBuddy container image to use.
+image:
+  repository: gcr.io/flame-public/buildbuddy-app-onprem
+  tag: server-image-v1.1.4
+  imagePullPolicy: IfNotPresent
+
+## The number of app replicas to run.
+## If setting this number higher than 1, make sure to configure a mysql database (not sqlite) and gcs storage
+## so data can be shared across replicas.
+## Using multiple replicas with a sqlite3 database or disk storage is not supported.
+replicas: 1
+
+## Enables disk storage using Persistent Volume Claims.
+## You'll also need to specify a disk block in the config cache and/or storage blocks below.
+## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+## ref: https://docs.gitlab.com/ee/install/requirements.html#storage
+disk:
+  ## This volume persists build events, cache artifacts, etc. when BuildBuddy is
+  ## configured to use disk storage. To use this disk in your config, make sure
+  ## your root_directory options begin with with /data/.
+  data:
+    enabled: true
+    size: 10Gi
+    ## If defined, volume.beta.kubernetes.io/storage-class: <storageClass>
+    ## Default: volume.alpha.kubernetes.io/storage-class: default
+    ##
+    # storageClass:
+    accessMode: ReadWriteOnce
+  # existingClaim: ""
+
+## Exposes the BuildBuddy service via a LoadBalancer on the given ports.
+service:
+  type: LoadBalancer
+
+  externalHTTPPort: 80
+  externalGRPCPort: 1985
+  externalHTTPSPort: 443
+  externalGRPCSPort: 1986
+
+  internalHTTPPort: 8080
+  internalGRPCPort: 1985
+  internalHTTPSPort: 8081
+  internalGRPCSPort: 1986
+
+  annotations: {}
+  # loadBalancerIP:
+  loadBalancerSourceRanges: []
+
+## You have two options for exposing BuildBuddy with TLS over HTTPS and GRPCS.
+## 1) Via the load balancer
+##   - Point your DNS at the load balancer IP, you can get this by deploying and running:
+##        echo `kubectl get --namespace default service buildbuddy -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+##   - Enable config.ssl.enable_ssl and config.ssl.use_acme to automatically get configure letsencrypt certs
+##   - Adding http and grpc host names to config.ssl.host_whitelist
+##   - Wait a bit for dns propagation to happen and certs to be issued
+##
+## 2) Ingress
+##   - Enable ingress with ingress.enabled and ingress.sslEnabled
+##   - Configure http and grpc host names with ingress.httpHost and ingress.grpcHost
+##   - Enable cert manager with certmanager.enabled
+##   - Update the cert manager email address in certmanager.emailAddress
+##   - Before you deploy, install CRDs with:
+##        kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.16.1/cert-manager.crds.yaml
+##   - Point your DNS at the ingress controller IP, you can get this by deploying and running:
+##        echo `kubectl get --namespace default service my-release-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+##   - Wait a bit for dns propagation to happen and certs to be issued
+
+ingress:
+  enabled: false
+
+  ## To enable SSL, either enable certmanager below or specify a
+  ## clusterIssuer that's already installed in the cluster.
+  sslEnabled: false
+  #clusterIssuer: "letsencrypt-prod"
+
+  httpHost: buildbuddy.example.com
+  grpcHost: buildbuddy-grpc.example.com
+
+  annotations: {}
+
+  ## Nginx controller
+  controller:
+    config:
+      ## Use Exponentially Weighted Moving Average load balancing.
+      load-balance: "ewma"
+      ## The defaults here are low - this sets them for all servers.
+      proxy-body-size: "0"
+      ignore-invalid-headers: "off"
+      server-snippet: |
+        grpc_socket_keepalive on;
+        grpc_read_timeout 7200s;
+        grpc_send_timeout 7200s;
+        client_body_timeout 7200s;
+        http2_idle_timeout 7200s;
+        http2_max_concurrent_streams 10000;
+        http2_max_requests 100000;
+
+certmanager:
+  ## Before enabling certmanager, make sure to install the CRDs on your cluster with:
+  ## kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.16.1/cert-manager.crds.yaml
+  enabled: false
+  ## If these CRDs are not installed, you will get the following error message:
+  ## Error: unable to build kubernetes objects from release manifest: unable to recognize "": no matches for kind "ClusterIssuer" in version "cert-manager.io/v1alpha2"
+  ##
+  ## Email address to use for letsencrypt certs
+  emailAddress: your-email@gmail.com
+
+## Either enable mysql here, or use your own data_source connection string
+## in the config block below.
+mysql:
+  enabled: false
+  mysqlRootPassword: ""
+  mysqlUser: ""
+  mysqlPassword: ""
+  mysqlDatabase: buildbuddy
+
+  repository: mysql
+  imageTag: '8.0.18'  
+
+# NOTE: These acts as the default values for the config.yaml file read by the
+# buildbuddy server itself. You can override the config object just like any
+# Helm template value. Since it is an object, the object you provide will merge
+# with these defaults.
+config:
+  app:
+    #build_buddy_url: "https://buildbuddy.example.com"
+    #events_api_url: "grpcs://buildbuddy-grpc.example.com"
+    #cache_api_url: "grpcs://buildbuddy-grpc.example.com"
+    default_to_dense_mode: false
+  database:
+    ## Use an external database connection string here, or deploy mysql using this chart with mysql.enabled
+    ## mysql:     "mysql://<USERNAME>:<PASSWORD>@tcp(<HOST>:3306)/<DATABASE_NAME>"
+    ## sqlite:    "sqlite3:///tmp/buildbuddy-enterprise.db"
+    data_source: "" # Either set this or mysql.enabled, not both! 
+  storage:
+    ttl_seconds: 2592000  # 30 days
+    # ttl_seconds: 0  # Do not TTL build events.
+    chunk_file_size_bytes: 3000000  # 3 MB
+    disk:
+      root_directory: "/data/buildbuddy/blobs/" # Enabled disk.data volume above to use
+    # gcs:
+    #   bucket: "buildbuddy_blobs"
+    #   project_id: "my-gc-project"
+    #   credentials_file: "my-volume/my-google-credentials.json"
+  cache:
+    disk:
+      root_directory: "/data/buildbuddy/cache/" # Enabled disk.data volume above to use
+    max_size_bytes: 10000000000  # 10 GB
+    # memcache_targets: # ENTERPRISE ONLY
+    #   - "10.10.100.10:11211"
+    # gcs: # ENTERPRISE ONLY
+    #   bucket: "buildbuddy_cache"
+    #   project_id: "my-gc-project"
+    #   credentials_file: "my-volume/my-google-credentials.json"
+    #   ttl_days: 30
+  ssl:
+    enable_ssl: false
+    # use_acme: true # Use acme for letsencrypt ssl certs if you point your domains at LoadBalancer without an ingress.
+    # host_whitelist: # Host whitelist to enable acme for
+    #   - buildbuddy.example.com
+    #   - buildbuddy-grpc.example.com
+  # integrations:
+  #   slack:
+  #     webhook_url: "https://hooks.slack.com/services/MY/WEBHOOK/URL"
+  # auth: # ENTERPRISE ONLY
+  #   oauth_providers:
+  #     - issuer_url: "https://accounts.google.com" # OIDC compatible discovery url
+  #       client_id: "MY_CLIENT_ID"
+  #       client_secret: "MY_CLIENT_SECRET"
+  # api: # ENTERPRISE ONLY
+  #   enable_api: true
+  # github: # ENTERPRISE ONLY
+  #   client_id: MY_CLIENT_ID
+  #   client_secret: MY_CLIENT_SECRET
+
+## Additional env vars
+extraEnvVars: []
+
+## Additional init containers
+extraInitContainers: []
+
+# Add additional volumes and mounts
+extraVolumes: []
+extraVolumeMounts: []
+
+## Container image that is used to ping mysql until it's up.
+initContainerImage:
+  repository: appropriate/curl
+  tag: latest
+  imagePullPolicy: IfNotPresent
