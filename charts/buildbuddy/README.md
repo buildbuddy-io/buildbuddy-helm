@@ -8,7 +8,7 @@
 helm repo add buildbuddy https://helm.buildbuddy.io
 helm install buildbuddy buildbuddy/buildbuddy \
   --set mysql.mysqlUser=sampleUser \
-  --set mysql.mysqlPassword=samplePassword \
+  --set mysql.mysqlPassword=samplePassword
 ```
 
 ## Introduction
