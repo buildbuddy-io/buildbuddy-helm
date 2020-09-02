@@ -2,6 +2,44 @@ apiVersion: v1
 entries:
   buildbuddy:
   - apiVersion: v1
+    appVersion: 1.2.1
+    created: "2020-09-02T22:05:39.89787923Z"
+    dependencies:
+    - condition: mysql.enabled
+      name: mysql
+      repository: https://kubernetes-charts.storage.googleapis.com
+      version: 1.6.4
+    - alias: ingress
+      condition: ingress.enabled
+      name: ingress-nginx
+      repository: https://kubernetes.github.io/ingress-nginx
+      version: 2.3.0
+    - alias: certmanager
+      condition: ingress.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: 0.16.1
+    description: BuildBuddy Open Source
+    digest: ef4fb2f35ba56bf02d35fb4157e0a5d35d0b9ba5a006a98778ce352f63e713cd
+    home: https://buildbuddy.io
+    icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
+    keywords:
+    - buildbuddy
+    - bazel
+    - build
+    - test
+    - remote-cache
+    - rbe
+    maintainers:
+    - email: siggi@buildbuddy.io
+      name: siggisim
+    - email: tyler@buildbuddy.io
+      name: tylerwilliams
+    name: buildbuddy
+    urls:
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-0.0.5/buildbuddy-0.0.5.tgz
+    version: 0.0.5
+  - apiVersion: v1
     appVersion: 1.1.4
     created: "2020-08-28T00:02:47.443812783Z"
     dependencies:
@@ -116,6 +154,49 @@ entries:
     - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-0.0.2/buildbuddy-0.0.2.tgz
     version: 0.0.2
   buildbuddy-enterprise:
+  - apiVersion: v1
+    appVersion: 1.2.1
+    created: "2020-09-02T22:05:39.991807747Z"
+    dependencies:
+    - condition: mysql.enabled
+      name: mysql
+      repository: https://kubernetes-charts.storage.googleapis.com
+      version: 1.6.4
+    - condition: memcached.enabled
+      name: memcached
+      repository: https://kubernetes-charts.storage.googleapis.com
+      version: 3.2.3
+    - alias: ingress
+      condition: ingress.enabled
+      name: ingress-nginx
+      repository: https://kubernetes.github.io/ingress-nginx
+      version: 2.3.0
+    - alias: certmanager
+      condition: ingress.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: 0.16.1
+    description: BuildBuddy Enterprise
+    digest: 1cb9ac45f7f95b06403c7d8b795a60610a9613d7288f6d6c9cf98d7c63157f5e
+    home: https://buildbuddy.io
+    icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
+    keywords:
+    - buildbuddy
+    - bazel
+    - build
+    - test
+    - remote-cache
+    - rbe
+    - enterprise
+    maintainers:
+    - email: siggi@buildbuddy.io
+      name: siggisim
+    - email: tyler@buildbuddy.io
+      name: tylerwilliams
+    name: buildbuddy-enterprise
+    urls:
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-enterprise-0.0.4/buildbuddy-enterprise-0.0.4.tgz
+    version: 0.0.4
   - apiVersion: v1
     appVersion: 1.1.4
     created: "2020-08-28T00:02:47.723832992Z"
