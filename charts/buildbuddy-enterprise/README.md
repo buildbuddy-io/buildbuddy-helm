@@ -115,7 +115,7 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 
 ```bash
 $ helm install my-release \
-  --set image.tag=server-image-enterprise-v1.1.1 \
+  --set image.tag=server-image-enterprise-v1.2.1 \
   --set mysql.mysqlUser=sampleUser \
   --set mysql.mysqlPassword=samplePassword \
   buildbuddy/buildbuddy-enterprise
