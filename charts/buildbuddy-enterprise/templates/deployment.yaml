@@ -71,14 +71,14 @@ spec:
               port: http
               httpHeaders:
                 - name: server-type
-                  value: prod-buildbuddy-server # TODO(siggisim): Update on next release
+                  value: buildbuddy-server
           readinessProbe:
             httpGet:
               path: /readyz
               port: http
               httpHeaders:
                 - name: server-type
-                  value: prod-buildbuddy-server # TODO(siggisim): Update on next release
+                  value: buildbuddy-server
           volumeMounts:
             - mountPath: /data
               name: data

@@ -188,10 +188,14 @@ config:
     # host_whitelist: # Host whitelist to enable acme for
     #   - buildbuddy.example.com
     #   - buildbuddy-grpc.example.com
+  # org:
+  #   name: Acme Corp
+  #   domain: acme.com
   # integrations:
   #   slack:
   #     webhook_url: "https://hooks.slack.com/services/MY/WEBHOOK/URL"
   # auth: # ENTERPRISE ONLY
+  #   enable_anonymous_usage: false
   #   oauth_providers:
   #     - issuer_url: "https://accounts.google.com" # OIDC compatible discovery url
   #       client_id: "MY_CLIENT_ID"
