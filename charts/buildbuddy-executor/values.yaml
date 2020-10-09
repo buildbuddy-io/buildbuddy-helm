@@ -49,7 +49,7 @@ service:
 # with these defaults.
 config:
   executor:
-    app_target: "grpcs://cloud.buildbuddy.dev:443"
+    # app_target: "grpcs://your.buildbuddy.install:443" # auto populated if deploying via buildbuddy-enterprise chart
     root_directory: "/buildbuddy/remotebuilds/"
     local_cache_directory: "/buildbuddy/filecache/"
     local_cache_size_bytes: 5000000000 # 5GB
