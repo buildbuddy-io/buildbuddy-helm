@@ -19,13 +19,9 @@ data:
   {{- /* Update the copied default config based on .Values */}}
 
   {{- if not .Values.config.appTarget }}
-  {{- $_ := set $c "app_target" (print .Release.Name "-buildbuddy-enterprise:1985") }}
+  {{- $_ := set $c.executor "app_target" (print "grpc://" .Release.Name "-buildbuddy-enterprise:1985") }}
   {{- end }}
   
-  {{- if not .Values.config.cacheTarget }}
-  {{- $_ := set $c "cache_target" (print .Release.Name "-buildbuddy-enterprise:1985") }}
-  {{- end }}
-
   {{- /* Render the processed config as an encoded YAML string */}}
   {{- /* NOTE: Mounted at /config.yaml on the buildbuddy pod */}}
   config.yaml: {{ $c | toYaml | b64enc }}
