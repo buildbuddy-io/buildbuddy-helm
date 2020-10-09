@@ -18,8 +18,8 @@ data:
 
   {{- /* Update the copied default config based on .Values */}}
 
-  {{- if not .Values.config.appTarget }}
-  {{- $_ := set $c.executor "app_target" (print "grpc://" .Release.Name "-buildbuddy-enterprise:1985") }}
+  {{- if not .Values.config.executor.appTarget }}
+  {{- $_ := set $c.executor "app_target" (print "grpc://buildbuddy-enterprise:1985") }}
   {{- end }}
   
   {{- /* Render the processed config as an encoded YAML string */}}
