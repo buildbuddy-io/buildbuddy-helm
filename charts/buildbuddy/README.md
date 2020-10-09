@@ -8,7 +8,7 @@
 helm repo add buildbuddy https://helm.buildbuddy.io
 helm install buildbuddy buildbuddy/buildbuddy \
   --set mysql.mysqlUser=sampleUser \
-  --set mysql.mysqlPassword=samplePassword \
+  --set mysql.mysqlPassword=samplePassword
 ```
 
 ## Introduction
@@ -47,7 +47,15 @@ $ helm delete my-release
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
 
-## Writing 
+## Updating your release
+
+If you change configuration, you can update your deployment:
+
+```bash
+$ helm upgrade my-release -f my-values.yaml buildbuddy/buildbuddy-enterprise
+```
+
+## Writing deployment to a file
 
 You can write your Kubernetes deployment configuration to a file release name `my-release`:
 
@@ -60,7 +68,6 @@ You can then check this configuration in to your source repository, or manually 
 $ kubectl apply -f buildbuddy-deploy.yaml
 ```
 
-
 ## Configuration
 
 The following table lists the configurable parameters of the BuildBuddy Open Source chart and their default values.
@@ -69,7 +76,7 @@ The following table lists the configurable parameters of the BuildBuddy Open Sou
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `config`                             | The `config.yaml` configuration to be used by the BuildBuddy server. The values you provide will by using Helm's merging behavior override individual default values only. See the [example configuration](#example-configuration) and the [BuildBuddy documentation](https://www.buildbuddy.io/docs/configl) for details. | See `config` in [values.yaml](https://github.com/buildbuddy-io/buildbuddy-helm/blob/master/charts/buildbuddy/values.yaml) |
 | `image.repository`                   | Container image repository                                                                                                                                                                                                                                                                                                 | `gcr.io/flame-public/buildbuddy-app-onprem`                                                                               |
-| `image.tag`                          | Container image tag                                                                                                                                                                                                                                                                                                        | `server-image-v1.1.4`                                                                                                     |
+| `image.tag`                          | Container image tag                                                                                                                                                                                                                                                                                                        | `server-image-v1.3.1`                                                                                                     |
 | `image.imagePullPolicy`              | Container image pull policy                                                                                                                                                                                                                                                                                                | `IfNotPresent`                                                                                                            |
 | `disk.data.enabled`                  | Whether to enable a persistent volume disk mounted at /data                                                                                                                                                                                                                                                                | `true`                                                                                                                    |
 | `disk.data.size`                     | The size of the persistent volume disk                                                                                                                                                                                                                                                                                     | `10Gi`                                                                                                                    |
@@ -106,8 +113,8 @@ The following table lists the configurable parameters of the BuildBuddy Open Sou
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
 ```bash
-$ helm install --name my-release \
-  --set image.tag=server-image-v1.1.4 \
+$ helm install my-release \
+  --set image.tag=server-image-v1.3.1 \
   --set mysql.mysqlUser=sampleUser \
   --set mysql.mysqlPassword=samplePassword \
   buildbuddy/buildbuddy
@@ -116,7 +123,7 @@ $ helm install --name my-release \
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
 ```bash
-$ helm install --name my-release -f values.yaml buildbuddy/buildbuddy
+$ helm install my-release -f values.yaml buildbuddy/buildbuddy
 ```
 
 ### Example configurations
@@ -172,6 +179,10 @@ config:
     events_api_url: "grpcs://buildbuddy-grpc.example.com"
     cache_api_url: "grpcs://buildbuddy-grpc.example.com"
 ```
+
+## More examples
+
+For more example `config:` blocks, see our [configuration docs](https://www.buildbuddy.io/docs/config#configuration-options).
 
 ### Local development
 

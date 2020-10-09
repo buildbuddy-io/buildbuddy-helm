@@ -31,21 +31,35 @@ spec:
         app.kubernetes.io/managed-by: {{ .Release.Service }}
         helm.sh/chart: {{ include "buildbuddy.chart" . }}      
     spec:
-      initContainers:
-      {{- if .Values.mysql.enabled }}
-      - name: "init-mysql"
-        image: "{{ .Values.initContainerImage.repository }}:{{ .Values.initContainerImage.tag }}"
-        imagePullPolicy: {{ .Values.initContainerImage.imagePullPolicy }}
-        command: ["sh", "-c", "until curl --max-time 10 http://{{ .Release.Name }}-mysql:3306; do echo waiting for {{ .Release.Name }}-mysql; sleep 5; done;"]
-      {{- end }}
-      {{- if .Values.extraInitContainers }}
-      {{- .Values.extraInitContainers | toYaml | nindent 6 }}
-      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          args: ["--server_type=buildbuddy-executor"]
+          resources:
+            limits:
+              cpu: "2"
+              memory: "10Gi"
+            requests:
+              cpu: "1"
+              memory: "5Gi"
           env:
+            - name: SYS_MEMORY_BYTES
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.memory
+            - name: SYS_MILLICPU
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.cpu
+            - name: MY_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MY_NODENAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
           {{- if .Values.extraEnvVars }}
             {{- .Values.extraEnvVars | toYaml | nindent 10 }}
           {{- end }}
@@ -54,37 +68,28 @@ spec:
               containerPort: {{ .Values.service.internalHTTPPort }}
             - name: grpc
               containerPort: {{ .Values.service.internalGRPCPort }}
-            {{ if .Values.service.internalHTTPSPort }}
-            - name: https
-              containerPort: {{ .Values.service.internalHTTPSPort }}
-            {{ end }}
-            {{ if .Values.service.internalGRPCSPort }}
-            - name: grpcs
-              containerPort: {{ .Values.service.internalGRPCSPort }}
-            {{ end }}
           livenessProbe:
-            initialDelaySeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 3
             httpGet:
               path: /healthz
               port: http
               httpHeaders:
                 - name: server-type
-                  value: buildbuddy-server
+                  value: buildbuddy-executor
           readinessProbe:
             httpGet:
               path: /readyz
               port: http
               httpHeaders:
                 - name: server-type
-                  value: buildbuddy-server
+                  value: buildbuddy-executor
           volumeMounts:
-            - mountPath: /data
-              name: data
+            - mountPath: /buildbuddy/
+              name: executor-data
             - mountPath: /config.yaml
               name: config
               subPath: config.yaml
+            - name: dockersock
+              mountPath: /var/run/docker.sock
             {{- if .Values.extraVolumeMounts -}}
             {{ .Values.extraVolumeMounts | toYaml | nindent 12 }}
             {{- end }}
@@ -92,7 +97,10 @@ spec:
         - name: config
           secret:
             secretName: {{ include "buildbuddy.fullname" . }}-config
-        - name: data
+        - name: dockersock
+          hostPath:
+            path: /var/run/docker.sock        
+        - name: executor-data
         {{ if .Values.disk.data.enabled }}
           persistentVolumeClaim:
             claimName: {{ .Values.disk.data.existingClaim | default (include "buildbuddy.fullname" .) }}

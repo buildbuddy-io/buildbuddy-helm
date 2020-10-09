@@ -1,4 +1,4 @@
-Thank you for installing BuildBuddy Open Source.
+Thank you for installing BuildBuddy Enterprise.
 {{ if eq .Values.service.type "LoadBalancer"}}
 {{- if .Values.service.loadBalancerIP }}
 BuildBuddy will be available at:
@@ -30,7 +30,7 @@ Once you configure your DNS, BuildBuddy will be available at the URL:
 {{ else }}
 To expose BuildBuddy via an Ingress you need to set hosts and enable ingress.
 
-    helm install {{ .Release.Name }} --set ingress.httpHost=buildbuddy.yourdomain.com --set ingress.grpcHost=buildbuddy-grpc.yourdomain.com --set ingress.enabled=true --set ingress.sslEnabled=true --set certmanager.enabled=true --set certmanager.emailAddress=myemail@gmail.com buildbuddy/buildbuddy
+    helm install {{ .Release.Name }} --set ingress.httpHost=buildbuddy.yourdomain.com --set ingress.grpcHost=buildbuddy-grpc.yourdomain.com --set ingress.enabled=true --set ingress.sslEnabled=true --set certmanager.enabled=true --set certmanager.emailAddress=myemail@gmail.com buildbuddy/buildbuddy-enterprise
 {{ end }}
 
 If you have any questions - join our Slack channel at:

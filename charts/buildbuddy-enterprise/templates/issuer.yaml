@@ -1,0 +1,21 @@
+{{ if .Values.certmanager.enabled }}
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: {{ .Values.certmanager.emailAddress }}
+    privateKeySecretRef:
+      name: {{ .Values.ingress.clusterIssuer | default "letsencrypt-prod"}}
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+{{ end }}

@@ -11,6 +11,16 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/backend-protocol: "grpc"
+    {{- if .Values.certmanager.enabled }}
+    nginx.ingress.kubernetes.io/server-snippet: |
+      ssl_verify_client optional;
+      ssl_verify_depth 1;
+      ssl_client_certificate /client-ca/tls.crt;
+    {{ end }}
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      grpc_set_header x-buildbuddy-api-key $api_key;
+      grpc_set_header x-buildbuddy-auth-type $cert_auth_type;
+
     {{- if .Values.ingress.sslEnabled }}
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | default "letsencrypt-prod"}}
@@ -29,6 +39,45 @@ spec:
         backend:
           serviceName: {{ include "buildbuddy.name" . }}
           servicePort: grpc
+  {{ if .Values.ingress.sslEnabled }}
+  tls:
+    - secretName: {{ .Values.ingress.grpcHost }}-tls
+      hosts:
+        - {{ .Values.ingress.grpcHost }}
+  {{ end }}
+---
+apiVersion: {{ include "buildbuddy.ingress.apiVersion" . }}
+kind: Ingress
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}-at-grpc
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/backend-protocol: "grpc"
+    nginx.ingress.kubernetes.io/server-alias: "~.*@{{ .Values.ingress.grpcHost | replace "." "\\\\." }}"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      grpc_set_header x-buildbuddy-api-key $api_key;
+      grpc_set_header x-buildbuddy-auth-type $host_auth_type;
+    {{- if .Values.ingress.sslEnabled }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | default "letsencrypt-prod"}}
+    {{- else }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    {{- end }}
+    {{- with .Values.ingress.annotations }}
+    {{- . | toYaml | nindent 4 }}
+    {{- end }}
+spec:
+  rules:
+    - http:
+        paths:
+          - backend:
+              serviceName: {{ include "buildbuddy.name" . }}
+              servicePort: grpc
   {{ if .Values.ingress.sslEnabled }}
   tls:
     - secretName: {{ .Values.ingress.grpcHost }}-tls

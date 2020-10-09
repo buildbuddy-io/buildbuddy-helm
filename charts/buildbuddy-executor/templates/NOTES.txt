@@ -1,0 +1,6 @@
+Thank you for installing BuildBuddy Executor!
+
+If you have any questions - join our Slack channel at:
+    https://slack.buildbuddy.io/
+
+Happy Building!

@@ -1,0 +1,15 @@
+dependencies:
+- name: mysql
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 1.6.4
+- name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 11.1.0
+- name: ingress-nginx
+  repository: https://kubernetes.github.io/ingress-nginx
+  version: 2.3.0
+- name: cert-manager
+  repository: https://charts.jetstack.io
+  version: v0.16.1
+digest: sha256:3fdb02b755dcdc801bc60c98eed08cef06ce15797a2aaed387a64fb540ffdfaa
+generated: "2020-10-08T15:40:40.829612-07:00"

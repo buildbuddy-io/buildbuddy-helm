@@ -1,11 +1,11 @@
-## Default values for BuildBuddy.
+## Default values for BuildBuddy Enterprise.
 ## This is a YAML-formatted file.
 ## Declare variables to be passed into your templates.
 
 ## The BuildBuddy container image to use.
 image:
-  repository: gcr.io/flame-public/buildbuddy-app-onprem
-  tag: server-image-v1.3.1
+  repository: gcr.io/flame-public/buildbuddy-app-enterprise
+  tag: server-image-enterprise-v1.3.1
   imagePullPolicy: IfNotPresent
 
 ## The number of app replicas to run.
@@ -84,6 +84,14 @@ ingress:
 
   ## Nginx controller
   controller:
+    extraVolumes:
+      - name: client-ca-volume
+        secret:
+          secretName: buildbuddy-client-ca
+    extraVolumeMounts:
+      - name: client-ca-volume
+        mountPath: /client-ca/ # Client CA must be mounted in the directory /client-ca/
+        readOnly: true
     config:
       ## Use Exponentially Weighted Moving Average load balancing.
       load-balance: "ewma"
@@ -98,6 +106,17 @@ ingress:
         http2_idle_timeout 7200s;
         http2_max_concurrent_streams 10000;
         http2_max_requests 100000;
+      # This snippet handles pulling api keys from the cert or host and
+      # shoving them into the $api_key variable / can be used in headers.
+      http-snippet: |
+        map $ssl_client_s_dn $cert_auth_type {
+          default "";
+          ~serialNumber=(?<api_key>[^,]*) "api_key_from_cert";
+        }
+        map $host $host_auth_type {
+          default "";
+          ~^(?<api_key>[^@]*)@ "api_key_from_host";
+        }
 
 certmanager:
   ## Before enabling certmanager, make sure to install the CRDs on your cluster with:
@@ -120,6 +139,10 @@ mysql:
 
   repository: mysql
   imageTag: "8.0.18"
+
+redis:
+  enabled: false
+  usePassword: false
 
 # NOTE: These acts as the default values for the config.yaml file read by the
 # buildbuddy server itself. You can override the config object just like any
@@ -150,8 +173,7 @@ config:
     disk:
       root_directory: "/data/buildbuddy/cache/" # Enabled disk.data volume above to use
     max_size_bytes: 10000000000 # 10 GB
-    # redis_target: # ENTERPRISE ONLY
-    #   - "10.10.100.10:6379"
+    redis_target: # ENTERPRISE ONLY
     # gcs: # ENTERPRISE ONLY
     #   bucket: "buildbuddy_cache"
     #   project_id: "my-gc-project"
@@ -159,14 +181,20 @@ config:
     #   ttl_days: 30
   ssl:
     enable_ssl: false
+    client_ca_cert_file: "" # DO NOT EDIT: Automatically configured using certmanager
+    client_ca_key_file: "" # DO NOT EDIT: Automatically configured using certmanager
     # use_acme: true # Use acme for letsencrypt ssl certs if you point your domains at LoadBalancer without an ingress.
     # host_whitelist: # Host whitelist to enable acme for
     #   - buildbuddy.example.com
     #   - buildbuddy-grpc.example.com
+  # org:
+  #   name: Acme Corp
+  #   domain: acme.com
   # integrations:
   #   slack:
   #     webhook_url: "https://hooks.slack.com/services/MY/WEBHOOK/URL"
   # auth: # ENTERPRISE ONLY
+  #   enable_anonymous_usage: false
   #   oauth_providers:
   #     - issuer_url: "https://accounts.google.com" # OIDC compatible discovery url
   #       client_id: "MY_CLIENT_ID"

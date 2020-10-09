@@ -88,6 +88,9 @@ spec:
             {{- if .Values.extraVolumeMounts -}}
             {{ .Values.extraVolumeMounts | toYaml | nindent 12 }}
             {{- end }}
+            {{- if and .Values.certmanager.enabled .Values.ingress.controller.extraVolumeMounts -}}
+            {{ .Values.ingress.controller.extraVolumeMounts | toYaml | nindent 12 }}
+            {{- end }}
       volumes:
         - name: config
           secret:
@@ -101,4 +104,7 @@ spec:
         {{ end }}
         {{- if .Values.extraVolumes -}}
         {{ .Values.extraVolumes | toYaml | nindent 8 }}
+        {{- end }}
+        {{- if and .Values.certmanager.enabled .Values.ingress.controller.extraVolumes -}}
+        {{ .Values.ingress.controller.extraVolumes | toYaml | nindent 8 }}
         {{- end }}
