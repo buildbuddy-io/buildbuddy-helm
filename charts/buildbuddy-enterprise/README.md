@@ -21,7 +21,6 @@ This chart creates a [BuildBuddy Enterprise](https://www.buildbuddy.io/pricing) 
 - Helm v2/v3
 - Tiller (the Helm v2 server-side component) installed on the cluster
 
-
 ## Installing the Chart
 
 To install the chart with the release name `my-release`:
@@ -29,7 +28,9 @@ To install the chart with the release name `my-release`:
 ```bash
 $ helm install my-release buildbuddy/buildbuddy-enterprise
 ```
- **Helm v2 command**
+
+**Helm v2 command**
+
 ```bash
 $ helm install --name my-release buildbuddy/buildbuddy-enterprise
 ```
@@ -64,6 +65,7 @@ $ helm template my-release buildbuddy/buildbuddy-enterprise > buildbuddy-deploy.
 ```
 
 You can then check this configuration in to your source repository, or manually apply it to your cluster with:
+
 ```bash
 $ kubectl apply -f buildbuddy-deploy.yaml
 ```
@@ -76,7 +78,7 @@ The following table lists the configurable parameters of the BuildBuddy Open Sou
 | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `config`                             | The `config.yaml` configuration to be used by the BuildBuddy server. The values you provide will by using Helm's merging behavior override individual default values only. See the [example configuration](#example-configuration) and the [BuildBuddy documentation](https://www.buildbuddy.io/docs/configl) for details. | See `config` in [values.yaml](https://github.com/buildbuddy-io/buildbuddy-helm/blob/master/charts/buildbuddy/values.yaml) |
 | `image.repository`                   | Container image repository                                                                                                                                                                                                                                                                                                 | `gcr.io/flame-public/buildbuddy-app-enterprise`                                                                           |
-| `image.tag`                          | Container image tag                                                                                                                                                                                                                                                                                                        | `server-image-enterprise-v1.2.1`                                                                                          |
+| `image.tag`                          | Container image tag                                                                                                                                                                                                                                                                                                        | `server-image-enterprise-v1.3.1`                                                                                          |
 | `image.imagePullPolicy`              | Container image pull policy                                                                                                                                                                                                                                                                                                | `IfNotPresent`                                                                                                            |
 | `disk.data.enabled`                  | Whether to enable a persistent volume disk mounted at /data                                                                                                                                                                                                                                                                | `true`                                                                                                                    |
 | `disk.data.size`                     | The size of the persistent volume disk                                                                                                                                                                                                                                                                                     | `10Gi`                                                                                                                    |
@@ -103,7 +105,7 @@ The following table lists the configurable parameters of the BuildBuddy Open Sou
 | `mysql.mysqlUser`                    | Username for Mysql (Required)                                                                                                                                                                                                                                                                                              | ""                                                                                                                        |
 | `mysql.mysqlPassword`                | User Password for Mysql (Required)                                                                                                                                                                                                                                                                                         | ""                                                                                                                        |
 | `mysql.mysqlDatabase`                | Database name (Required)                                                                                                                                                                                                                                                                                                   | "buildbuddy"                                                                                                              |
-| `memcached.enabled`                  | Enables deployment of a memcached as a caching layer for smaller artifacts                                                                                                                                                                                                                                                 | `false`                                                                                                                   |
+| `redis.enabled`                      | Enables deployment of a redis as a caching layer for smaller artifacts                                                                                                                                                                                                                                                     | `false`                                                                                                                   |
 | `extraPodAnnotations`                | Extra pod annotations to be used in the deployments                                                                                                                                                                                                                                                                        | `[]`                                                                                                                      |
 | `extraEnvVars`                       | Extra environments variables to be used in the deployments                                                                                                                                                                                                                                                                 | `[]`                                                                                                                      |
 | `extraInitContainers`                | Additional init containers                                                                                                                                                                                                                                                                                                 | `[]`                                                                                                                      |
@@ -115,7 +117,7 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 
 ```bash
 $ helm install my-release \
-  --set image.tag=server-image-enterprise-v1.2.1 \
+  --set image.tag=server-image-enterprise-v1.3.1 \
   --set mysql.mysqlUser=sampleUser \
   --set mysql.mysqlPassword=samplePassword \
   buildbuddy/buildbuddy-enterprise
@@ -129,7 +131,7 @@ $ helm install my-release -f values.yaml buildbuddy/buildbuddy-enterprise
 
 ### Example configurations
 
-Below are some  examples of `.yaml` files with values that could be passed to the `helm`
+Below are some examples of `.yaml` files with values that could be passed to the `helm`
 command with the `-f` or `--values` flag to get started.
 
 ### Example MySQL configuration
@@ -151,7 +153,7 @@ config:
   database:
     ## mysql:     "mysql://<USERNAME>:<PASSWORD>@tcp(<HOST>:3306)/<DATABASE_NAME>"
     ## sqlite:    "sqlite3:///tmp/buildbuddy-enterprise.db"
-    data_source: "" # Either set this or mysql.enabled, not both! 
+    data_source: "" # Either set this or mysql.enabled, not both!
 ```
 
 ### Example ingress and certs configuration
@@ -209,7 +211,7 @@ config:
     events_api_url: "grpcs://buildbuddy-grpc.example.com"
     cache_api_url: "grpcs://buildbuddy-grpc.example.com"
   auth:
-    ## To use Google auth, get client_id and client_secret here: 
+    ## To use Google auth, get client_id and client_secret here:
     ## https://console.developers.google.com/apis/credentials
     oauth_providers:
       - issuer_url: "https://accounts.google.com" # OpenID Connect Discovery URL
@@ -238,6 +240,7 @@ Initialize helm
 ```bash
 $ helm init
 ```
+
 Above command is not required for Helm v3
 
 Get dependencies
@@ -255,7 +258,8 @@ $ helm install . \
     --set mysql.mysqlPassword=samplePassword
 ```
 
- **Helm v3 command**
+**Helm v3 command**
+
 ```bash
 $ helm install . \
     --generate-name \

@@ -5,7 +5,7 @@
 ## The BuildBuddy container image to use.
 image:
   repository: gcr.io/flame-public/buildbuddy-app-onprem
-  tag: server-image-v1.2.1
+  tag: server-image-v1.3.1
   imagePullPolicy: IfNotPresent
 
 ## The number of app replicas to run.
@@ -119,7 +119,7 @@ mysql:
   mysqlDatabase: buildbuddy
 
   repository: mysql
-  imageTag: '8.0.18'  
+  imageTag: "8.0.18"
 
 # NOTE: These acts as the default values for the config.yaml file read by the
 # buildbuddy server itself. You can override the config object just like any
@@ -135,11 +135,11 @@ config:
     ## Use an external database connection string here, or deploy mysql using this chart with mysql.enabled
     ## mysql:     "mysql://<USERNAME>:<PASSWORD>@tcp(<HOST>:3306)/<DATABASE_NAME>"
     ## sqlite:    "sqlite3:///tmp/buildbuddy-enterprise.db"
-    data_source: "" # Either set this or mysql.enabled, not both! 
+    data_source: "" # Either set this or mysql.enabled, not both!
   storage:
-    ttl_seconds: 2592000  # 30 days
+    ttl_seconds: 2592000 # 30 days
     # ttl_seconds: 0  # Do not TTL build events.
-    chunk_file_size_bytes: 3000000  # 3 MB
+    chunk_file_size_bytes: 3000000 # 3 MB
     disk:
       root_directory: "/data/buildbuddy/blobs/" # Enabled disk.data volume above to use
     # gcs:
@@ -149,9 +149,9 @@ config:
   cache:
     disk:
       root_directory: "/data/buildbuddy/cache/" # Enabled disk.data volume above to use
-    max_size_bytes: 10000000000  # 10 GB
-    # memcache_targets: # ENTERPRISE ONLY
-    #   - "10.10.100.10:11211"
+    max_size_bytes: 10000000000 # 10 GB
+    # redis_target: # ENTERPRISE ONLY
+    #   - "10.10.100.10:6379"
     # gcs: # ENTERPRISE ONLY
     #   bucket: "buildbuddy_cache"
     #   project_id: "my-gc-project"

@@ -29,8 +29,8 @@ data:
   {{- $_ := set $c.database "data_source" "sqlite3:///tmp/buildbuddy-enterprise.db" }}
   {{- end }}
 
-  {{- if .Values.memcached.enabled }}
-  {{- $_ := set $c.cache "memcache_targets" (toStrings (print .Release.Name "-memcached:11211")) }}
+  {{- if .Values.redis.enabled }}
+  {{- $_ := set $c.cache "redis_target" (print .Release.Name "-redis-master:6379") }}
   {{- end }}
 
   {{- if .Values.ingress.controller.extraVolumeMounts }}
