@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+spec:
+  replicas: {{ .Values.replicas | default 1 }}
+  strategy:
+    type: Recreate
+    rollingUpdate: null
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/managed-by: {{ .Release.Service }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
+        {{- if .Values.extraPodAnnotations }}
+        {{- .Values.extraPodAnnotations | toYaml | nindent 8 }}
+        {{- end }}
+
+      labels:
+        app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        helm.sh/chart: {{ include "buildbuddy.chart" . }}      
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          args: ["--server_type=buildbuddy-executor"]
+          resources:
+            limits:
+              cpu: "2"
+              memory: "10Gi"
+            requests:
+              cpu: "1"
+              memory: "5Gi"
+          env:
+            - name: SYS_MEMORY_BYTES
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.memory
+            - name: SYS_MILLICPU
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.cpu
+            - name: MY_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MY_NODENAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          {{- if .Values.extraEnvVars }}
+            {{- .Values.extraEnvVars | toYaml | nindent 10 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.internalHTTPPort }}
+            - name: grpc
+              containerPort: {{ .Values.service.internalGRPCPort }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+              httpHeaders:
+                - name: server-type
+                  value: buildbuddy-executor
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+              httpHeaders:
+                - name: server-type
+                  value: buildbuddy-executor
+          volumeMounts:
+            - mountPath: /buildbuddy/
+              name: executor-data
+            - mountPath: /config.yaml
+              name: config
+              subPath: config.yaml
+            - name: dockersock
+              mountPath: /var/run/docker.sock
+            {{- if .Values.extraVolumeMounts -}}
+            {{ .Values.extraVolumeMounts | toYaml | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: config
+          secret:
+            secretName: {{ include "buildbuddy.fullname" . }}-config
+        - name: dockersock
+          hostPath:
+            path: /var/run/docker.sock        
+        - name: executor-data
+        {{ if .Values.disk.data.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.disk.data.existingClaim | default (include "buildbuddy.fullname" .) }}
+        {{ else }}
+          emptyDir: {}
+        {{ end }}
+        {{- if .Values.extraVolumes -}}
+        {{ .Values.extraVolumes | toYaml | nindent 8 }}
+        {{- end }}

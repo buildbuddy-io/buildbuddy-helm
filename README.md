@@ -6,6 +6,7 @@ Click on the following links to see installation instructions for each chart:
 
 - [buildbuddy](charts/buildbuddy/)
 - [buildbuddy-enterprise](charts/buildbuddy-enterprise/)
+- [buildbuddy-executor](charts/buildbuddy-executor/)
 
 ## Usage
 
