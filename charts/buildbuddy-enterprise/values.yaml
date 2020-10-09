@@ -144,6 +144,13 @@ redis:
   enabled: false
   usePassword: false
 
+# executor:
+#   enabled: true
+#   replicas: 3
+#   # config:
+#   #   executor:
+#   #     app_target: "grpc://buildbuddy-enterprise:1985"
+
 # NOTE: These acts as the default values for the config.yaml file read by the
 # buildbuddy server itself. You can override the config object just like any
 # Helm template value. Since it is an object, the object you provide will merge
@@ -204,7 +211,8 @@ config:
   # github: # ENTERPRISE ONLY
   #   client_id: MY_CLIENT_ID
   #   client_secret: MY_CLIENT_SECRET
-
+  # remote_execution:
+  #   enabled: true
 ## Additional env vars
 extraEnvVars: []
 

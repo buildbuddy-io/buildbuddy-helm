@@ -11,5 +11,8 @@ dependencies:
 - name: cert-manager
   repository: https://charts.jetstack.io
   version: v0.16.1
-digest: sha256:3fdb02b755dcdc801bc60c98eed08cef06ce15797a2aaed387a64fb540ffdfaa
-generated: "2020-10-08T15:40:40.829612-07:00"
+- name: buildbuddy-executor
+  repository: https://helm.buildbuddy.io
+  version: 0.0.4
+digest: sha256:cf6342d9f66ebe0ca21bf2219f94e1f4914ad88f9426a42a2534a738042b8986
+generated: "2020-10-09T12:05:27.732522-07:00"

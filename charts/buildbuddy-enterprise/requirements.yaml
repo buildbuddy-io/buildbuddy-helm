@@ -17,3 +17,8 @@ dependencies:
     version: 0.16.1
     repository: https://charts.jetstack.io
     condition: ingress.enabled
+  - name: buildbuddy-executor
+    alias: executor
+    version: 0.0.4
+    repository: https://helm.buildbuddy.io
+    condition: executor.enabled
