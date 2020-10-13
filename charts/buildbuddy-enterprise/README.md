@@ -221,6 +221,19 @@ config:
     enable_ssl: true
 ```
 
+## Example with remote build execution
+
+```yaml
+executor:
+  enabled: true
+  replicas: 3
+redis:
+  enabled: true
+config:
+  remote_execution:
+    enabled: true
+```
+
 ## More examples
 
 For more example `config:` blocks, see our [configuration docs](https://www.buildbuddy.io/docs/config#configuration-options).
