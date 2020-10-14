@@ -1,0 +1,36 @@
+## Default values for BuildBuddy.
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
+
+## The BuildBuddy container image to use.
+image:
+  repository: redis
+  tag: redis:5.0.4
+  imagePullPolicy: IfNotPresent
+
+## The number of app replicas to run.
+## If setting this number higher than 1, make sure to configure a mysql database (not sqlite) and gcs storage
+## so data can be shared across replicas.
+## Using multiple replicas with a sqlite3 database or disk storage is not supported.
+replicas: 1
+
+## The default resources to give redis.
+resources:
+  limits:
+    cpu: "1"
+    memory: "11Gi"
+  requests:
+    cpu: "1"
+    memory: "10Gi"
+
+## Exposes the Redis service via a LoadBalancer on the given ports.
+service:
+  type: ClusterIP
+  internalRedisPort: 6379
+
+## Additional env vars
+extraEnvVars: []
+
+# Add additional volumes and mounts
+extraVolumes: []
+extraVolumeMounts: []

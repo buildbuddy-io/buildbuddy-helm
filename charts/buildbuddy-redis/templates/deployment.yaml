@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+spec:
+  replicas: {{ .Values.replicas | default 1 }}
+  strategy:
+    type: Recreate
+    rollingUpdate: null
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/managed-by: {{ .Release.Service }}
+  template:
+    metadata:
+      annotations:
+        {{- if .Values.extraPodAnnotations }}
+        {{- .Values.extraPodAnnotations | toYaml | nindent 8 }}
+        {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        helm.sh/chart: {{ include "buildbuddy.chart" . }}      
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          command:
+            - redis-server
+            - "/redis-master/redis.conf"                            
+          resources:
+          {{- if .Values.resources }}
+            {{- .Values.resources | toYaml | nindent 12 }}
+          {{- end }}
+          env:
+          {{- if .Values.extraEnvVars }}
+            {{- .Values.extraEnvVars | toYaml | nindent 10 }}
+          {{- end }}
+          ports:
+            - name: redis
+              containerPort: {{ .Values.service.internalRedisPort }}
+          volumeMounts:
+            - mountPath: /redis-master-data
+              name: data
+            - mountPath: /redis-master
+              name: config
+            {{- if .Values.extraVolumeMounts -}}
+            {{ .Values.extraVolumeMounts | toYaml | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: data
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: {{ include "buildbuddy.fullname" . }}-config
+            items:
+              - key: redis-config-file
+                path: redis.conf
