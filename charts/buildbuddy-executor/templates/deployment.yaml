@@ -37,12 +37,9 @@ spec:
           imagePullPolicy: {{ .Values.image.imagePullPolicy }}
           args: ["--server_type=buildbuddy-executor"]
           resources:
-            limits:
-              cpu: "2"
-              memory: "10Gi"
-            requests:
-              cpu: "1"
-              memory: "5Gi"
+          {{- if .Values.resources }}
+            {{- .Values.resources | toYaml | nindent 12 }}
+          {{- end }}
           env:
             - name: SYS_MEMORY_BYTES
               valueFrom:

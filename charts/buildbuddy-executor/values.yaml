@@ -11,6 +11,15 @@ image:
 ## The number of executor replicas to run.
 replicas: 3
 
+## The default resources to give the app.
+resources:
+  limits:
+    cpu: "2"
+    memory: "10Gi"
+  requests:
+    cpu: "1"
+    memory: "5Gi"
+
 ## Enables disk storage using Persistent Volume Claims.
 ## You'll also need to specify a disk block in the config cache and/or storage blocks below.
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
