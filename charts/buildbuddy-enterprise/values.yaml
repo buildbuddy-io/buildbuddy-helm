@@ -14,6 +14,15 @@ image:
 ## Using multiple replicas with a sqlite3 database or disk storage is not supported.
 replicas: 1
 
+## The default resources to give the app.
+resources:
+  limits:
+    cpu: "2"
+    memory: "8Gi"
+  requests:
+    cpu: "1"
+    memory: "4Gi"
+
 ## Enables disk storage using Persistent Volume Claims.
 ## You'll also need to specify a disk block in the config cache and/or storage blocks below.
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
@@ -24,7 +33,7 @@ disk:
   ## your root_directory options begin with with /data/.
   data:
     enabled: true
-    size: 10Gi
+    size: 100Gi
     ## If defined, volume.beta.kubernetes.io/storage-class: <storageClass>
     ## Default: volume.alpha.kubernetes.io/storage-class: default
     ##
