@@ -126,6 +126,9 @@ ingress:
           default "";
           ~^(?<api_key>[^@]*)@ "api_key_from_host";
         }
+        map $http_x_buildbuddy_api_key $api_key {
+          "~." $http_x_buildbuddy_api_key;
+        }
 
 certmanager:
   ## Before enabling certmanager, make sure to install the CRDs on your cluster with:
