@@ -919,6 +919,30 @@ entries:
   buildbuddy-redis:
   - apiVersion: v1
     appVersion: 5.0.4
+    created: "2020-10-14T21:30:29.341266547Z"
+    description: BuildBuddy Redis LRU
+    digest: 29b8db321dfce523daea900d86c943aa8dda057dbb1cb0d90e02f878a39e34f8
+    home: https://buildbuddy.io
+    icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
+    keywords:
+    - buildbuddy
+    - bazel
+    - build
+    - test
+    - remote-cache
+    - rbe
+    - lru
+    maintainers:
+    - email: siggi@buildbuddy.io
+      name: siggisim
+    - email: tyler@buildbuddy.io
+      name: tylerwilliams
+    name: buildbuddy-redis
+    urls:
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-redis-0.0.2/buildbuddy-redis-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v1
+    appVersion: 5.0.4
     created: "2020-10-14T21:21:02.453542514Z"
     description: BuildBuddy Redis LRU
     digest: be797ccd93221801bdf63d9776a3e4b5114b8fe085f068a076d6583faab3ad84
