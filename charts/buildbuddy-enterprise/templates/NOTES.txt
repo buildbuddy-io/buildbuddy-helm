@@ -12,13 +12,13 @@ BuildBuddy will be available at:
 {{ else }}
 You can connect to BuildBuddy by using the IP printed by this command on port {{ .Values.service.externalHTTPPort }}:
 
-    echo `kubectl get --namespace {{ .Release.Namespace }} service {{  include "buildbuddy.name" . }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+    echo `kubectl get --namespace {{ .Release.Namespace }} service {{  include "buildbuddy.name" . }} -o jsonpath='{.status.loadBalancer.ingress[0].*}'`
 {{ end -}}
 {{ end -}}
 {{ if .Values.ingress.enabled }}
 Update your DNS settings and add A records that point {{ .Values.ingress.httpHost }} and {{ .Values.ingress.grpcHost }} at the IP printed when you run the following command:
 
-    echo `kubectl get --namespace default service {{ .Release.Name }}-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+    echo `kubectl get --namespace default service {{ .Release.Name }}-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[0].*}'`
 
 Once you configure your DNS, BuildBuddy will be available at the URL:
 
