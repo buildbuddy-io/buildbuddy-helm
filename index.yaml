@@ -232,6 +232,55 @@ entries:
   buildbuddy-enterprise:
   - apiVersion: v1
     appVersion: 1.3.1
+    created: "2020-10-15T04:42:15.895854489Z"
+    dependencies:
+    - condition: mysql.enabled
+      name: mysql
+      repository: https://kubernetes-charts.storage.googleapis.com
+      version: 1.6.4
+    - alias: redis
+      condition: redis.enabled
+      name: buildbuddy-redis
+      repository: https://helm.buildbuddy.io
+      version: 0.0.2
+    - alias: ingress
+      condition: ingress.enabled
+      name: ingress-nginx
+      repository: https://kubernetes.github.io/ingress-nginx
+      version: 2.3.0
+    - alias: certmanager
+      condition: ingress.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: 0.16.1
+    - alias: executor
+      condition: executor.enabled
+      name: buildbuddy-executor
+      repository: https://helm.buildbuddy.io
+      version: 0.0.6
+    description: BuildBuddy Enterprise
+    digest: eafa2a43fcce33e5e0cf7ecd56dd04e2260f2dbd69639158ce5f122d564c6e6d
+    home: https://buildbuddy.io
+    icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
+    keywords:
+    - buildbuddy
+    - bazel
+    - build
+    - test
+    - remote-cache
+    - rbe
+    - enterprise
+    maintainers:
+    - email: siggi@buildbuddy.io
+      name: siggisim
+    - email: tyler@buildbuddy.io
+      name: tylerwilliams
+    name: buildbuddy-enterprise
+    urls:
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-enterprise-0.0.14/buildbuddy-enterprise-0.0.14.tgz
+    version: 0.0.14
+  - apiVersion: v1
+    appVersion: 1.3.1
     created: "2020-10-14T23:04:27.15150516Z"
     dependencies:
     - condition: mysql.enabled
