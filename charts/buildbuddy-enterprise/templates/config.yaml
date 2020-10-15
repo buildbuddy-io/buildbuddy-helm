@@ -30,7 +30,7 @@ data:
   {{- end }}
 
   {{- if .Values.redis.enabled }}
-  {{- $_ := set $c.cache "redis_target" (print .Release.Name "-redis-master:6379") }}
+  {{- $_ := set $c.cache "redis_target" "redis:6379" }}
   {{- end }}
 
   {{- if .Values.ingress.controller.extraVolumeMounts }}

@@ -154,9 +154,6 @@ mysql:
 
 redis:
   enabled: false
-  usePassword: false
-  cluster:
-    slaveCount: 0
 
 # executor:
 #   enabled: true

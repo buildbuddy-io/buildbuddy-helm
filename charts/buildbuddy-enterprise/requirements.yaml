@@ -3,9 +3,10 @@ dependencies:
     version: 1.6.4
     repository: https://kubernetes-charts.storage.googleapis.com
     condition: mysql.enabled
-  - name: redis
-    version: 11.1.0
-    repository: https://charts.bitnami.com/bitnami
+  - name: buildbuddy-redis
+    alias: redis
+    version: 0.0.2
+    repository: https://helm.buildbuddy.io
     condition: redis.enabled
   - name: ingress-nginx
     alias: ingress
