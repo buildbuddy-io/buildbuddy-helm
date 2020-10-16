@@ -1056,6 +1056,30 @@ entries:
   buildbuddy-executor:
   - apiVersion: v1
     appVersion: 1.3.1
+    created: "2020-10-16T16:44:41.836549208Z"
+    description: BuildBuddy Executor
+    digest: 3f7b473f264e3f0ed70fd1b51cb42177a972ca04f96948c9c81cc2e0e52ca80f
+    home: https://buildbuddy.io
+    icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
+    keywords:
+    - buildbuddy
+    - bazel
+    - build
+    - test
+    - remote-cache
+    - rbe
+    - enterprise
+    maintainers:
+    - email: siggi@buildbuddy.io
+      name: siggisim
+    - email: tyler@buildbuddy.io
+      name: tylerwilliams
+    name: buildbuddy-executor
+    urls:
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-executor-0.0.8/buildbuddy-executor-0.0.8.tgz
+    version: 0.0.8
+  - apiVersion: v1
+    appVersion: 1.3.1
     created: "2020-10-15T21:18:27.684298104Z"
     description: BuildBuddy Executor
     digest: b8cc0b4e0b513486f51311eeb6c377737335342b71cca2a9267581da789d4526
