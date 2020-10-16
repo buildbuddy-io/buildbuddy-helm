@@ -62,7 +62,7 @@ service:
 ## You have two options for exposing BuildBuddy with TLS over HTTPS and GRPCS.
 ## 1) Via the load balancer
 ##   - Point your DNS at the load balancer IP, you can get this by deploying and running:
-##        echo `kubectl get --namespace default service buildbuddy -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+##        echo `kubectl get --namespace default service buildbuddy -o jsonpath='{.status.loadBalancer.ingress[0].*}'`
 ##   - Enable config.ssl.enable_ssl and config.ssl.use_acme to automatically get configure letsencrypt certs
 ##   - Adding http and grpc host names to config.ssl.host_whitelist
 ##   - Wait a bit for dns propagation to happen and certs to be issued (this can take a while).
@@ -75,7 +75,7 @@ service:
 ##   - Before you deploy, install CRDs with:
 ##        kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.16.1/cert-manager.crds.yaml
 ##   - Point your DNS at the ingress controller IP, you can get this by deploying and running:
-##        echo `kubectl get service my-release-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}'`
+##        echo `kubectl get service my-release-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[0].*}'`
 ##   - Wait a bit for dns propagation to happen and certs to be issued (this can take a while).
 
 ingress:
