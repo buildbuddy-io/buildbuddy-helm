@@ -13,6 +13,6 @@ dependencies:
   version: v0.16.1
 - name: buildbuddy-executor
   repository: https://helm.buildbuddy.io
-  version: 0.0.9
-digest: sha256:1814e6c5122d4164cf4a3948936bd4def03f10d6ba735d16fbd5f774298a10e0
-generated: "2020-10-27T09:28:04.27616-07:00"
+  version: 0.0.10
+digest: sha256:0e21f0480b49553388f37759299f4e5d93a31896e29d7c4643ab82bd054276bb
+generated: "2020-10-27T11:20:59.145413-07:00"
