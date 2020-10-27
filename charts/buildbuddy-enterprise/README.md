@@ -58,7 +58,7 @@ $ helm upgrade my-release -f my-values.yaml buildbuddy/buildbuddy-enterprise
 
 ## Writing deployment to a file
 
-You can write your Kubernetes deployment configuration to a file release name `my-release`:
+You can write your Kubernetes deployment configuration to a file with release name `my-release`:
 
 ```bash
 $ helm template my-release buildbuddy/buildbuddy-enterprise > buildbuddy-deploy.yaml
@@ -112,6 +112,7 @@ The following table lists the configurable parameters of the BuildBuddy Open Sou
 | `initContainerImage.repository`      | Init container image repository                                                                                                                                                                                                                                                                                            | `appropriate/curl`                                                                                                                   |
 | `initContainerImage.tag`             | Init container image tag                                                                                                                                                                                                                                                                                                   | `latest`                                                                                                                             |
 | `initContainerImage.imagePullPolicy` | Container image pull policy                                                                                                                                                                                                                                                                                                | `IfNotPresent`                                                                                                                       |
+| `executor.enabled`                      | Enables deployment of [BuildBuddy executors](https://github.com/buildbuddy-io/buildbuddy-helm/tree/master/charts/buildbuddy-executor). Any buildbuddy-executor chart configuration options can be passed into the `executor` block.                                                                                   | `false`                                                                                                                              |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
@@ -221,7 +222,7 @@ config:
     enable_ssl: true
 ```
 
-## Example with remote build execution
+## Example with Remote Build Execution
 
 ```yaml
 executor:
@@ -233,6 +234,8 @@ config:
   remote_execution:
     enabled: true
 ```
+
+For more information on configuring RBE, see our [enterprise RBE configuration docs](https://www.buildbuddy.io/docs/enterprise-rbe).
 
 ## More examples
 

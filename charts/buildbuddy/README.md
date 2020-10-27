@@ -57,7 +57,7 @@ $ helm upgrade my-release -f my-values.yaml buildbuddy/buildbuddy-enterprise
 
 ## Writing deployment to a file
 
-You can write your Kubernetes deployment configuration to a file release name `my-release`:
+You can write your Kubernetes deployment configuration to a file with release name `my-release`:
 
 ```bash
 $ helm template my-release buildbuddy/buildbuddy > buildbuddy-deploy.yaml

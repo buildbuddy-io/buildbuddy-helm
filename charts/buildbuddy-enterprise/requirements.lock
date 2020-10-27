@@ -4,7 +4,7 @@ dependencies:
   version: 1.6.4
 - name: buildbuddy-redis
   repository: https://helm.buildbuddy.io
-  version: 0.0.2
+  version: 0.0.3
 - name: ingress-nginx
   repository: https://kubernetes.github.io/ingress-nginx
   version: 2.3.0
@@ -14,5 +14,5 @@ dependencies:
 - name: buildbuddy-executor
   repository: https://helm.buildbuddy.io
   version: 0.0.10
-digest: sha256:0e21f0480b49553388f37759299f4e5d93a31896e29d7c4643ab82bd054276bb
-generated: "2020-10-27T11:20:59.145413-07:00"
+digest: sha256:729d748b002e04b4d7fe16a5c83241fcb41235c50e9b578e53d7aeaf57674406
+generated: "2020-10-27T16:22:09.761144-07:00"
