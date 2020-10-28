@@ -223,7 +223,7 @@ config:
   #   client_id: MY_CLIENT_ID
   #   client_secret: MY_CLIENT_SECRET
   # remote_execution:
-  #   enabled: true
+  #   enable_remote_exec: true
 ## Additional env vars
 extraEnvVars: []
 

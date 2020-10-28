@@ -232,7 +232,7 @@ redis:
   enabled: true
 config:
   remote_execution:
-    enabled: true
+    enable_remote_exec: true
 ```
 
 For more information on configuring RBE, see our [enterprise RBE configuration docs](https://www.buildbuddy.io/docs/enterprise-rbe).
