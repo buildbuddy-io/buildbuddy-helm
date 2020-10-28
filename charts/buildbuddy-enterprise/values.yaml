@@ -155,8 +155,8 @@ mysql:
 redis:
   enabled: false
 
-# executor:
-#   enabled: true
+executor:
+  enabled: false
 #   replicas: 3
 #   # config:
 #   #   executor:
