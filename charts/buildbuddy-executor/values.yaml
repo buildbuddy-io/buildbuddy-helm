@@ -5,11 +5,14 @@
 ## The BuildBuddy Executor container image to use.
 image:
   repository: gcr.io/flame-public/buildbuddy-executor-enterprise
-  tag: server-image-enterprise-v1.3.6
+  tag: server-image-enterprise-v1.3.7
   imagePullPolicy: IfNotPresent
 
 ## The number of executor replicas to run.
 replicas: 3
+
+## The name of the executor pool for this deployment.
+# poolName: high-memory-pool
 
 ## The default resources to give the app.
 resources:

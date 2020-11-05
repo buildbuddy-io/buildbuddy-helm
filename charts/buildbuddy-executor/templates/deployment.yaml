@@ -57,6 +57,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            {{- if .Values.poolName }}
+            - name: MY_POOL
+              value: {{ .Values.poolName }}
+            {{- end }}
+
           {{- if .Values.extraEnvVars }}
             {{- .Values.extraEnvVars | toYaml | nindent 10 }}
           {{- end }}
