@@ -1,10 +1,10 @@
 dependencies:
 - name: mysql
-  repository: https://kubernetes-charts.storage.googleapis.com
+  repository: https://charts.helm.sh/stable
   version: 1.6.4
 - name: buildbuddy-redis
   repository: https://helm.buildbuddy.io
-  version: 0.0.3
+  version: 0.0.4
 - name: ingress-nginx
   repository: https://kubernetes.github.io/ingress-nginx
   version: 2.3.0
@@ -13,6 +13,6 @@ dependencies:
   version: v0.16.1
 - name: buildbuddy-executor
   repository: https://helm.buildbuddy.io
-  version: 0.0.10
-digest: sha256:729d748b002e04b4d7fe16a5c83241fcb41235c50e9b578e53d7aeaf57674406
-generated: "2020-10-27T16:22:09.761144-07:00"
+  version: 0.0.14
+digest: sha256:dbd31befdb164f7846961318bf7780aadd742fae3e026482797daf6bb289679e
+generated: "2021-01-25T16:13:03.815752-08:00"
