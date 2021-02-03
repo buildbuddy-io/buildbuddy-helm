@@ -20,6 +20,6 @@ dependencies:
     condition: ingress.enabled
   - name: buildbuddy-executor
     alias: executor
-    version: 0.0.14
+    version: 0.0.16
     repository: https://helm.buildbuddy.io
     condition: executor.enabled
