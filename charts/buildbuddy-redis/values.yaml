@@ -14,6 +14,9 @@ image:
 ## Using multiple replicas with a sqlite3 database or disk storage is not supported.
 replicas: 1
 
+## Maximum memory redis will use, should be less than the kubernetes resource limits below.
+maxMemory: "5gb"
+
 ## The default resources to give redis.
 resources:
   limits:

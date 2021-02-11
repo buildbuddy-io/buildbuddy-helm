@@ -5,7 +5,7 @@
 ## The BuildBuddy container image to use.
 image:
   repository: gcr.io/flame-public/buildbuddy-app-onprem
-  tag: server-image-v1.5.3
+  tag: server-image-v1.6.0
   imagePullPolicy: IfNotPresent
 
 ## The number of app replicas to run.
@@ -45,6 +45,7 @@ service:
   internalGRPCPort: 1985
   internalHTTPSPort: 8081
   internalGRPCSPort: 1986
+  # internalMetricsPort: 9090
 
   annotations: {}
   # loadBalancerIP:

@@ -9,6 +9,6 @@ metadata:
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
 data:
   redis-config-file: |
-    maxmemory 10gb
+    maxmemory {{ .Values.maxMemory }}
     maxmemory-policy allkeys-lru
                 

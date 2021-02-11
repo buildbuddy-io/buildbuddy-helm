@@ -62,6 +62,10 @@ spec:
             - name: grpcs
               containerPort: {{ .Values.service.internalGRPCSPort }}
             {{ end }}
+            {{ if .Values.service.internalMetricsPort }}
+            - name: metrics
+              containerPort: {{ .Values.service.internalMetricsPort }}
+            {{ end }}
           livenessProbe:
             initialDelaySeconds: 10
             timeoutSeconds: 5
