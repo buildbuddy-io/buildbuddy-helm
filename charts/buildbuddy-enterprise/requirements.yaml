@@ -5,7 +5,7 @@ dependencies:
     condition: mysql.enabled
   - name: buildbuddy-redis
     alias: redis
-    version: 0.0.4
+    version: 0.0.5
     repository: https://helm.buildbuddy.io
     condition: redis.enabled
   - name: ingress-nginx
@@ -20,6 +20,6 @@ dependencies:
     condition: ingress.enabled
   - name: buildbuddy-executor
     alias: executor
-    version: 0.0.16
+    version: 0.0.17
     repository: https://helm.buildbuddy.io
     condition: executor.enabled
