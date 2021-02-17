@@ -47,6 +47,18 @@ service:
   internalGRPCPort: 1985
   # internalMetricsPort: 9090
 
+# Required to enable autoscaling based on custom metrics
+prometheus:
+  enabled: false
+
+autoscaler:
+  enabled: false
+#   minReplicas: 3
+#   maxReplicas: 100
+#   averageCPU: 90
+#   averageMemory: 50
+#   averageQueueLength: 5
+
 # NOTE: These acts as the default values for the config.yaml file read by the
 # buildbuddy server itself. You can override the config object just like any
 # Helm template value. Since it is an object, the object you provide will merge

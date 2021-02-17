@@ -1,0 +1,38 @@
+{{ if .Values.autoscaler.enabled }}
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}-autoscaler
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}-autoscaler
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "buildbuddy.fullname" . }}
+  minReplicas: {{ .Values.autoscaler.minReplicas }}
+  maxReplicas: {{ .Values.autoscaler.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.autoscaler.averageCPU }}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.autoscaler.averageMemory }}
+  - type: Pods
+    pods:
+      metric:
+        name: buildbuddy_remote_execution_queue_length
+      target:
+        type: AverageValue
+        averageValue: {{ .Values.autoscaler.averageQueueLength }}
+{{ end }}

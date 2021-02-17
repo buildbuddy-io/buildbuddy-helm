@@ -1,0 +1,13 @@
+dependencies:
+  - name: metrics-server
+    version: 5.5.1
+    repository: https://charts.bitnami.com/bitnami
+    condition: prometheus.enabled
+  - name: prometheus
+    version: 13.3.2
+    repository: https://prometheus-community.github.io/helm-charts
+    condition: prometheus.enabled
+  - name: prometheus-adapter
+    version: 2.12.0
+    repository: https://prometheus-community.github.io/helm-charts
+    condition: prometheus.enabled
