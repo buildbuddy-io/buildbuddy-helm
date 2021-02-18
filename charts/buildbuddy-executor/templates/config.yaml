@@ -18,7 +18,7 @@ data:
 
   {{- /* Update the copied default config based on .Values */}}
 
-  {{- if not .Values.config.executor.appTarget }}
+  {{- if not .Values.config.executor.app_target }}
   {{- $_ := set $c.executor "app_target" (print "grpc://buildbuddy-enterprise:1985") }}
   {{- end }}
   
