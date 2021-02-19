@@ -12,4 +12,4 @@ dependencies:
   alias: certmanager
   version: 0.16.1
   repository: https://charts.jetstack.io
-  condition: ingress.enabled
+  condition: certmanager.enabled
