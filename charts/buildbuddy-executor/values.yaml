@@ -5,7 +5,7 @@
 ## The BuildBuddy Executor container image to use.
 image:
   repository: gcr.io/flame-public/buildbuddy-executor-enterprise
-  tag: server-image-enterprise-v1.6.0
+  tag: server-image-enterprise-v1.6.1
   imagePullPolicy: IfNotPresent
 
 ## The number of executor replicas to run.
@@ -45,11 +45,28 @@ disk:
 service:
   internalHTTPPort: 8080
   internalGRPCPort: 1985
-  # internalMetricsPort: 9090
+  internalMetricsPort: 9090
 
 # Required to enable autoscaling based on custom metrics
 prometheus:
   enabled: false
+
+prometheus-adapter:
+  prometheus:
+    url: http://{{ .Release.Name }}-prometheus-server
+    port: 80
+  rules:
+    default: false
+    custom:
+      - seriesQuery: 'buildbuddy_remote_execution_queue_length{kubernetes_pod_name!="",kubernetes_namespace!=""}'
+        resources:
+          overrides:
+            kubernetes_namespace: { resource: "namespace" }
+            kubernetes_pod_name: { resource: "pod" }
+        metricsQuery: sum (<<.Series>>{<<.LabelMatchers>>} and (up{<<.LabelMatchers>>} > 0)) by (<<.GroupBy>>) 
+        name:
+          matches: "^(.*)$"
+          as: "${1}"
 
 autoscaler:
   enabled: false

@@ -20,11 +20,12 @@ spec:
   template:
     metadata:
       annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.service.internalMetricsPort }}"
         checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
         {{- if .Values.extraPodAnnotations }}
         {{- .Values.extraPodAnnotations | toYaml | nindent 8 }}
         {{- end }}
-
       labels:
         app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -70,10 +71,8 @@ spec:
               containerPort: {{ .Values.service.internalHTTPPort }}
             - name: grpc
               containerPort: {{ .Values.service.internalGRPCPort }}
-            {{ if .Values.service.internalMetricsPort }}
             - name: metrics
               containerPort: {{ .Values.service.internalMetricsPort }}
-            {{ end }}
           livenessProbe:
             httpGet:
               path: /healthz
