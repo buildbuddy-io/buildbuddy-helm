@@ -5,7 +5,7 @@
 ## The BuildBuddy container image to use.
 image:
   repository: gcr.io/flame-public/buildbuddy-app-enterprise
-  tag: server-image-enterprise-v1.6.0
+  tag: server-image-enterprise-v1.6.1
   imagePullPolicy: IfNotPresent
 
 ## The number of app replicas to run.
@@ -54,8 +54,7 @@ service:
   internalGRPCPort: 1985
   internalHTTPSPort: 8081
   internalGRPCSPort: 1986
-  # internalMetricsPort: 9090
-
+  internalMetricsPort: 9090
 
   annotations: {}
   # loadBalancerIP:
@@ -157,12 +156,50 @@ mysql:
 redis:
   enabled: false
 
+# Autoscaler for buildbuddy-app instances
+autoscaler:
+  enabled: false
+#   minReplicas: 3
+#   maxReplicas: 100
+#   averageCPU: 80
+#   averageMemory: 80
+
+# Required for autoscaling executors based on custom metrics
+prometheus:
+  enabled: false
+
+prometheus-adapter:
+  prometheus:
+    url: http://{{ .Release.Name }}-prometheus-server
+    port: 80
+  rules:
+    default: false
+    custom:
+      - seriesQuery: 'buildbuddy_remote_execution_queue_length{kubernetes_pod_name!="",kubernetes_namespace!=""}'
+        resources:
+          overrides:
+            kubernetes_namespace: { resource: "namespace" }
+            kubernetes_pod_name: { resource: "pod" }
+        metricsQuery: sum (<<.Series>>{<<.LabelMatchers>>} and (up{<<.LabelMatchers>>} > 0)) by (<<.GroupBy>>) 
+        name:
+          matches: "^(.*)$"
+          as: "${1}"
+
+
 executor:
   enabled: false
 #   replicas: 3
-#   # config:
-#   #   executor:
-#   #     app_target: "grpc://buildbuddy-enterprise:1985"
+## Autoscaler for buildbuddy-executor instances
+#   autoscaler:
+#     enabled: true
+#     minReplicas: 3
+#     maxReplicas: 100
+#     averageCPU: 90
+#     averageMemory: 50
+#     averageQueueLength: 5
+#   config:
+#     executor:
+#       app_target: "grpc://buildbuddy-enterprise:1985"
 
 # NOTE: These acts as the default values for the config.yaml file read by the
 # buildbuddy server itself. You can override the config object just like any

@@ -20,6 +20,8 @@ spec:
   template:
     metadata:
       annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.service.internalMetricsPort }}"
         checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
         {{- if .Values.extraPodAnnotations }}
         {{- .Values.extraPodAnnotations | toYaml | nindent 8 }}

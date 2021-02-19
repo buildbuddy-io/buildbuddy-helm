@@ -13,6 +13,15 @@ dependencies:
   version: v0.16.1
 - name: buildbuddy-executor
   repository: https://helm.buildbuddy.io
-  version: 0.0.17
-digest: sha256:bb2838029815fc771adf90562b6ac1a193fe759a8b0fd74c9883c78254a47668
-generated: "2021-02-11T13:43:12.706113-08:00"
+  version: 0.0.20
+- name: metrics-server
+  repository: https://charts.bitnami.com/bitnami
+  version: 5.5.1
+- name: prometheus
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 13.3.2
+- name: prometheus-adapter
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 2.12.0
+digest: sha256:89ee8ef49bd03182277b1712b362f8be95d9807c9aa31917cc3c61bce4b01a97
+generated: "2021-02-18T17:59:41.364422-08:00"
