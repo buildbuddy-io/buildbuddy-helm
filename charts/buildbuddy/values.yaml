@@ -91,7 +91,7 @@ ingress:
       load-balance: "ewma"
       ## The defaults here are low - this sets them for all servers.
       proxy-body-size: "0"
-      ignore-invalid-headers: "off"
+      ignore-invalid-headers: "false"
       server-snippet: |
         grpc_socket_keepalive on;
         grpc_read_timeout 7200s;
