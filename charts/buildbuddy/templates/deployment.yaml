@@ -106,3 +106,6 @@ spec:
         {{- if .Values.extraVolumes -}}
         {{ .Values.extraVolumes | toYaml | nindent 8 }}
         {{- end }}
+      {{- if .Values.extraPodSpec }}
+      {{- .Values.extraPodSpec | toYaml | nindent 6 }}
+      {{- end }}
