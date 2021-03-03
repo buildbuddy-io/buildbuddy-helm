@@ -5,7 +5,7 @@
 ## The BuildBuddy container image to use.
 image:
   repository: gcr.io/flame-public/buildbuddy-app-enterprise
-  tag: server-image-enterprise-v1.6.1
+  tag: server-image-enterprise-v1.7.0
   imagePullPolicy: IfNotPresent
 
 ## The number of app replicas to run.
@@ -150,6 +150,15 @@ mysql:
   mysqlPassword: ""
   mysqlDatabase: buildbuddy
 
+  resources:
+    requests:
+      cpu: "2"
+      memory: "4Gi"
+
+  configurationFiles:
+    mysql.cnf: |-
+      [mysqld]
+      max_connections=4000
   repository: mysql
   imageTag: "8.0.18"
 
