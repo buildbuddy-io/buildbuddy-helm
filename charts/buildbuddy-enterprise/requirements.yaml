@@ -5,7 +5,7 @@ dependencies:
     condition: mysql.enabled
   - name: buildbuddy-redis
     alias: redis
-    version: 0.0.6
+    version: 0.0.7
     repository: https://helm.buildbuddy.io
     condition: redis.enabled
   - name: ingress-nginx
@@ -20,7 +20,7 @@ dependencies:
     condition: certmanager.enabled
   - name: buildbuddy-executor
     alias: executor
-    version: 0.0.22
+    version: 0.0.23
     repository: https://helm.buildbuddy.io
     condition: executor.enabled
   - name: metrics-server

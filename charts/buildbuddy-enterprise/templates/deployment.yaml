@@ -9,7 +9,7 @@ metadata:
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
 spec:
   replicas: {{ .Values.replicas | default 1 }}
-  updateStrategy:
+  strategy:
     type: RollingUpdate
   selector:
     matchLabels:
