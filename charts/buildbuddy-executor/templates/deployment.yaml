@@ -9,9 +9,8 @@ metadata:
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
 spec:
   replicas: {{ .Values.replicas | default 1 }}
-  strategy:
-    type: Recreate
-    rollingUpdate: null
+  updateStrategy:
+    type: RollingUpdate
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "buildbuddy.name" . }}

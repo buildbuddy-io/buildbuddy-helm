@@ -87,8 +87,7 @@ ingress:
   ## Nginx controller
   controller:
     config:
-      ## Use Exponentially Weighted Moving Average load balancing.
-      load-balance: "ewma"
+      load-balance: "round_robin"
       ## The defaults here are low - this sets them for all servers.
       proxy-body-size: "0"
       ignore-invalid-headers: "false"

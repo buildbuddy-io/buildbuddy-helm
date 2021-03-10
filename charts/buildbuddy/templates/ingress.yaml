@@ -11,6 +11,9 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: {{ .Values.ingress.class }}
     nginx.ingress.kubernetes.io/backend-protocol: "grpc"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      grpc_next_upstream error timeout http_502 non_idempotent;
+      grpc_next_upstream_tries 3;
     {{- if .Values.ingress.sslEnabled }}
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | default "letsencrypt-prod"}}

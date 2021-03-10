@@ -20,7 +20,8 @@ metadata:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       grpc_set_header x-buildbuddy-api-key $api_key;
       grpc_set_header x-buildbuddy-auth-type $cert_auth_type;
-
+      grpc_next_upstream error timeout http_502 non_idempotent;
+      grpc_next_upstream_tries 3;
     {{- if .Values.ingress.sslEnabled }}
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | default "letsencrypt-prod"}}
@@ -62,6 +63,8 @@ metadata:
     nginx.ingress.kubernetes.io/configuration-snippet: |
       grpc_set_header x-buildbuddy-api-key $api_key;
       grpc_set_header x-buildbuddy-auth-type $host_auth_type;
+      grpc_next_upstream error timeout http_502 non_idempotent;
+      grpc_next_upstream_tries 3;
     {{- if .Values.ingress.sslEnabled }}
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | default "letsencrypt-prod"}}

@@ -23,6 +23,10 @@ resources:
     cpu: "1"
     memory: "4Gi"
 
+## Arguments to pass directly to the buildbuddy binary
+#args:
+#  - "--auto_migrate_db=false"
+
 ## Enables disk storage using Persistent Volume Claims.
 ## You'll also need to specify a disk block in the config cache and/or storage blocks below.
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
@@ -103,8 +107,7 @@ ingress:
         mountPath: /client-ca/ # Client CA must be mounted in the directory /client-ca/
         readOnly: true
     config:
-      ## Use Exponentially Weighted Moving Average load balancing.
-      load-balance: "ewma"
+      load-balance: "round_robin"
       ## The defaults here are low - this sets them for all servers.
       proxy-body-size: "0"
       ignore-invalid-headers: "false"
