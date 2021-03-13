@@ -275,6 +275,42 @@ config:
   #   client_secret: MY_CLIENT_SECRET
   # remote_execution:
   #   enable_remote_exec: true
+
+grafana:
+  enabled: false
+  grafana.ini:
+    server:
+      domain: "{{ .Values.ingress.httpHost }}"
+      root_url: "%(protocol)s://%(domain)s:%(http_port)s/grafana/"
+      serve_from_sub_path: true
+      cookie_secure: false
+    dashboards:
+      default_home_dashboard_path: /var/lib/grafana/dashboards/default/buildbuddy-dashboard.json
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: true
+          editable: false
+          options:
+            path: /var/lib/grafana/dashboards/default
+  dashboardsConfigMaps:
+    default: buildbuddy-dashboard
+  datasources:
+   datasources.yaml:
+     apiVersion: 1
+     datasources:
+     - name: Prometheus
+       type: prometheus
+       uid: prom
+       url: http://{{ .Release.Name }}-prometheus-server
+       access: proxy
+       isDefault: true
+
 ## Additional env vars
 extraEnvVars: []
 

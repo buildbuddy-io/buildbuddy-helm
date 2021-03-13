@@ -257,6 +257,37 @@ config:
     enable_remote_exec: true
 ```
 
+## Example with Prometheus & Grafana
+
+Make sure you change your Grafana password or configure more advanced auth.
+
+Your Grafana dashboards will be accessible at `buildbuddy.example.com/grafana`
+
+```yaml
+grafana:
+  enabled: true
+  adminUser: admin
+  adminPassword: mysuperstrongpassword
+
+prometheus:
+  enabled: true
+
+ingress:
+  enabled: true
+  httpHost: buildbuddy.example.com
+  grpcHost: buildbuddy-grpc.example.com
+
+certmanager:
+  enabled: true
+  emailAddress: your-email@gmail.com
+
+config:
+  app:
+    build_buddy_url: "http://buildbuddy.example.com"
+    events_api_url: "grpc://buildbuddy-grpc.example.com"
+    cache_api_url: "grpc://buildbuddy-grpc.example.com"
+```
+
 For more information on configuring RBE, see our [enterprise RBE configuration docs](https://www.buildbuddy.io/docs/enterprise-rbe).
 
 ## More examples

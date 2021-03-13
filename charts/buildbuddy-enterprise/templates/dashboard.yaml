@@ -1,0 +1,9 @@
+{{ if and .Values.grafana.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: buildbuddy-dashboard
+data:
+  buildbuddy-dashboard.json: |-
+    {{- .Files.Get "dashboards/buildbuddy.json" | nindent 6 -}}
+{{ end }}
