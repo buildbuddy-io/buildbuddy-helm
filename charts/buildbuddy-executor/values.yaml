@@ -23,24 +23,6 @@ resources:
     cpu: "1"
     memory: "5Gi"
 
-## Enables disk storage using Persistent Volume Claims.
-## You'll also need to specify a disk block in the config cache and/or storage blocks below.
-## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
-## ref: https://docs.gitlab.com/ee/install/requirements.html#storage
-disk:
-  ## This volume persists build events, cache artifacts, etc. when BuildBuddy is
-  ## configured to use disk storage. To use this disk in your config, make sure
-  ## your root_directory options begin with with /data/.
-  data:
-    enabled: true
-    size: 10Gi
-    ## If defined, volume.beta.kubernetes.io/storage-class: <storageClass>
-    ## Default: volume.alpha.kubernetes.io/storage-class: default
-    ##
-    # storageClass:
-    accessMode: ReadWriteOnce
-  # existingClaim: ""
-
 ## Configures what port the BuildBuddy executors operate on.
 service:
   internalHTTPPort: 8080
