@@ -27,6 +27,10 @@ resources:
 #args:
 #  - "--auto_migrate_db=false"
 
+# Enables distributed disk caching configuration
+distributed: 
+  enabled: false
+
 ## Enables disk storage using Persistent Volume Claims.
 ## You'll also need to specify a disk block in the config cache and/or storage blocks below.
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
@@ -58,6 +62,7 @@ service:
   internalGRPCPort: 1985
   internalHTTPSPort: 8081
   internalGRPCSPort: 1986
+  internalDistPort: 5151
   internalMetricsPort: 9090
 
   annotations: {}
@@ -133,6 +138,13 @@ ingress:
         map $http_x_buildbuddy_api_key $api_key {
           "~." $http_x_buildbuddy_api_key;
         }
+  # metrics:
+  #   enabled: true
+  #   service:
+  #     annotations:
+  #       prometheus.io/scrape: "true"
+  #       prometheus.io/port: "10254"
+
 
 certmanager:
   ## Before enabling certmanager, make sure to install the CRDs on your cluster with:
@@ -164,6 +176,11 @@ mysql:
       max_connections=4000
   repository: mysql
   imageTag: "8.0.18"
+  # metrics:
+  #   enabled: true
+  #   annotations:
+  #     prometheus.io/scrape: "true"
+  #     prometheus.io/port: "9104"
 
 redis:
   enabled: false

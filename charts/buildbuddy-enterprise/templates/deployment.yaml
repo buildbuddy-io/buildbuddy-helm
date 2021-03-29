@@ -1,5 +1,9 @@
 apiVersion: apps/v1
+{{ if .Values.distributed.enabled }}
+kind: StatefulSet
+{{ else }}
 kind: Deployment
+{{ end }}
 metadata:
   name: {{ include "buildbuddy.fullname" . }}
   labels:
@@ -9,8 +13,10 @@ metadata:
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
 spec:
   replicas: {{ .Values.replicas | default 1 }}
+{{ if eq .Values.distributed.enabled false }}
   strategy:
     type: RollingUpdate
+{{ end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
@@ -55,6 +61,18 @@ spec:
             {{- .Values.resources | toYaml | nindent 12 }}
           {{- end }}
           env:
+            - name: MY_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          {{ if .Values.distributed.enabled }}
+            - name: MY_CLUSTER_HOSTNAME
+              value: "$(MY_HOSTNAME).{{ include "buildbuddy.name" . }}-headless.$(MY_NAMESPACE).svc.cluster.local"
+          {{- end }}
           {{- if .Values.extraEnvVars }}
             {{- .Values.extraEnvVars | toYaml | nindent 10 }}
           {{- end }}
@@ -63,6 +81,10 @@ spec:
               containerPort: {{ .Values.service.internalHTTPPort }}
             - name: grpc
               containerPort: {{ .Values.service.internalGRPCPort }}
+            {{ if .Values.service.internalDistPort }}
+            - name: dist
+              containerPort: {{ .Values.service.internalDistPort }}
+            {{ end }}
             {{ if .Values.service.internalHTTPSPort }}
             - name: https
               containerPort: {{ .Values.service.internalHTTPSPort }}
@@ -93,8 +115,13 @@ spec:
                 - name: server-type
                   value: buildbuddy-server
           volumeMounts:
+            {{ if .Values.distributed.enabled }}
+            - mountPath: /data
+              name: buildbuddy-data-pvc
+            {{ else }}
             - mountPath: /data
               name: data
+            {{ end }}
             - mountPath: /config.yaml
               name: config
               subPath: config.yaml
@@ -121,3 +148,15 @@ spec:
         {{- if and .Values.certmanager.enabled .Values.ingress.controller.extraVolumes -}}
         {{ .Values.ingress.controller.extraVolumes | toYaml | nindent 8 }}
         {{- end }}
+{{ if .Values.distributed.enabled }}
+  serviceName: {{ include "buildbuddy.name" . }}-headless
+  volumeClaimTemplates:
+    - metadata:
+        name: buildbuddy-data-pvc
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 100Gi
+{{ end }}

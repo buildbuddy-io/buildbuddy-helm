@@ -45,3 +45,21 @@ spec:
   loadBalancerSourceRanges:
 {{ toYaml .Values.service.loadBalancerSourceRanges | indent 4 }}
 {{- end }}
+---
+{{ if .Values.distributed.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "buildbuddy.name" . }}-headless
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  clusterIP: None
+  ports:
+    - name: http
+      protocol: "TCP"
+      port: {{ .Values.service.internalDistPort }}
+      targetPort: {{ .Values.service.internalDistPort }}
+{{ end }}
