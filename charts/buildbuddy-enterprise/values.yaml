@@ -5,11 +5,11 @@
 ## The BuildBuddy container image to use.
 image:
   repository: gcr.io/flame-public/buildbuddy-app-enterprise
-  tag: server-image-enterprise-v1.8.0
+  tag: server-image-enterprise-v1.9.0
   imagePullPolicy: IfNotPresent
 
 ## The number of app replicas to run.
-## If setting this number higher than 1, make sure to configure a mysql database (not sqlite) and gcs storage
+## If setting this number higher than 1, make sure to configure a mysql database (not sqlite) and gcs/s3 storage
 ## so data can be shared across replicas.
 ## Using multiple replicas with a sqlite3 database or disk storage is not supported.
 replicas: 1
@@ -30,6 +30,8 @@ resources:
 # Enables distributed disk caching configuration
 distributed: 
   enabled: false
+  # Per-replica disk
+  size: 100Gi
 
 ## Enables disk storage using Persistent Volume Claims.
 ## You'll also need to specify a disk block in the config cache and/or storage blocks below.
