@@ -13,7 +13,9 @@ metadata:
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
 spec:
   replicas: {{ .Values.replicas | default 1 }}
-{{ if eq .Values.distributed.enabled false }}
+{{ if eq .Values.distributed.enabled true }}
+  podManagementPolicy: "Parallel"
+{{ else }}
   strategy:
     type: RollingUpdate
 {{ end }}
