@@ -96,6 +96,7 @@ ingress:
         grpc_read_timeout 7200s;
         grpc_send_timeout 7200s;
         client_body_timeout 7200s;
+        client_body_buffer_size 4m;
         http2_idle_timeout 7200s;
         http2_max_concurrent_streams 10000;
         http2_max_requests 100000;
