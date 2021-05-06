@@ -32,6 +32,7 @@ distributed:
   enabled: false
   # Per-replica disk
   size: 100Gi
+  podManagementPolicy: "Parallel"
 
 ## Enables disk storage using Persistent Volume Claims.
 ## You'll also need to specify a disk block in the config cache and/or storage blocks below.

@@ -14,7 +14,7 @@ metadata:
 spec:
   replicas: {{ .Values.replicas | default 1 }}
 {{ if eq .Values.distributed.enabled true }}
-  podManagementPolicy: "Parallel"
+  podManagementPolicy: {{ .Values.distributed.podManagementPolicy }}
 {{ else }}
   strategy:
     type: RollingUpdate
