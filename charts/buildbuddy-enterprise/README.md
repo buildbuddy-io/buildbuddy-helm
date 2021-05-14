@@ -229,6 +229,15 @@ config:
 executor:
   enabled: true
   replicas: 3
+  # Size these resources to roughly fill one machine.
+  # The below config works well for 8cpu 32gb executors.
+  resources:
+    requests:
+      cpu: "7000m"
+      memory: 20Gi
+    limits:
+      cpu: "7500m"
+      memory: 30Gi
 redis:
   enabled: true
 config:
