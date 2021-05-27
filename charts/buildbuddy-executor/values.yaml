@@ -5,7 +5,7 @@
 ## The BuildBuddy Executor container image to use.
 image:
   repository: gcr.io/flame-public/buildbuddy-executor-enterprise
-  tag: server-image-enterprise-v2.1.1
+  tag: server-image-enterprise-v2.2.1
   imagePullPolicy: IfNotPresent
 
 ## The number of executor replicas to run.
@@ -69,19 +69,6 @@ config:
     local_cache_directory: "/buildbuddy/filecache/"
     local_cache_size_bytes: 5000000000 # 5GB
     docker_socket: /var/run/docker.sock
-  # auth:
-  #   enable_anonymous_usage: true
-  #   oauth_providers:
-  #     - issuer_url: "https://accounts.google.com"
-  #       client_id: "myclient.apps.googleusercontent.com"
-  #       client_secret: "mysecret"
-  # cache:
-  #   redis_target: "my-release-redis-master:6379"
-  #   gcs:
-  #     bucket: "buildbuddy_cache_bucket"
-  #     project_id: "myprojectid"
-  #     credentials_file: "mycredentials.json"
-  #     ttl_days: 30
 
 ## Additional env vars
 extraEnvVars: []
