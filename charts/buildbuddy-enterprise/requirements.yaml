@@ -20,7 +20,7 @@ dependencies:
     condition: certmanager.enabled
   - name: buildbuddy-executor
     alias: executor
-    version: 0.0.32
+    version: 0.0.33
     repository: https://helm.buildbuddy.io
     condition: executor.enabled
   - name: metrics-server
