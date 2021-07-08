@@ -45,7 +45,7 @@ prometheus-adapter:
           overrides:
             kubernetes_namespace: { resource: "namespace" }
             kubernetes_pod_name: { resource: "pod" }
-        metricsQuery: sum (<<.Series>>{<<.LabelMatchers>>} and (up{<<.LabelMatchers>>} > 0)) by (<<.GroupBy>>) 
+        metricsQuery: sum (<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>) 
         name:
           matches: "^(.*)$"
           as: "${1}"
