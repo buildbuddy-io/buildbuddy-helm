@@ -12,7 +12,7 @@ dependencies:
     alias: ingress
     version: 3.25.0
     repository: https://kubernetes.github.io/ingress-nginx
-    condition: ingress.enabled
+    condition: ingress.controller.enabled,ingress.enabled
   - name: cert-manager
     alias: certmanager
     version: 0.16.1
