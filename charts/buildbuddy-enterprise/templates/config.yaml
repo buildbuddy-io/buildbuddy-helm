@@ -29,9 +29,13 @@ data:
   {{- $_ := set $c.database "data_source" "sqlite3:///tmp/buildbuddy-enterprise.db" }}
   {{- end }}
 
+  {{- if .Values.redis.enabled }}
+  {{- $_ := set $c.remote_execution "redis_target" "redis:6379" }}
+  {{- end }}
+
   {{- if .Values.distributed.enabled }}
   {{- $_ := set $c.cache "redis_target" "" }}
-  {{- else if .Values.redis.enabled }}
+  {{- else if (and .Values.redis.enabled (or $c.cache.gcs $c.cache.s3)) }}
   {{- $_ := set $c.cache "redis_target" "redis:6379" }}
   {{- end }}
 
