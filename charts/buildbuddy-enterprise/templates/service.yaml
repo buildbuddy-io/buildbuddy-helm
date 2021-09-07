@@ -46,7 +46,6 @@ spec:
 {{ toYaml .Values.service.loadBalancerSourceRanges | indent 4 }}
 {{- end }}
 ---
-{{ if .Values.distributed.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -64,4 +63,3 @@ spec:
       protocol: "TCP"
       port: {{ .Values.service.internalDistPort }}
       targetPort: {{ .Values.service.internalDistPort }}
-{{ end }}
