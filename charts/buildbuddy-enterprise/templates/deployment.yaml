@@ -63,7 +63,7 @@ spec:
             {{- .Values.resources | toYaml | nindent 12 }}
           {{- end }}
           env:
-            - name: MY_HOSTNAME
+            - name: MY_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
@@ -72,9 +72,14 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
           {{ if .Values.distributed.enabled }}
-            - name: MY_CLUSTER_HOSTNAME
-              value: "$(MY_HOSTNAME).{{ include "buildbuddy.name" . }}-headless.$(MY_NAMESPACE).svc.cluster.local"
+            - name: MY_HOSTNAME
+              value: "$(MY_NAME).{{ include "buildbuddy.name" . }}-headless.$(MY_NAMESPACE).svc.cluster.local"
+          {{ else }}
+            - name: MY_HOSTNAME
+              value: "$(MY_NAME)"
           {{- end }}
+            - name: MY_CLUSTER_HOSTNAME
+              value: "$(MY_HOSTNAME)"          
           {{- if .Values.extraEnvVars }}
             {{- .Values.extraEnvVars | toYaml | nindent 10 }}
           {{- end }}
