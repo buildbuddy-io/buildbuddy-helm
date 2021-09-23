@@ -32,6 +32,8 @@ distributed:
   enabled: false
   # Per-replica disk
   size: 100Gi
+  # Enable the use of pd-ssd on GCP
+  # ssd: true
   podManagementPolicy: "Parallel"
 
 ## Enables disk storage using Persistent Volume Claims.

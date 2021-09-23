@@ -161,9 +161,23 @@ spec:
     - metadata:
         name: buildbuddy-data-pvc
       spec:
+{{ if .Values.distributed.ssd }}
+        storageClassName: ssd
+{{ end }}
         accessModes:
           - "ReadWriteOnce"
         resources:
           requests:
             storage: {{ .Values.distributed.size }}
+{{ end }}
+{{ if .Values.distributed.ssd }}
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ssd
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-ssd
+allowVolumeExpansion: true
 {{ end }}
