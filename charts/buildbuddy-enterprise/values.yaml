@@ -246,6 +246,7 @@ config:
     # build_buddy_url: "https://buildbuddy.example.com"
     # events_api_url: "grpcs://buildbuddy-grpc.example.com"
     # cache_api_url: "grpcs://buildbuddy-grpc.example.com"
+    # default_redis_target: redis:6379 # ENTERPRISE ONLY
     default_to_dense_mode: false
   database:
     ## Use an external database connection string here, or deploy mysql using this chart with mysql.enabled
@@ -299,7 +300,6 @@ config:
   #   client_secret: MY_CLIENT_SECRET
   remote_execution:
     enable_remote_exec: false
-    # redis_target: redis:6379
 
 grafana:
   enabled: false
