@@ -30,7 +30,7 @@ data:
   {{- end }}
 
   {{- if .Values.redis.enabled }}
-  {{- $_ := set $c.remote_execution "redis_target" "redis:6379" }}
+  {{- $_ := set $c.app "default_redis_target" "redis:6379" }}
   {{- end }}
 
   {{- if .Values.distributed.enabled }}
