@@ -113,8 +113,9 @@ command with the `-f` or `--values` flag to get started.
 ```yaml
 config:
   executor:
-    app_target: "grpcs://your.buildbuddy.app:443"
-    local_cache_size_bytes: 10000000000 # 10GB
+    app_target: "grpcs://remote.buildbuddy.io:443"
+    local_cache_size_bytes: 50000000000 # 50GB
+    api_key: "YOUR_EXECUTOR_ENABLED_API_KEY"
 ```
 
 ## More examples
