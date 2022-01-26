@@ -29,9 +29,12 @@ spec:
     http:
       paths:
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: {{ include "buildbuddy.name" . }}
-          servicePort: grpc
+          service:
+            name: {{ include "buildbuddy.name" . }}
+            port: 
+              name: grpc
   {{ if .Values.ingress.sslEnabled }}
   tls:
     - secretName: {{ .Values.ingress.grpcHost }}-tls
@@ -65,9 +68,12 @@ spec:
     http:
       paths:
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: {{ include "buildbuddy.name" . }}
-          servicePort: http
+          service:
+            name: {{ include "buildbuddy.name" . }}
+            port: 
+              name: http
   {{ if .Values.ingress.sslEnabled }}
   tls:
     - secretName: {{ .Values.ingress.httpHost }}-tls
