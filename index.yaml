@@ -9125,6 +9125,43 @@ entries:
   buildbuddy-executor:
   - apiVersion: v1
     appVersion: 2.8.3
+    created: "2022-01-26T23:47:42.878097017Z"
+    dependencies:
+    - condition: prometheus.enabled
+      name: metrics-server
+      repository: https://charts.bitnami.com/bitnami
+      version: 5.5.1
+    - condition: prometheus.enabled
+      name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 13.3.2
+    - condition: prometheus.enabled
+      name: prometheus-adapter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 2.12.0
+    description: BuildBuddy Executor
+    digest: b5fdb010d23c02b759acb4b1f8cbfda1775ebc70fb8c4c700a79400a7b67edc1
+    home: https://buildbuddy.io
+    icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
+    keywords:
+    - buildbuddy
+    - bazel
+    - build
+    - test
+    - remote-cache
+    - rbe
+    - enterprise
+    maintainers:
+    - email: siggi@buildbuddy.io
+      name: siggisim
+    - email: tyler@buildbuddy.io
+      name: tylerwilliams
+    name: buildbuddy-executor
+    urls:
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-executor-0.0.81/buildbuddy-executor-0.0.81.tgz
+    version: 0.0.81
+  - apiVersion: v1
+    appVersion: 2.8.3
     created: "2022-01-19T23:12:25.607432399Z"
     dependencies:
     - condition: prometheus.enabled
