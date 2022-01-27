@@ -7,10 +7,10 @@ dependencies:
   version: 0.0.7
 - name: ingress-nginx
   repository: https://kubernetes.github.io/ingress-nginx
-  version: 3.25.0
+  version: 4.0.16
 - name: cert-manager
   repository: https://charts.jetstack.io
-  version: v0.16.1
+  version: v1.6.1
 - name: buildbuddy-executor
   repository: https://helm.buildbuddy.io
   version: 0.0.82
@@ -26,5 +26,5 @@ dependencies:
 - name: grafana
   repository: https://grafana.github.io/helm-charts
   version: 6.6.2
-digest: sha256:36b3690c5f929d5725e0881168d194f5a512b94872a79e56a433beb7687d7240
-generated: "2022-01-27T00:26:47.657386719Z"
+digest: sha256:352a30e5b409772c907fd274254ad852e3bc41056f258b5c00227f14366b3737
+generated: "2022-01-26T16:39:37.548179-08:00"

@@ -1,5 +1,5 @@
 {{ if .Values.ingress.enabled }}
-apiVersion: {{ include "buildbuddy.ingress.apiVersion" . }}
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "buildbuddy.fullname" . }}-grpc
@@ -37,9 +37,12 @@ spec:
     http:
       paths:
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: {{ include "buildbuddy.name" . }}
-          servicePort: grpc
+          service:
+            name: {{ include "buildbuddy.name" . }}
+            port: 
+              name: grpc
   {{ if .Values.ingress.sslEnabled }}
   tls:
     - secretName: {{ .Values.ingress.grpcHost }}-tls
@@ -47,7 +50,7 @@ spec:
         - {{ .Values.ingress.grpcHost }}
   {{ end }}
 ---
-apiVersion: {{ include "buildbuddy.ingress.apiVersion" . }}
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "buildbuddy.fullname" . }}-at-grpc
@@ -78,9 +81,12 @@ spec:
   rules:
     - http:
         paths:
-          - backend:
-              serviceName: {{ include "buildbuddy.name" . }}
-              servicePort: grpc
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ include "buildbuddy.name" . }}
+                port: 
+                  name: grpc
   {{ if .Values.ingress.sslEnabled }}
   tls:
     - secretName: {{ .Values.ingress.grpcHost }}-tls
@@ -88,7 +94,7 @@ spec:
         - {{ .Values.ingress.grpcHost }}
   {{ end }}
 ---
-apiVersion: {{ include "buildbuddy.ingress.apiVersion" . }}
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "buildbuddy.fullname" . }}-http
@@ -114,9 +120,12 @@ spec:
     http:
       paths:
       - path: /
+        pathType: Prefix
         backend:
-          serviceName: {{ include "buildbuddy.name" . }}
-          servicePort: http
+          service:
+            name: {{ include "buildbuddy.name" . }}
+            port: 
+              name: http
   {{ if .Values.ingress.sslEnabled }}
   tls:
     - secretName: {{ .Values.ingress.httpHost }}-tls

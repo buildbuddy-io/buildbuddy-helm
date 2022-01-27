@@ -1,5 +1,5 @@
 {{ if and .Values.grafana.enabled .Values.ingress.enabled }}
-apiVersion: {{ include "buildbuddy.ingress.apiVersion" . }}
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-grafana
@@ -17,7 +17,10 @@ spec:
       http:
         paths:
           - backend:
-              serviceName: {{ .Release.Name }}-grafana
-              servicePort: 80
+              service:
+                name: {{ .Release.Name }}-grafana
+                port: 
+                  number: 80
             path: /grafana/
+            pathType: Prefix
 {{ end }}

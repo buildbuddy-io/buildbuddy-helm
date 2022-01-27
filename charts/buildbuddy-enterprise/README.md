@@ -17,7 +17,7 @@ This chart creates a [BuildBuddy Enterprise](https://www.buildbuddy.io/pricing) 
 
 ## Prerequisites
 
-- Kubernetes 1.15+ with Beta APIs enabled
+- Kubernetes 1.19+ with Beta APIs enabled
 - Helm v2/v3
 - Tiller (the Helm v2 server-side component) installed on the cluster
 
