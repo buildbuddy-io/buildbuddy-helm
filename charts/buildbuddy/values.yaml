@@ -40,6 +40,8 @@ service:
   externalGRPCPort: 1985
   externalHTTPSPort: 443
   externalGRPCSPort: 1986
+  # Exposing metrics port in service is disabled by default
+  # externalMetricsPort: 9090
 
   internalHTTPPort: 8080
   internalGRPCPort: 1985
