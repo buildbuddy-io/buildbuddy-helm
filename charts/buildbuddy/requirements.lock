@@ -1,12 +1,12 @@
 dependencies:
 - name: mysql
-  repository: https://kubernetes-charts.storage.googleapis.com
+  repository: https://charts.helm.sh/stable
   version: 1.6.4
 - name: ingress-nginx
   repository: https://kubernetes.github.io/ingress-nginx
-  version: 2.3.0
+  version: 4.0.16
 - name: cert-manager
   repository: https://charts.jetstack.io
-  version: v0.16.1
-digest: sha256:b4c5a13b4770d32fb78f2841ca6da8d6a5d767d815432bdf434b1c9cced6b211
-generated: "2020-08-26T12:59:57.831236-07:00"
+  version: v1.6.1
+digest: sha256:51c570736122c3838d8cb3ebaf8ed925ae5f55ef1b5ac3dd22d738df40c8c8b9
+generated: "2022-01-26T12:19:09.011607824-08:00"
