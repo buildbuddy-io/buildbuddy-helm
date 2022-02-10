@@ -13,7 +13,7 @@ dependencies:
   version: v1.6.1
 - name: buildbuddy-executor
   repository: https://helm.buildbuddy.io
-  version: 0.0.83
+  version: 0.0.84
 - name: metrics-server
   repository: https://charts.bitnami.com/bitnami
   version: 5.5.1
@@ -26,5 +26,5 @@ dependencies:
 - name: grafana
   repository: https://grafana.github.io/helm-charts
   version: 6.6.2
-digest: sha256:a0e0686512bdfc8585fc9a1829c461baa9b059598698894319f758f874b9834b
-generated: "2022-02-03T18:09:25.261867846Z"
+digest: sha256:5cd69ab912991629b86336fa938fe7295e4d0a556ad825918967d55bd45324ac
+generated: "2022-02-10T03:53:55.223632526Z"
