@@ -81,7 +81,7 @@ spec:
             - name: MY_CLUSTER_HOSTNAME
               value: "$(MY_HOSTNAME)"          
           {{- if .Values.extraEnvVars }}
-            {{- .Values.extraEnvVars | toYaml | nindent 10 }}
+            {{- .Values.extraEnvVars | toYaml | nindent 12 }}
           {{- end }}
           ports:
             - name: http
