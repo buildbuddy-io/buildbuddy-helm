@@ -76,7 +76,7 @@ The following table lists the configurable parameters of the BuildBuddy Open Sou
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `config`                      | The `config.yaml` configuration to be used by the BuildBuddy Executor. The values you provide will by using Helm's merging behavior override individual default values only. See the [example configurations](#example-configurations) and the [BuildBuddy documentation](https://www.buildbuddy.io/docs/config-rbe#executor-config) for details. | See `config` in [values.yaml](https://github.com/buildbuddy-io/buildbuddy-helm/blob/master/charts/buildbuddy-executor/values.yaml) |
 | `image.repository`            | Container image repository                                                                                                                                                                                                                                                                                                                        | `gcr.io/flame-public/buildbuddy-executor-enterprise`                                                                               |
-| `image.tag`                   | Container image tag                                                                                                                                                                                                                                                                                                                               | `enterprise-v2.9.2`                                                                                                   |
+| `image.tag`                   | Container image tag                                                                                                                                                                                                                                                                                                                               | `enterprise-v2.9.2`                                                                                                                |
 | `image.imagePullPolicy`       | Container image pull policy                                                                                                                                                                                                                                                                                                                       | `IfNotPresent`                                                                                                                     |
 | `disk.data.enabled`           | Whether to enable a persistent volume disk mounted at /data                                                                                                                                                                                                                                                                                       | `true`                                                                                                                             |
 | `disk.data.size`              | The size of the persistent volume disk                                                                                                                                                                                                                                                                                                            | `10Gi`                                                                                                                             |
@@ -116,6 +116,18 @@ config:
     app_target: "grpcs://remote.buildbuddy.io:443"
     local_cache_size_bytes: 50000000000 # 50GB
     api_key: "YOUR_EXECUTOR_ENABLED_API_KEY"
+```
+
++### Example autoscaling configuration
+
+```yaml
+autoscaler:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 100
+  averageCPU: 90
+  averageMemory: 50
+  averageQueueLength: 5
 ```
 
 ## More examples

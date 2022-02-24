@@ -9,6 +9,10 @@ metadata:
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
 spec:
   replicas: {{ .Values.replicas | default 1 }}
+  {{- if .Values.nodeSelector}}
+  nodeSelector:
+    {{- toYaml .Values.nodeSelector | nindent 4 }}
+  {{- end }}
   strategy:
     type: RollingUpdate
   selector:

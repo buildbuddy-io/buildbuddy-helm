@@ -15,6 +15,10 @@ spec:
     name: {{ include "buildbuddy.fullname" . }}
   minReplicas: {{ .Values.autoscaler.minReplicas }}
   maxReplicas: {{ .Values.autoscaler.maxReplicas }}
+{{ if .Values.autoscaler.behavior }}
+  behavior:
+    {{- .Values.autoscaler.behavior | toYaml | nindent 4 }}
+{{ end }}
   metrics:
   - type: Resource
     resource:
