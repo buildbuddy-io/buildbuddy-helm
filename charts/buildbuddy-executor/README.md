@@ -118,7 +118,7 @@ config:
     api_key: "YOUR_EXECUTOR_ENABLED_API_KEY"
 ```
 
-+### Example autoscaling configuration
+### Example autoscaling configuration
 
 ```yaml
 autoscaler:
