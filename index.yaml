@@ -9949,7 +9949,7 @@ entries:
   buildbuddy-executor:
   - apiVersion: v1
     appVersion: 2.9.2
-    created: "2022-02-24T23:59:07.758374549Z"
+    created: "2022-02-24T23:59:57.720845661Z"
     dependencies:
     - condition: prometheus.enabled
       name: metrics-server
@@ -9964,7 +9964,7 @@ entries:
       repository: https://prometheus-community.github.io/helm-charts
       version: 2.12.0
     description: BuildBuddy Executor
-    digest: 0173fb9e12ae09a41cd2bf43b7a6a30cac23fb80f86999307b4522467aca38c7
+    digest: 9e6fe17d488333d585066980bdeec39ff82dd74757cde9d0c0aaf447a9737b77
     home: https://buildbuddy.io
     icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
     keywords:
@@ -9982,8 +9982,8 @@ entries:
       name: tylerwilliams
     name: buildbuddy-executor
     urls:
-    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-executor-0.0.87/buildbuddy-executor-0.0.87.tgz
-    version: 0.0.87
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-executor-0.0.88/buildbuddy-executor-0.0.88.tgz
+    version: 0.0.88
   - apiVersion: v1
     appVersion: 2.9.2
     created: "2022-02-23T20:04:25.027998732Z"
