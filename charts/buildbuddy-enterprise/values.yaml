@@ -14,6 +14,13 @@ image:
 ## Using multiple replicas with a sqlite3 database or disk storage is not supported.
 replicas: 1
 
+## The (optional) nodeSelector used for placing executors and apps in separate node pools/groups (useful when autoscaling executors)
+# nodeSelector:
+#   # GCP
+#   cloud.google.com/gke-nodepool: my-app-pool
+#   # AWS
+#   eks.amazonaws.com/nodegroup: my-app-pool
+
 ## The default resources to give the app.
 resources:
   limits:
@@ -28,7 +35,7 @@ resources:
 #  - "--auto_migrate_db=false"
 
 # Enables distributed disk caching configuration
-distributed: 
+distributed:
   enabled: false
   # Per-replica disk
   size: 100Gi
@@ -153,7 +160,6 @@ ingress:
   #       prometheus.io/scrape: "true"
   #       prometheus.io/port: "10254"
 
-
 certmanager:
   ## Before enabling certmanager, make sure to install the CRDs on your cluster with:
   ## kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.16.1/cert-manager.crds.yaml
@@ -217,11 +223,10 @@ prometheus-adapter:
           overrides:
             kubernetes_namespace: { resource: "namespace" }
             kubernetes_pod_name: { resource: "pod" }
-        metricsQuery: sum (<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>) 
+        metricsQuery: sum (<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
         name:
           matches: "^(.*)$"
           as: "${1}"
-
 
 executor:
   enabled: false
@@ -234,6 +239,24 @@ executor:
 #     averageCPU: 90
 #     averageMemory: 50
 #     averageQueueLength: 5
+#     ## Optional scaling behavior
+#     ## https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#scaling-policies
+#     # behavior:
+#     #   scaleDown:
+#     #     stabilizationWindowSeconds: 600
+#     #     policies:
+#     #     - type: Pods
+#     #       value: 2
+#     #       periodSeconds: 10
+#     #     - type: Percent
+#     #       value: 10
+#     #       periodSeconds: 60
+## The (optional) nodeSelector used for placing executors and apps in separate node pools/groups (useful when autoscaling executors)
+#   nodeSelector:
+#     ## GCP
+#     cloud.google.com/gke-nodepool: my-executor-pool
+#     ## AWS
+#     eks.amazonaws.com/nodegroup: my-executor-pool
 #   config:
 #     executor:
 #       # If using multiple app replicas, point this at your ingress grpcHost with grpc(s):// prefix and port.
@@ -317,9 +340,9 @@ grafana:
     dashboardproviders.yaml:
       apiVersion: 1
       providers:
-        - name: 'default'
+        - name: "default"
           orgId: 1
-          folder: ''
+          folder: ""
           type: file
           disableDeletion: true
           editable: false
@@ -328,15 +351,15 @@ grafana:
   dashboardsConfigMaps:
     default: buildbuddy-dashboard
   datasources:
-   datasources.yaml:
-     apiVersion: 1
-     datasources:
-     - name: Prometheus
-       type: prometheus
-       uid: prom
-       url: http://{{ .Release.Name }}-prometheus-server
-       access: proxy
-       isDefault: true
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          uid: prom
+          url: http://{{ .Release.Name }}-prometheus-server
+          access: proxy
+          isDefault: true
 
 ## Additional env vars
 extraEnvVars: []
