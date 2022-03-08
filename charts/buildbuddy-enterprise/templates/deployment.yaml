@@ -13,10 +13,6 @@ metadata:
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
 spec:
   replicas: {{ .Values.replicas | default 1 }}
-  {{- if .Values.nodeSelector}}
-  nodeSelector:
-    {{- toYaml .Values.nodeSelector | nindent 4 }}
-  {{- end }}
 {{ if eq .Values.distributed.enabled true }}
   podManagementPolicy: {{ .Values.distributed.podManagementPolicy }}
 {{ else }}
@@ -53,6 +49,10 @@ spec:
       {{- end }}
       {{- if .Values.extraInitContainers }}
       {{- .Values.extraInitContainers | toYaml | nindent 6 }}
+      {{- end }}
+      {{- if .Values.nodeSelector}}
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
