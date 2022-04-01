@@ -42,7 +42,7 @@ spec:
         - {{ .Values.ingress.grpcHost }}
   {{ end }}
 ---
-apiVersion: {{ include "buildbuddy.ingress.apiVersion" . }}
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "buildbuddy.fullname" . }}-http
