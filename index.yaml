@@ -3,6 +3,44 @@ entries:
   buildbuddy:
   - apiVersion: v1
     appVersion: 2.9.9
+    created: "2022-04-04T17:10:29.585969509Z"
+    dependencies:
+    - condition: mysql.enabled
+      name: mysql
+      repository: https://charts.helm.sh/stable
+      version: 1.6.4
+    - alias: ingress
+      condition: ingress.controller.enabled,ingress.enabled
+      name: ingress-nginx
+      repository: https://kubernetes.github.io/ingress-nginx
+      version: 4.0.16
+    - alias: certmanager
+      condition: certmanager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: 1.6.1
+    description: BuildBuddy Open Source
+    digest: bb33932c757ca8ba292d912ea38993b785d377b95c3d001f21dd3086b0b7c9a2
+    home: https://buildbuddy.io
+    icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
+    keywords:
+    - buildbuddy
+    - bazel
+    - build
+    - test
+    - remote-cache
+    - rbe
+    maintainers:
+    - email: siggi@buildbuddy.io
+      name: siggisim
+    - email: tyler@buildbuddy.io
+      name: tylerwilliams
+    name: buildbuddy
+    urls:
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-0.0.97/buildbuddy-0.0.97.tgz
+    version: 0.0.97
+  - apiVersion: v1
+    appVersion: 2.9.9
     created: "2022-04-01T17:08:36.384816542Z"
     dependencies:
     - condition: mysql.enabled
