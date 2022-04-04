@@ -7,6 +7,9 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
+    {{- if .Values.extraPodLabels }}
+    {{- .Values.extraPodLabels | toYaml | nindent 4 }}
+    {{- end }}
 spec:
   replicas: {{ .Values.replicas | default 1 }}
   strategy:
@@ -29,7 +32,10 @@ spec:
         app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
         app.kubernetes.io/managed-by: {{ .Release.Service }}
-        helm.sh/chart: {{ include "buildbuddy.chart" . }}      
+        helm.sh/chart: {{ include "buildbuddy.chart" . }}
+        {{- if .Values.extraPodLabels }}
+        {{- .Values.extraPodLabels | toYaml | nindent 8 }}
+        {{- end }}
     spec:
       {{- if .Values.securityContext }}
       securityContext:
