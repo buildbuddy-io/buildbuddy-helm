@@ -5,7 +5,7 @@
 ## The BuildBuddy Executor container image to use.
 image:
   repository: gcr.io/flame-public/buildbuddy-executor-enterprise
-  tag: enterprise-v2.9.20
+  tag: enterprise-v2.10.0
   imagePullPolicy: IfNotPresent
 
 ## The number of executor replicas to run.
