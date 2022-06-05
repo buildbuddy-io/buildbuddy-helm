@@ -15,7 +15,6 @@ spec:
   selector:
     app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
   type: {{ .Values.service.type }}
   ports:
     - name: http
