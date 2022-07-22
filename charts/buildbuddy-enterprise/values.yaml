@@ -292,6 +292,7 @@ config:
     disk:
       root_directory: "/data/buildbuddy/cache/" # Enabled disk.data volume above to use
     max_size_bytes: 10000000000 # 10 GB
+    detailed_stats_enabled: true
     # redis_target: redis:6379
     # gcs: # ENTERPRISE ONLY
     #   bucket: "buildbuddy_cache"
