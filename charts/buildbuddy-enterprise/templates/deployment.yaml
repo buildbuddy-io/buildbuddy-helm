@@ -67,7 +67,7 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.imagePullPolicy }}
-          args:       
+          args:
           {{- if .Values.args }}
             {{- .Values.args | toYaml | nindent 12 }}
           {{- end }}
@@ -92,7 +92,7 @@ spec:
               value: "$(MY_NAME)"
           {{- end }}
             - name: MY_CLUSTER_HOSTNAME
-              value: "$(MY_HOSTNAME)"          
+              value: "$(MY_HOSTNAME)"
           {{- if .Values.extraEnvVars }}
             {{- .Values.extraEnvVars | toYaml | nindent 12 }}
           {{- end }}
@@ -155,12 +155,14 @@ spec:
         - name: config
           secret:
             secretName: {{ include "buildbuddy.fullname" . }}-config
+        {{ if not .Values.distributed.enabled }}
         - name: data
-        {{ if .Values.disk.data.enabled }}
+          {{ if .Values.disk.data.enabled }}
           persistentVolumeClaim:
             claimName: {{ .Values.disk.data.existingClaim | default (include "buildbuddy.fullname" .) }}
-        {{ else }}
+          {{ else }}
           emptyDir: {}
+          {{ end }}
         {{ end }}
         {{- if .Values.extraVolumes -}}
         {{ .Values.extraVolumes | toYaml | nindent 8 }}
