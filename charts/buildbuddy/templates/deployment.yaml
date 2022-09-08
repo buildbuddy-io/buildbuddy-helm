@@ -100,6 +100,35 @@ spec:
             {{- if .Values.extraVolumeMounts -}}
             {{ .Values.extraVolumeMounts | toYaml | nindent 12 }}
             {{- end }}
+        {{- if .Values.sidecar }}
+        - name: "{{ .Values.sidecar.name }}"
+          image: "{{ .Values.sidecar.repository }}:{{ .Values.sidecar.tag }}"
+          imagePullPolicy: {{ .Values.sidecar.pullPolicy }}
+          {{- if .Values.sidecar.envVars }}
+          env:
+            {{- .Values.sidecar.envVars | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.sidecar.ports }}
+          ports:
+            {{- .Values.sidecar.ports | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.sidecar.livenessProbe }}
+          livenessProbe:
+            {{- .Values.sidecar.livenessProbe | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.sidecar.readinessProbe }}
+          readinessProbe:
+            {{- .Values.sidecar.readinessProbe | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.sidecar.resources }}
+          resources:
+            {{- .Values.sidecar.resources | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.sidecar.volumeMounts }}
+          volumeMounts:
+            {{- .Values.sidecar.volumeMounts | toYaml | nindent 12 }}
+          {{- end }}
+        {{- end }}
       volumes:
         - name: config
           secret:
