@@ -41,6 +41,8 @@ distributed:
   size: 100Gi
   # Enable the use of pd-ssd on GCP
   # ssd: true
+  # Configure alternative storage class name (use either storageClass OR ssd, not both)
+  # storageClass: true
   podManagementPolicy: "Parallel"
 
 ## Enables disk storage using Persistent Volume Claims.
