@@ -112,6 +112,14 @@ spec:
           ports:
             {{- .Values.sidecar.ports | toYaml | nindent 12 }}
           {{- end }}
+          {{- if .Values.sidecar.command }}
+          command:
+            {{- .Values.sidecar.command | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.sidecar.args }}
+          args:
+            {{- .Values.sidecar.args | toYaml | nindent 12 }}
+          {{- end }}
           {{- if .Values.sidecar.livenessProbe }}
           livenessProbe:
             {{- .Values.sidecar.livenessProbe | toYaml | nindent 12 }}
