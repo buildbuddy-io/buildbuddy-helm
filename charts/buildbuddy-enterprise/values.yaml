@@ -5,7 +5,7 @@
 ## The BuildBuddy container image to use.
 image:
   repository: gcr.io/flame-public/buildbuddy-app-enterprise
-  tag: enterprise-v2.11.13
+  tag: enterprise-v2.11.14
   imagePullPolicy: IfNotPresent
 
 ## The number of app replicas to run.
@@ -41,6 +41,8 @@ distributed:
   size: 100Gi
   # Enable the use of pd-ssd on GCP
   # ssd: true
+  # Configure alternative storage class name (use either storageClass OR ssd, not both)
+  # storageClass: true
   podManagementPolicy: "Parallel"
 
 ## Enables disk storage using Persistent Volume Claims.

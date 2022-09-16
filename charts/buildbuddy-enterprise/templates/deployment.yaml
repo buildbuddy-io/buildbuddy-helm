@@ -179,6 +179,9 @@ spec:
 {{ if .Values.distributed.ssd }}
         storageClassName: ssd
 {{ end }}
+{{ if .Values.distributed.storageClass }}
+        storageClassName: {{ .Values.distributed.storageClass }}
+{{ end }}
         accessModes:
           - "ReadWriteOnce"
         resources:
