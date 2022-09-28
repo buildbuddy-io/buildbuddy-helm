@@ -1,6 +1,6 @@
 dependencies:
   - name: metrics-server
-    version: 5.11.9
+    version: 6.2.0
     repository: https://charts.bitnami.com/bitnami
     condition: prometheus.enabled
   - name: prometheus

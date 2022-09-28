@@ -16,7 +16,7 @@ dependencies:
   version: 0.0.126
 - name: metrics-server
   repository: https://charts.bitnami.com/bitnami
-  version: 5.11.9
+  version: 6.2.0
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
   version: 13.3.2
@@ -26,5 +26,5 @@ dependencies:
 - name: grafana
   repository: https://grafana.github.io/helm-charts
   version: 6.6.2
-digest: sha256:169e46d3834b140fb5458a9ef8a608a6d85cdb913a979bad4fec7c901d3a7e90
-generated: "2022-09-21T23:51:39.223878004Z"
+digest: sha256:6c1e66e00ca8bb495079112a5dc417397a0ffd1bc1f9ec7459ba316e8b718d7c
+generated: "2022-09-28T12:14:43.892066-07:00"
