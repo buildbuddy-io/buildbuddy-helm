@@ -81,3 +81,95 @@ spec:
         - {{ .Values.ingress.httpHost }}
   {{ end }}
 {{ end }}
+{{- if .Values.statefulset }}
+{{- if .Values.statefulset.ingressPerReplica }}
+{{- $grpcHostList := splitList "." .Values.ingress.grpcHost }}
+{{- $httpHostList := splitList "." .Values.ingress.httpHost }}
+{{- range $i := until (int .Values.replicas) }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "buildbuddy.fullname" $ }}-grpc-{{ $i }}
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" $ }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" $ }}
+  annotations:
+    kubernetes.io/ingress.class: {{ $.Values.ingress.class }}
+    nginx.ingress.kubernetes.io/backend-protocol: "grpc"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      grpc_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504 non_idempotent;
+      grpc_next_upstream_tries 3;
+    {{- if $.Values.ingress.sslEnabled }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: {{ $.Values.ingress.clusterIssuer | default "letsencrypt-prod"}}
+    {{- else }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    {{- end }}
+    {{- with $.Values.ingress.annotations }}
+      {{- . | toYaml | nindent 4 }}
+    {{- end }}
+spec:
+  {{- $grpcHost := join "." (mustPrepend (mustRest $grpcHostList) (printf "%s-%b" (mustFirst $grpcHostList) $i)) }}
+  rules:
+  - host: {{ $grpcHost }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "buildbuddy.name" $ }}-{{ $i }}
+            port:
+              name: grpc
+  {{- if $.Values.ingress.sslEnabled }}
+  tls:
+    - secretName: {{ $grpcHost }}-tls
+      hosts:
+        - {{ $grpcHost }}
+  {{- end }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "buildbuddy.fullname" $ }}-http-{{ $i }}
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" $ }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" $ }}
+  annotations:
+    kubernetes.io/ingress.class: {{ $.Values.ingress.class }}
+    {{- if $.Values.ingress.sslEnabled }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: {{ $.Values.ingress.clusterIssuer | default "letsencrypt-prod"}}
+    {{- else }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    {{- end }}
+    {{- with $.Values.ingress.annotations }}
+      {{- . | toYaml | nindent 4 }}
+    {{- end }}
+spec:
+  {{- $httpHost := join "." (mustPrepend (mustRest $httpHostList) (printf "%s-%b" (mustFirst $httpHostList) $i)) }}
+  rules:
+  - host: {{ $httpHost }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "buildbuddy.name" $ }}
+            port:
+              name: http
+  {{- if $.Values.ingress.sslEnabled }}
+  tls:
+    - secretName: {{ $httpHost }}-tls
+      hosts:
+        - {{ $httpHost }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

@@ -1,4 +1,4 @@
-{{- if and .Values.disk.data.enabled (not .Values.disk.data.existingClaim) -}}
+{{- if and .Values.disk.data.enabled (not .Values.disk.data.existingClaim) (not .Values.statefulset) -}}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:

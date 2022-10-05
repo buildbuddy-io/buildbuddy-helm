@@ -1,5 +1,9 @@
 apiVersion: apps/v1
+{{- if .Values.statefulset }}
+kind: StatefulSet
+{{- else }}
 kind: Deployment
+{{- end }}
 metadata:
   name: {{ include "buildbuddy.fullname" . }}
   labels:
@@ -12,8 +16,12 @@ metadata:
     {{- end }}
 spec:
   replicas: {{ .Values.replicas | default 1 }}
+  {{- if .Values.statefulset }}
+  podManagementPolicy: {{ .Values.statefulset.podManagementPolicy }}
+  {{- else }}
   strategy:
     type: RollingUpdate
+  {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
@@ -92,8 +100,13 @@ spec:
             {{- .Values.resources | toYaml | nindent 12 }}
           {{- end }}
           volumeMounts:
+            {{- if .Values.statefulset }}
+            - mountPath: /data
+              name: buildbuddy-data-pvc
+            {{- else }}
             - mountPath: /data
               name: data
+            {{- end }}
             - mountPath: /config.yaml
               name: config
               subPath: config.yaml
@@ -141,6 +154,7 @@ spec:
         - name: config
           secret:
             secretName: {{ include "buildbuddy.fullname" . }}-config
+        {{- if not .Values.statefulset }}
         - name: data
         {{ if .Values.disk.data.enabled }}
           persistentVolumeClaim:
@@ -148,9 +162,23 @@ spec:
         {{ else }}
           emptyDir: {}
         {{ end }}
+        {{- end }}
         {{- if .Values.extraVolumes -}}
         {{ .Values.extraVolumes | toYaml | nindent 8 }}
         {{- end }}
       {{- if .Values.extraPodSpec }}
       {{- .Values.extraPodSpec | toYaml | nindent 6 }}
       {{- end }}
+  {{- if .Values.statefulset }}
+  serviceName: {{ include "buildbuddy.name" . }}-headless
+  volumeClaimTemplates:
+    - metadata:
+        name: buildbuddy-data-pvc
+      spec:
+        storageClassName: {{ .Values.statefulset.storageClass }}
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: {{ .Values.statefulset.size }}
+  {{- end }}

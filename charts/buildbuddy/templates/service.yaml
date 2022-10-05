@@ -50,3 +50,77 @@ spec:
   loadBalancerSourceRanges:
 {{ toYaml .Values.service.loadBalancerSourceRanges | indent 4 }}
 {{- end }}
+{{- if .Values.statefulset }}
+{{- if .Values.statefulset.ingressPerReplica }}
+{{- range $i := until (int .Values.replicas) }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "buildbuddy.name" $ }}-{{ $i }}
+  {{- if $.Values.service.annotations }}
+  annotations:
+    {{- toYaml $.Values.service.annotations | indent 4 }}
+  {{- end }}
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" $ }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" $ }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" $ }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    statefulset.kubernetes.io/pod-name: {{ include "buildbuddy.name" $ }}-{{ $i }}
+  type: {{ $.Values.service.type }}
+  ports:
+    - name: http
+      protocol: 'TCP'
+      port: {{ $.Values.service.externalHTTPPort }}
+      targetPort: {{ $.Values.service.internalHTTPPort }}
+    - name: grpc
+      protocol: 'TCP'
+      port: {{ $.Values.service.externalGRPCPort }}
+      targetPort: {{ $.Values.service.internalGRPCPort }}
+    {{- if and $.Values.service.externalHTTPSPort $.Values.service.internalHTTPSPort }}
+    - name: https
+      protocol: 'TCP'
+      port: {{ $.Values.service.externalHTTPSPort }}
+      targetPort: {{ $.Values.service.internalHTTPSPort }}
+    {{- end }}
+    {{- if and $.Values.service.externalGRPCSPort $.Values.service.internalGRPCSPort }}
+    - name: grpcs
+      protocol: 'TCP'
+      port: {{ $.Values.service.externalGRPCSPort }}
+      targetPort: {{ $.Values.service.internalGRPCSPort }}
+    {{- end }}
+    {{- if and $.Values.service.externalMetricsPort $.Values.service.internalMetricsPort }}
+    - name: metrics
+      protocol: 'TCP'
+      port: {{ $.Values.service.externalMetricsPort }}
+      targetPort: {{ $.Values.service.internalMetricsPort }}
+    {{- end }}
+  {{- if $.Values.service.loadBalancerIP }}
+  loadBalancerIP: {{ $.Values.service.loadBalancerIP }}
+  {{- end }}
+  {{- if $.Values.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml $.Values.service.loadBalancerSourceRanges | indent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "buildbuddy.name" . }}-headless
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  clusterIP: None
+  ports:
+    {{- with .Values.statefulset.ports }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}
