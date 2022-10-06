@@ -47,11 +47,11 @@ prometheus-adapter:
   rules:
     default: false
     custom:
-      - seriesQuery: 'buildbuddy_remote_execution_queue_length{kubernetes_pod_name!="",kubernetes_namespace!=""}'
+      - seriesQuery: 'buildbuddy_remote_execution_queue_length{pod!="",namespace!=""}'
         resources:
           overrides:
-            kubernetes_namespace: { resource: "namespace" }
-            kubernetes_pod_name: { resource: "pod" }
+            namespace: { resource: "namespace" }
+            pod: { resource: "pod" }
         metricsQuery: sum (<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
         name:
           matches: "^(.*)$"
