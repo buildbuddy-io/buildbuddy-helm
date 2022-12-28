@@ -50,8 +50,8 @@ prometheus-adapter:
       - seriesQuery: 'buildbuddy_remote_execution_queue_length{pod!="",namespace!=""}'
         resources:
           overrides:
-            namespace: { resource: "namespace" }
-            pod: { resource: "pod" }
+            namespace: {resource: "namespace"}
+            pod: {resource: "pod"}
         metricsQuery: sum (<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
         name:
           matches: "^(.*)$"
@@ -86,7 +86,7 @@ config:
     # app_target: "grpcs://your.buildbuddy.install:443" # auto populated if deploying via buildbuddy-enterprise chart
     root_directory: "/buildbuddy/remotebuilds/"
     local_cache_directory: "/buildbuddy/filecache/"
-    local_cache_size_bytes: 5000000000 # 5GB
+    local_cache_size_bytes: 5000000000  # 5GB
     docker_socket: /var/run/docker.sock
 
 ## Additional env vars
