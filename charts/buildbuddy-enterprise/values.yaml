@@ -106,6 +106,7 @@ service:
 
 ingress:
   enabled: false
+  class: "nginx"
 
   ## To enable SSL, either enable certmanager below or specify a
   ## clusterIssuer that's already installed in the cluster.
