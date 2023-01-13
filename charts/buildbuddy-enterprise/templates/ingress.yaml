@@ -1,4 +1,10 @@
-{{ if .Values.ingress.enabled }}
+{{ if and
+  (.Values.ingress.enabled)
+  (ne .Values.ingress.class "alb")
+}}
+#########
+# NGINX #
+#########
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -42,7 +48,7 @@ spec:
         backend:
           service:
             name: {{ include "buildbuddy.name" . }}
-            port: 
+            port:
               name: grpc
   {{ if .Values.ingress.sslEnabled }}
   tls:
@@ -87,7 +93,7 @@ spec:
             backend:
               service:
                 name: {{ include "buildbuddy.name" . }}
-                port: 
+                port:
                   name: grpc
   {{ if .Values.ingress.sslEnabled }}
   tls:
@@ -126,7 +132,7 @@ spec:
         backend:
           service:
             name: {{ include "buildbuddy.name" . }}
-            port: 
+            port:
               name: http
   {{ if .Values.ingress.sslEnabled }}
   tls:
