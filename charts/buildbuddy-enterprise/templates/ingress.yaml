@@ -18,6 +18,7 @@ metadata:
       ssl_client_certificate /client-ca/tls.crt;
     {{ end }}
     nginx.ingress.kubernetes.io/configuration-snippet: |
+      grpc_set_header x-ssl-cert $ssl_client_escaped_cert;
       grpc_set_header x-buildbuddy-api-key $api_key;
       grpc_set_header x-buildbuddy-auth-type $cert_auth_type;
       grpc_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504 non_idempotent;
@@ -64,6 +65,7 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "grpc"
     nginx.ingress.kubernetes.io/server-alias: "~.*@{{ .Values.ingress.grpcHost | replace "." "\\\\." }}"
     nginx.ingress.kubernetes.io/configuration-snippet: |
+      grpc_set_header x-ssl-cert $ssl_client_escaped_cert;
       grpc_set_header x-buildbuddy-api-key $api_key;
       grpc_set_header x-buildbuddy-auth-type $host_auth_type;
       grpc_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504 non_idempotent;
