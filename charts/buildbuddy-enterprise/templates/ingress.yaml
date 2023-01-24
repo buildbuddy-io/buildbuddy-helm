@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.class: {{ .Values.ingress.class }}
     nginx.ingress.kubernetes.io/backend-protocol: "grpc"
     {{- if .Values.certmanager.enabled }}
     nginx.ingress.kubernetes.io/server-snippet: |
@@ -18,6 +18,7 @@ metadata:
       ssl_client_certificate /client-ca/tls.crt;
     {{ end }}
     nginx.ingress.kubernetes.io/configuration-snippet: |
+      grpc_set_header x-ssl-cert $ssl_client_escaped_cert;
       grpc_set_header x-buildbuddy-api-key $api_key;
       grpc_set_header x-buildbuddy-auth-type $cert_auth_type;
       grpc_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504 non_idempotent;
@@ -60,10 +61,11 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.class: {{ .Values.ingress.class }}
     nginx.ingress.kubernetes.io/backend-protocol: "grpc"
     nginx.ingress.kubernetes.io/server-alias: "~.*@{{ .Values.ingress.grpcHost | replace "." "\\\\." }}"
     nginx.ingress.kubernetes.io/configuration-snippet: |
+      grpc_set_header x-ssl-cert $ssl_client_escaped_cert;
       grpc_set_header x-buildbuddy-api-key $api_key;
       grpc_set_header x-buildbuddy-auth-type $host_auth_type;
       grpc_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504 non_idempotent;
@@ -104,7 +106,7 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.class: {{ .Values.ingress.class }}
     {{- if .Values.ingress.sslEnabled }}
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | default "letsencrypt-prod"}}
