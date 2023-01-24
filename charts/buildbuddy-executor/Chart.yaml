@@ -1,7 +1,7 @@
 apiVersion: v1
 description: BuildBuddy Executor
 name: buildbuddy-executor
-version: 0.0.145 # Chart version
+version: 0.0.146 # Chart version
 appVersion: 2.12.16 # Version of deployed app
 keywords:
   - buildbuddy
@@ -13,7 +13,7 @@ keywords:
   - enterprise
 home: https://buildbuddy.io
 icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
-source:
+sources:
   - https://github.com/buildbuddy-io/buildbuddy
   - https://github.com/buildbuddy-io/buildbuddy-helm
 maintainers:
