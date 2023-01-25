@@ -5171,6 +5171,71 @@ entries:
     version: 0.0.2
   buildbuddy-enterprise:
   - apiVersion: v1
+    appVersion: 2.12.18
+    created: "2023-01-25T21:46:59.531477435Z"
+    dependencies:
+    - condition: mysql.enabled
+      name: mysql
+      repository: https://charts.helm.sh/stable
+      version: 1.6.4
+    - alias: redis
+      condition: redis.enabled
+      name: buildbuddy-redis
+      repository: https://helm.buildbuddy.io
+      version: 0.0.9
+    - alias: ingress
+      condition: ingress.controller.enabled,ingress.enabled
+      name: ingress-nginx
+      repository: https://kubernetes.github.io/ingress-nginx
+      version: 4.0.16
+    - alias: certmanager
+      condition: certmanager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: 1.6.1
+    - alias: executor
+      condition: executor.enabled
+      name: buildbuddy-executor
+      repository: https://helm.buildbuddy.io
+      version: 0.0.147
+    - condition: prometheus.enabled
+      name: metrics-server
+      repository: https://charts.bitnami.com/bitnami
+      version: 6.2.0
+    - condition: prometheus.enabled
+      name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 15.14.0
+    - condition: prometheus.enabled
+      name: prometheus-adapter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 3.4.0
+    - condition: grafana.enabled
+      name: grafana
+      repository: https://grafana.github.io/helm-charts
+      version: 6.6.2
+    description: BuildBuddy Enterprise
+    digest: b058434f0a0ae955287ad5459cda226ff3785a477dbec4f733c9ffe9f4464954
+    home: https://buildbuddy.io
+    icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
+    keywords:
+    - buildbuddy
+    - bazel
+    - build
+    - test
+    - remote-cache
+    - rbe
+    - enterprise
+    maintainers:
+    - email: siggi@buildbuddy.io
+      name: siggisim
+    - email: tyler@buildbuddy.io
+      name: tylerwilliams
+    name: buildbuddy-enterprise
+    urls:
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-enterprise-0.0.178/buildbuddy-enterprise-0.0.178.tgz
+    version: 0.0.178
+  - apiVersion: v1
     appVersion: 2.12.15
     created: "2023-01-23T23:51:35.976637171Z"
     dependencies:
