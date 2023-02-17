@@ -163,6 +163,21 @@ ingress:
   #       prometheus.io/scrape: "true"
   #       prometheus.io/port: "10254"
 
+  ## AWS's LoadBalancer(ALB) Controller
+  ## Documentation: https://kubernetes-sigs.github.io/aws-load-balancer-controller
+  ## Configuration steps:
+  ##   - Install `aws-load-balancer-controller` into your cluster
+  ##   - Disable nginx-controller with `ingress.controller.enabled: false`
+  ##   - Enable ingress by setting `ingress.enabled: true`
+  ##   - Configure `ingress.class: "alb"` for the controller to aware of the Ingress
+  ##   - Depending on what type is your Service, the chart will provision different things:
+  ##     + LoadBalancer: ALB controller will provision a legacy Elastic Load Balancer corresponding to your Service directly.
+  ##     + NodePort: ALB controller will provision a set of Load Balancer corresponding to your Ingress configurations.
+  ##       Note: Serving GRPC requests through ALB requires an SSL connection so you need to set `ingress.alb.certificateArn`
+  ##             to a valid certificate ARN on AWS. Example below.
+  # alb:
+  #   certificateArn: "arn:aws:acm:us-west-2:xxxxx:certificate/xxxxxxx"
+
 certmanager:
   ## Before enabling certmanager, make sure to install the CRDs on your cluster with:
   ## kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.16.1/cert-manager.crds.yaml
