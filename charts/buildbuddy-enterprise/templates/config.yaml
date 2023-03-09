@@ -9,12 +9,8 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
 data:
-  {{- /* Make a deep enough copy of the default config */}}
-  {{- $c := dict }}
-  {{- range $key, $dictVal := .Values.config }}
-  {{- $dictCopy := merge (dict) $dictVal }}
-  {{- $_ := set $c $key $dictCopy }}
-  {{- end }}
+  {{- /* Make a deep copy of the default config */}}
+  {{- $c := deepCopy .Values.config }}
 
   {{- /* Update the copied default config based on .Values */}}
 
