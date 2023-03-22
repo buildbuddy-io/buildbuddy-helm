@@ -119,6 +119,9 @@ spec:
             {{- end }}
           {{- if .Values.containerSecurityContext }}
           securityContext:
+            {{- if .Values.config.executor.enable_podman }}
+            privileged: true
+            {{- end }}
             {{- .Values.containerSecurityContext | toYaml | nindent 12 }}
           {{- end }}
       volumes:
