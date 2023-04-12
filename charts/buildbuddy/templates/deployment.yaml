@@ -13,7 +13,7 @@ metadata:
 spec:
   replicas: {{ .Values.replicas | default 1 }}
   strategy:
-    type: RollingUpdate
+    type: {{ .Values.deploymentType }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
