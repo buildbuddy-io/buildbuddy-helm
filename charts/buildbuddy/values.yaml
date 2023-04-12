@@ -196,3 +196,6 @@ initContainerImage:
   repository: appropriate/curl
   tag: latest
   imagePullPolicy: IfNotPresent
+
+## Strategy used to replace pods in Deployment
+deploymentType: RollingUpdate
