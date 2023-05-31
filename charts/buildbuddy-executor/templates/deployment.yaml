@@ -36,6 +36,10 @@ spec:
         {{- .Values.extraPodLabels | toYaml | nindent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.extraInitContainers }}
+      initContainers:
+      {{- .Values.extraInitContainers | toYaml | nindent 8 }}
+      {{- end }}
       {{- if .Values.securityContext }}
       securityContext:
       {{- .Values.securityContext | toYaml | nindent 8 }}
