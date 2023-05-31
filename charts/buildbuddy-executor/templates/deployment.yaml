@@ -104,8 +104,10 @@ spec:
             - mountPath: /config.yaml
               name: config
               subPath: config.yaml
+            {{- if .Values.config.executor.docker_socket }}
             - name: dockersock
               mountPath: /var/run/docker.sock
+            {{- end }}
             {{- if .Values.config.executor.enable_podman }}
             - name: containerd-lib
               mountPath: /var/lib/containerd
@@ -128,9 +130,11 @@ spec:
         - name: config
           secret:
             secretName: {{ include "buildbuddy.fullname" . }}-config
+        {{- if .Values.config.executor.docker_socket }}
         - name: dockersock
           hostPath:
-            path: /var/run/docker.sock        
+            path: /var/run/docker.sock
+        {{- end }}
         - name: executor-data
           emptyDir: {}
         {{- if .Values.config.executor.enable_podman }}
