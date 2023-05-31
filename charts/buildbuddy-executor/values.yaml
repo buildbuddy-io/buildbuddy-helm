@@ -95,6 +95,9 @@ extraEnvVars: []
 ## Additional init containers
 extraInitContainers: []
 
+## Additional containers
+extraContainers: []
+
 # Add additional volumes and mounts
 extraVolumes: []
 extraVolumeMounts: []
