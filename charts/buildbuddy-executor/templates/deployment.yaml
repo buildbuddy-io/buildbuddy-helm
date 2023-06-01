@@ -59,14 +59,18 @@ spec:
             {{- .Values.resources | toYaml | nindent 12 }}
           {{- end }}
           env:
+            {{- if not .Values.config.executor.memory_bytes }}
             - name: SYS_MEMORY_BYTES
               valueFrom:
                 resourceFieldRef:
                   resource: limits.memory
+            {{- end }}
+            {{- if not .Values.config.executor.millicpu }}
             - name: SYS_MILLICPU
               valueFrom:
                 resourceFieldRef:
                   resource: limits.cpu
+            {{- end }}
             - name: MY_HOSTNAME
               valueFrom:
                 fieldRef:
