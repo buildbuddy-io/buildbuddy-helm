@@ -88,6 +88,7 @@ ingress:
 
   ## Nginx controller
   controller:
+    enabled: false
     config:
       load-balance: "round_robin"
       ## The defaults here are low - this sets them for all servers.
