@@ -55,7 +55,12 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          {{- if .Values.customExecutorCommand }}
+          command: {{ .Values.customExecutorCommand }}
+          {{- end }}
+          {{- if not .Values.customExecutorCommand }}
           args: ["--server_type=buildbuddy-executor"]
+          {{- end }}
           resources:
           {{- if .Values.resources }}
             {{- .Values.resources | toYaml | nindent 12 }}
