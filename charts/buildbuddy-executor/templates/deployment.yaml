@@ -126,10 +126,6 @@ spec:
               mountPath: /var/run/docker.sock
             {{- end }}
             {{- if .Values.config.executor.enable_podman }}
-            - name: containerd-lib
-              mountPath: /var/lib/containerd
-            - name: containerd-run
-              mountPath: /run/containerd
             - name: containers-lib
               mountPath: /var/lib/containers
             {{- end }}
@@ -144,6 +140,8 @@ spec:
             {{- .Values.containerSecurityContext | toYaml | nindent 12 }}
           {{- end }}
       volumes:
+        - name: executor-data
+          emptyDir: {}
         - name: config
           secret:
             secretName: {{ include "buildbuddy.fullname" . }}-config
@@ -152,15 +150,7 @@ spec:
           hostPath:
             path: /var/run/docker.sock
         {{- end }}
-        - name: executor-data
-          emptyDir: {}
         {{- if .Values.config.executor.enable_podman }}
-        - name: containerd-lib
-          hostPath:
-            path: /var/lib/containerd
-        - name: containerd-run
-          hostPath:
-            path: /run/containerd
         - name: containers-lib
           emptyDir: {}
         {{- end }}
