@@ -30,18 +30,16 @@ metadata:
     {{- end }}
 spec:
   rules:
-  - http:
+  - host: {{ .Values.ingress.grpcHost }}
+    http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
             name: {{ include "buildbuddy.name" . }}
-            port: 
+            port:
               name: grpc
-    {{- if not .Values.testing }}
-    host: {{ .Values.ingress.grpcHost }}
-    {{- end }}
   tls:
     - secretName: {{ .Values.ingress.grpcHost }}-tls
       hosts:
@@ -75,7 +73,7 @@ spec:
             backend:
               service:
                 name: {{ include "buildbuddy.name" . }}
-                port: 
+                port:
                   name: grpc
   tls:
     - secretName: {{ .Values.ingress.grpcHost }}-tls
@@ -104,18 +102,16 @@ metadata:
     {{- end }}
 spec:
   rules:
-  - http:
+  - host: {{ .Values.ingress.httpHost }}
+    http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
             name: {{ include "buildbuddy.name" . }}
-            port: 
+            port:
               name: http
-    {{- if not .Values.testing }}
-    host: {{ .Values.ingress.grpcHost }}
-    {{- end }}
   tls:
     - secretName: {{ .Values.ingress.httpHost }}-tls
       hosts:
