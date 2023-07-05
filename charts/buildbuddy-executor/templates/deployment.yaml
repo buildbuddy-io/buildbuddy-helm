@@ -44,6 +44,10 @@ spec:
       securityContext:
       {{- .Values.securityContext | toYaml | nindent 8 }}
       {{- end }}
+      {{- if .Values.affinity}}
+      affinity:
+        {{- toYaml .Values.affinity | nindent 8 }}
+      {{- end }}
       {{- if .Values.nodeSelector}}
       nodeSelector:
         {{- toYaml .Values.nodeSelector | nindent 8 }}
