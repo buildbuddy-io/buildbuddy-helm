@@ -101,3 +101,7 @@ extraContainers: []
 # Add additional volumes and mounts
 extraVolumes: []
 extraVolumeMounts: []
+
+## Affinity (optional) could be used to configured 'executor' pods to be deployed
+## on nodes with a certain type of storage volume or hardware available.
+affinity: {}

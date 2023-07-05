@@ -394,3 +394,7 @@ initContainerImage:
   repository: appropriate/curl
   tag: latest
   imagePullPolicy: IfNotPresent
+
+## Affinity (optional) could be used to configured 'app' pods to be deployed in separate nodes,
+## or nodes with a certain type of storage volume available.
+affinity: {}
