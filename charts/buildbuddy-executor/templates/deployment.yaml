@@ -71,6 +71,20 @@ spec:
             {{- .Values.resources | toYaml | nindent 12 }}
           {{- end }}
           env:
+            - name: MY_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MY_NODENAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: K8S_POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: HOME
+              value: /buildbuddy
             {{- if not .Values.config.executor.memory_bytes }}
             - name: SYS_MEMORY_BYTES
               valueFrom:
@@ -83,14 +97,6 @@ spec:
                 resourceFieldRef:
                   resource: limits.cpu
             {{- end }}
-            - name: MY_HOSTNAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
-            - name: MY_NODENAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
             {{- if .Values.poolName }}
             - name: MY_POOL
               value: {{ .Values.poolName }}
