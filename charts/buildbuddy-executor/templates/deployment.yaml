@@ -148,6 +148,9 @@ spec:
             privileged: true
             {{- end }}
             {{- .Values.containerSecurityContext | toYaml | nindent 12 }}
+          {{- else if .Values.config.executor.enable_podman }}
+          securityContext:
+            privileged: true
           {{- end }}
       volumes:
         - name: executor-data
