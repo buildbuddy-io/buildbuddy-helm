@@ -83,8 +83,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.uid
-            - name: HOME
-              value: /buildbuddy
             {{- if not .Values.config.executor.memory_bytes }}
             - name: SYS_MEMORY_BYTES
               valueFrom:
@@ -126,6 +124,8 @@ spec:
                 - name: server-type
                   value: buildbuddy-executor
           volumeMounts:
+            - mountPath: /root/buildbuddy/
+              name executor-root-dir
             - mountPath: /buildbuddy/
               name: executor-data
             - mountPath: /config.yaml
@@ -153,6 +153,8 @@ spec:
             privileged: true
           {{- end }}
       volumes:
+        - name: executor-root-dir
+          emptyDir: {}
         - name: executor-data
           emptyDir: {}
         - name: config
