@@ -124,8 +124,8 @@ spec:
                 - name: server-type
                   value: buildbuddy-executor
           volumeMounts:
-            - mountPath: /root/buildbuddy/
-              name executor-root-dir
+            - mountPath: /root/.config/buildbuddy/
+              name user-config-buildbuddy
             - mountPath: /buildbuddy/
               name: executor-data
             - mountPath: /config.yaml
@@ -153,7 +153,7 @@ spec:
             privileged: true
           {{- end }}
       volumes:
-        - name: executor-root-dir
+        - name: user-config-buildbuddy
           emptyDir: {}
         - name: executor-data
           emptyDir: {}
