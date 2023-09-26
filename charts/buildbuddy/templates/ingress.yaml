@@ -24,6 +24,9 @@ metadata:
     {{- . | toYaml | nindent 4 }}
     {{- end }}
 spec:
+  {{- if ge .Capabilities.KubeVersion.Minor "18" }}
+  ingressClassName: {{ .Values.ingress.class }}
+  {{- end }}
   rules:
   - host: {{ .Values.ingress.grpcHost }}
     http:
@@ -63,6 +66,9 @@ metadata:
     {{- . | toYaml | nindent 4 }}
     {{- end }}
 spec:
+  {{- if ge .Capabilities.KubeVersion.Minor "18" }}
+  ingressClassName: {{ .Values.ingress.class }}
+  {{- end }}
   rules:
   - host: {{ .Values.ingress.httpHost }}
     http:
