@@ -84,7 +84,10 @@ ingress:
   httpHost: buildbuddy.example.com
   grpcHost: buildbuddy-grpc.example.com
 
-  annotations: {}
+  http:
+    annotations: {}
+  grpc:
+    annotations: {}
 
   ## Nginx controller
   controller:

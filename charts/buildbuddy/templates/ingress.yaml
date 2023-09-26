@@ -20,7 +20,7 @@ metadata:
     {{- else }}
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     {{- end }}
-    {{- with .Values.ingress.annotations }}
+    {{- with .Values.ingress.grpc.annotations }}
     {{- . | toYaml | nindent 4 }}
     {{- end }}
 spec:
@@ -59,7 +59,7 @@ metadata:
     {{- else }}
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     {{- end }}
-    {{- with .Values.ingress.annotations }}
+    {{- with .Values.ingress.http.annotations }}
     {{- . | toYaml | nindent 4 }}
     {{- end }}
 spec:
