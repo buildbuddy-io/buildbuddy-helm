@@ -125,7 +125,7 @@ spec:
                   value: buildbuddy-executor
           volumeMounts:
             - mountPath: /root/.config/buildbuddy/
-              name user-config-buildbuddy
+              name: user-config-buildbuddy
             - mountPath: /buildbuddy/
               name: executor-data
             - mountPath: /config.yaml
