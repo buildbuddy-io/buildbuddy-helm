@@ -21,6 +21,13 @@ replicas: 1
 #   # AWS
 #   eks.amazonaws.com/nodegroup: my-app-pool
 
+## The taints to schedule pods on (useful for mixed architecture clusters)
+# tolerations:
+#   - effect: NoSchedule
+#     key: hardware_requirements
+#     operator: Equal
+#     value: x86_64
+
 ## The default resources to give the app.
 resources:
   limits:
