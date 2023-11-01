@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
   annotations:
-    {{- if and (lt .Capabilities.KubeVersion.Minor "18") (nq .Values.ingress.class "alb") }}
+    {{- if and (lt .Capabilities.KubeVersion.Minor "18") (ne .Values.ingress.class "alb") }}
     kubernetes.io/ingress.class: {{ .Values.ingress.class }}
     {{- end }}
     nginx.ingress.kubernetes.io/backend-protocol: "grpc"
@@ -57,7 +57,7 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
   annotations:
-    {{- if and (lt .Capabilities.KubeVersion.Minor "18") (nq .Values.ingress.class "alb") }}
+    {{- if and (lt .Capabilities.KubeVersion.Minor "18") (ne .Values.ingress.class "alb") }}
     kubernetes.io/ingress.class: {{ .Values.ingress.class }}
     {{- end }}
     {{- if .Values.ingress.sslEnabled }}
