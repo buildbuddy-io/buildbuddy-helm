@@ -20,18 +20,6 @@ spec:
     {{- .Values.autoscaler.behavior | toYaml | nindent 4 }}
 {{ end }}
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.autoscaler.averageCPU }}
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.autoscaler.averageMemory }}
   - type: Pods
     pods:
       metric:
