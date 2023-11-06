@@ -68,8 +68,6 @@ autoscaler:
   enabled: false
 #   minReplicas: 3
 #   maxReplicas: 100
-#   averageCPU: 90
-#   averageMemory: 50
 #   averageQueueLength: 5
 #   ## Optional scaling behavior
 #   ## https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#scaling-policies
