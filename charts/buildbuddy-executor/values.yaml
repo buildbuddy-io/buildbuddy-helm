@@ -94,6 +94,15 @@ config:
     local_cache_size_bytes: 5000000000  # 5GB
     docker_socket: /var/run/docker.sock
 
+# Configuration for Deployment Rollout Staggering
+# The 'minReadySeconds' config delays the rollout process during a RollingUpdate.  This delay allows the
+# new Executor time for initialization, which includes picking up new actions, downloading necessary
+# container images and inputs.  As a result, it prevents the immediate replacement of the old Executor.
+# By setting this config, the impact of 'helm upgrade' on ongoing operations is minimized, ensuring a
+# smoother transition between different chart releases.
+#
+# minReadySeconds: 300
+
 ## Additional env vars
 extraEnvVars: []
 

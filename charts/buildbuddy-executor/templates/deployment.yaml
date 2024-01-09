@@ -56,6 +56,9 @@ spec:
       tolerations:
         {{- toYaml .Values.tolerations | nindent 8 }}
       {{- end }}
+      {{- if .Values.minReadySeconds}}
+      minReadySeconds: {{ .Values.minReadySeconds }}
+      {{- end }}
       containers:
         {{- if .Values.extraContainers }}
         {{- toYaml .Values.extraContainers | nindent 8 }}
