@@ -1,7 +1,7 @@
 apiVersion: v1
 description: BuildBuddy Executor
 name: buildbuddy-executor
-version: 0.0.213 # Chart version
+version: 0.0.214 # Chart version
 appVersion: 2.35.0 # Version of deployed app
 keywords:
   - buildbuddy
