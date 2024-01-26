@@ -33,6 +33,14 @@ spec:
         {{- .Values.extraPodLabels | toYaml | nindent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.nodeSelector}}
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations}}
+      tolerations:
+        {{- toYaml .Values.tolerations | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
