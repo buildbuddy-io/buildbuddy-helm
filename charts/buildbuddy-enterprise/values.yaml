@@ -317,12 +317,6 @@ config:
     disk:
       root_directory: "/data/buildbuddy/cache/" # Enabled disk.data volume above to use
     max_size_bytes: 10000000000 # 10 GB
-    # redis_target: redis:6379
-    # gcs: # ENTERPRISE ONLY
-    #   bucket: "buildbuddy_cache"
-    #   project_id: "my-gc-project"
-    #   credentials_file: "my-volume/my-google-credentials.json"
-    #   ttl_days: 30
   ssl:
     enable_ssl: false
     client_ca_cert_file: "" # DO NOT EDIT: Automatically configured using certmanager
