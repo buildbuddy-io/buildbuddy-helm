@@ -14,6 +14,20 @@ image:
 ## Using multiple replicas with a sqlite3 database or disk storage is not supported.
 replicas: 1
 
+## The nodeSelector used for placing pods in separate node pools/groups
+# nodeSelector:
+#   # GCP
+#   cloud.google.com/gke-nodepool: my-redis-pool
+#   # AWS
+#   eks.amazonaws.com/nodegroup: my-redis-pool
+
+## The taints to schedule pods on (useful for mixed architecture clusters)
+# tolerations:
+#   - effect: NoSchedule
+#     key: hardware_requirements
+#     operator: Equal
+#     value: x86_64
+
 ## Maximum memory redis will use, should be less than the kubernetes resource limits below.
 maxMemory: "5gb"
 
