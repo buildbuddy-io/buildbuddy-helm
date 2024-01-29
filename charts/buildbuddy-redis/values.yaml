@@ -14,12 +14,12 @@ image:
 ## Using multiple replicas with a sqlite3 database or disk storage is not supported.
 replicas: 1
 
-## The nodeSelector used for placing executors and apps in separate node pools/groups (useful when autoscaling executors)
+## The nodeSelector used for placing pods in separate node pools/groups
 # nodeSelector:
 #   # GCP
-#   cloud.google.com/gke-nodepool: my-executor-pool
+#   cloud.google.com/gke-nodepool: my-redis-pool
 #   # AWS
-#   eks.amazonaws.com/nodegroup: my-executor-pool
+#   eks.amazonaws.com/nodegroup: my-redis-pool
 
 ## The taints to schedule pods on (useful for mixed architecture clusters)
 # tolerations:
