@@ -15,7 +15,9 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
   annotations:
+    {{- if lt .Capabilities.KubeVersion.Minor "18" }}
     kubernetes.io/ingress.class: {{ .Values.ingress.class }}
+    {{- end }}
     nginx.ingress.kubernetes.io/backend-protocol: "grpc"
     {{- if .Values.certmanager.enabled }}
     nginx.ingress.kubernetes.io/server-snippet: |
@@ -39,6 +41,9 @@ metadata:
     {{- . | toYaml | nindent 4 }}
     {{- end }}
 spec:
+  {{- if ge .Capabilities.KubeVersion.Minor "18" }}
+  ingressClassName: {{ .Values.ingress.class }}
+  {{- end }}
   rules:
   - host: {{ .Values.ingress.grpcHost }}
     http:
@@ -67,7 +72,9 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
   annotations:
+    {{- if lt .Capabilities.KubeVersion.Minor "18" }}
     kubernetes.io/ingress.class: {{ .Values.ingress.class }}
+    {{- end }}
     nginx.ingress.kubernetes.io/backend-protocol: "grpc"
     nginx.ingress.kubernetes.io/server-alias: "~.*@{{ .Values.ingress.grpcHost | replace "." "\\\\." }}"
     nginx.ingress.kubernetes.io/configuration-snippet: |
@@ -86,6 +93,9 @@ metadata:
     {{- . | toYaml | nindent 4 }}
     {{- end }}
 spec:
+  {{- if ge .Capabilities.KubeVersion.Minor "18" }}
+  ingressClassName: {{ .Values.ingress.class }}
+  {{- end }}
   rules:
     - http:
         paths:
@@ -112,7 +122,9 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
   annotations:
+    {{- if lt .Capabilities.KubeVersion.Minor "18" }}
     kubernetes.io/ingress.class: {{ .Values.ingress.class }}
+    {{- end }}
     {{- if .Values.ingress.sslEnabled }}
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | default "letsencrypt-prod"}}
@@ -123,6 +135,9 @@ metadata:
     {{- . | toYaml | nindent 4 }}
     {{- end }}
 spec:
+  {{- if ge .Capabilities.KubeVersion.Minor "18" }}
+  ingressClassName: {{ .Values.ingress.class }}
+  {{- end }}
   rules:
   - host: {{ .Values.ingress.httpHost }}
     http:
