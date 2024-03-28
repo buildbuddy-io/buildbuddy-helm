@@ -225,6 +225,9 @@ redis:
   enabled: false
 
 # Autoscaler for buildbuddy-app instances
+#
+# This will NOT work if distributed.enabled is true.
+# See https://github.com/buildbuddy-io/buildbuddy-helm/issues/23 for more info.
 autoscaler:
   enabled: false
 #   minReplicas: 3
