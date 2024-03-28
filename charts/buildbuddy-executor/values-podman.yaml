@@ -1,0 +1,28 @@
+# Example Podman Runner Configuration
+#
+# This is meant to be used together with the default values.yaml file.
+
+config:
+  executor:
+    app_target: "grpcs://remote.buildbuddy.io"
+    # api_key: "<API_KEY>"
+
+    ## Each executor maintains a local LRU cache that helps speed up inputs download.
+    ## It's good to use larger executor pod to improve local cache hit rates.
+    local_cache_size_bytes: 50_000_000_000 # 50GB
+
+    ## Use podman to spin up 'runner' child containers inside executor container.
+    enable_podman: true
+    default_isolation_type: podman
+
+    ## Override the default image used for action executions.
+    ## Should contains appropriate local toolchains (i.e. gcc) if needed.
+    # default_image: ubuntu
+
+    ## Registry specific authentication.
+    ## If not provided, falls back to credential helper available on executor's container
+    # container_registries:
+    #   - hostnames:
+    #       - gcr.io
+    #     username: "anonymous"
+    #     password: ""
