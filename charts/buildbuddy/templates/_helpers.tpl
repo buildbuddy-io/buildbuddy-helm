@@ -30,3 +30,16 @@ Create chart name and version as used by the chart label.
 {{- define "buildbuddy.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "buildbuddy.labels" -}}
+app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+helm.sh/chart: {{ include "buildbuddy.chart" . }}
+{{- if .Values.extraLabels }}
+{{ toYaml .Values.extraLabels }}
+{{- end }}
+{{- end -}}

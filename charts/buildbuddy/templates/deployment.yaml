@@ -3,10 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "buildbuddy.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+    {{- include "buildbuddy.labels" . | nindent 4 }}
     {{- if .Values.extraPodLabels }}
     {{- .Values.extraPodLabels | toYaml | nindent 4 }}
     {{- end }}
@@ -27,10 +24,7 @@ spec:
         {{- end }}
 
       labels:
-        app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
-        app.kubernetes.io/managed-by: {{ .Release.Service }}
-        helm.sh/chart: {{ include "buildbuddy.chart" . }}
+        {{- include "buildbuddy.labels" . | nindent 8 }}
         {{- if .Values.extraPodLabels }}
         {{- .Values.extraPodLabels | toYaml | nindent 8 }}
         {{- end }}

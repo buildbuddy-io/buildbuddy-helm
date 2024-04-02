@@ -4,10 +4,7 @@ kind: Ingress
 metadata:
   name: {{ include "buildbuddy.fullname" . }}-grpc
   labels:
-    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+    {{- include "buildbuddy.labels" . | nindent 4 }}
   annotations:
     {{- if and (lt .Capabilities.KubeVersion.Minor "18") (ne .Values.ingress.class "alb") }}
     kubernetes.io/ingress.class: {{ .Values.ingress.class }}
@@ -52,10 +49,7 @@ kind: Ingress
 metadata:
   name: {{ include "buildbuddy.fullname" . }}-http
   labels:
-    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+    {{- include "buildbuddy.labels" . | nindent 4 }}
   annotations:
     {{- if and (lt .Capabilities.KubeVersion.Minor "18") (ne .Values.ingress.class "alb") }}
     kubernetes.io/ingress.class: {{ .Values.ingress.class }}
