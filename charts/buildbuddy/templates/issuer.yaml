@@ -4,10 +4,7 @@ kind: ClusterIssuer
 metadata:
   name: letsencrypt-prod
   labels:
-    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+    {{- include "buildbuddy.labels" . | nindent 4 }}
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
