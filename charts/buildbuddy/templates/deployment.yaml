@@ -4,9 +4,6 @@ metadata:
   name: {{ include "buildbuddy.fullname" . }}
   labels:
     {{- include "buildbuddy.labels" . | nindent 4 }}
-    {{- if .Values.extraPodLabels }}
-    {{- .Values.extraPodLabels | toYaml | nindent 4 }}
-    {{- end }}
 spec:
   replicas: {{ .Values.replicas | default 1 }}
   strategy:
