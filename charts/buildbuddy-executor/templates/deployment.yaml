@@ -147,6 +147,8 @@ spec:
             {{- if .Values.config.executor.enable_podman }}
             - name: containers-lib
               mountPath: /var/lib/containers
+            - name: containers-run
+              mountPath: /run/containers
             {{- end }}
             {{- if .Values.extraVolumeMounts -}}
             {{ .Values.extraVolumeMounts | toYaml | nindent 12 }}
@@ -176,6 +178,8 @@ spec:
         {{- end }}
         {{- if .Values.config.executor.enable_podman }}
         - name: containers-lib
+          emptyDir: {}
+        - name: containers-run
           emptyDir: {}
         {{- end }}
         {{- if .Values.extraVolumes -}}
