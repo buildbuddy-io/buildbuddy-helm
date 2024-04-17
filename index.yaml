@@ -2,8 +2,8 @@ apiVersion: v1
 entries:
   buildbuddy:
   - apiVersion: v1
-    appVersion: 2.49.0
-    created: "2024-04-10T18:47:23.419117801Z"
+    appVersion: 2.50.0
+    created: "2024-04-17T19:27:46.155458508Z"
     dependencies:
     - condition: mysql.enabled
       name: mysql
@@ -20,7 +20,7 @@ entries:
       repository: https://charts.jetstack.io
       version: 1.6.1
     description: BuildBuddy Open Source
-    digest: 11d57de1c63910827cbc161801be33668f3d9f5cd567ee14a075e2db0f71fae4
+    digest: 3c8173c30a44e5a1dd072d4df13aae2503bb8575e09aeb6dfd24b59c2c4cbdae
     home: https://buildbuddy.io
     icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
     keywords:
@@ -37,8 +37,8 @@ entries:
       name: tylerwilliams
     name: buildbuddy
     urls:
-    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-0.0.217/buildbuddy-0.0.217.tgz
-    version: 0.0.217
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-0.0.218/buildbuddy-0.0.218.tgz
+    version: 0.0.218
   - apiVersion: v1
     appVersion: 2.48.2
     created: "2024-04-04T15:34:00.439389294Z"
@@ -23668,8 +23668,8 @@ entries:
     version: 0.0.1
   buildbuddy-executor:
   - apiVersion: v1
-    appVersion: 2.49.0
-    created: "2024-04-10T18:47:23.542680057Z"
+    appVersion: 2.50.0
+    created: "2024-04-17T19:27:46.232603464Z"
     dependencies:
     - condition: prometheus.enabled
       name: metrics-server
@@ -23684,7 +23684,7 @@ entries:
       repository: https://prometheus-community.github.io/helm-charts
       version: 3.4.0
     description: BuildBuddy Executor
-    digest: c0f718e21d45a9f58f526b3ecdac7fa320987ddd59e303cf97d74d03f5f4df21
+    digest: 96319e49f512ce3b6aab9b5f2a7b4d4fb7248ae1c6d51c529b2ae68c7deba38a
     home: https://buildbuddy.io
     icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
     keywords:
@@ -23705,8 +23705,8 @@ entries:
     - https://github.com/buildbuddy-io/buildbuddy
     - https://github.com/buildbuddy-io/buildbuddy-helm
     urls:
-    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-executor-0.0.232/buildbuddy-executor-0.0.232.tgz
-    version: 0.0.232
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-executor-0.0.233/buildbuddy-executor-0.0.233.tgz
+    version: 0.0.233
   - apiVersion: v1
     appVersion: 2.48.2
     created: "2024-04-09T16:47:27.64449308Z"
