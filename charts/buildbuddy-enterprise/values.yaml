@@ -346,9 +346,9 @@ config:
     #   project_id: "my-gc-project"
     #   credentials_file: "my-volume/my-google-credentials.json"
   cache:
-    disk:
-      root_directory: "/data/buildbuddy/cache/" # Enabled disk.data volume above to use
     max_size_bytes: 10000000000 # 10 GB
+    pebble:
+      root_directory: /data/buildbuddy/pebble-cache/
   ssl:
     enable_ssl: false
     client_ca_cert_file: "" # DO NOT EDIT: Automatically configured using certmanager
