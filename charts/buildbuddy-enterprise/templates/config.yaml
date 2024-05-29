@@ -20,7 +20,7 @@ data:
   {{- end }}
 
   {{- if .Values.mysql.enabled }}
-  {{- $_ := set $c.database "data_source" (print "mysql://" .Values.mysql.mysqlUser ":" .Values.mysql.mysqlPassword "@tcp(" .Release.Name "-mysql:3306)/" .Values.mysql.mysqlDatabase) }}
+  {{- $_ := set $c.database "data_source" (print "mysql://" .Values.mysql.auth.user ":" .Values.mysql.auth.password "@tcp(" .Release.Name "-mysql:3306)/" .Values.mysql.auth.database) }}
   {{- else if not .Values.config.database.data_source }}
   {{- $_ := set $c.database "data_source" "sqlite3:///tmp/buildbuddy-enterprise.db" }}
   {{- end }}

@@ -198,28 +198,20 @@ certmanager:
 ## Either enable mysql here, or use your own data_source connection string
 ## in the config block below.
 mysql:
-  enabled: false
-  mysqlRootPassword: ""
-  mysqlUser: ""
-  mysqlPassword: ""
-  mysqlDatabase: buildbuddy
-
-  resources:
-    requests:
-      cpu: "2"
-      memory: "4Gi"
-
-  configurationFiles:
-    mysql.cnf: |-
+  enabled: true
+  auth:
+    rootPassword: ""
+    username: ""
+    password: ""
+    database: buildbuddy
+  primary:
+    # See the preset values in https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
+    resourcesPreset: xlarge
+    configuration: |-
       [mysqld]
       max_connections=4000
-  repository: mysql
-  imageTag: "8.0.18"
-  # metrics:
-  #   enabled: true
-  #   annotations:
-  #     prometheus.io/scrape: "true"
-  #     prometheus.io/port: "9104"
+  secondary:
+    replicaCount: 0
 
 redis:
   enabled: false

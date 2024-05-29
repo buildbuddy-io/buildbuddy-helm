@@ -1,7 +1,7 @@
 dependencies:
   - name: mysql
-    version: 1.6.4
-    repository: https://charts.helm.sh/stable
+    version: 11.1.0
+    repository: https://charts.bitnami.com/bitnami
     condition: mysql.enabled
   - name: buildbuddy-redis
     alias: redis
