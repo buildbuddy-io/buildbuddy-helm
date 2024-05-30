@@ -1,0 +1,15 @@
+{{- if .Values.clickhouse.enabled }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: init-clickhouse-database
+  labels:
+    app.kubernetes.io/component: clickhouse
+stringData:
+  init-buildbuddy-db.sh: |
+    #!/bin/bash
+    set -e
+    clickhouse client --user {{ .Values.clickhouse.auth.username }} --password {{ .Values.clickhouse.auth.password }} -n <<-EOSQL
+      CREATE DATABASE IF NOT EXISTS {{ .Values.clickhouse.auth.database }};
+    EOSQL
+{{- end }}

@@ -195,6 +195,31 @@ certmanager:
   ## Email address to use for letsencrypt certs
   emailAddress: your-email@gmail.com
 
+## Either enable clickhouse here, or use your own data_source connection string
+## in the config block below.
+clickhouse:
+  enabled: false
+  image:
+    tag: 23.8
+  auth:
+    username: buildbuddy
+    password: buildbuddy
+    database: buildbuddy
+  resources:
+    requests:
+      cpu: "2"
+      memory: "4Gi"
+  # A script to initialize a database for BuildBuddy.
+  # This is needed because the bitnami Clickhouse image does not have support
+  # for CLICKHOUSE_DB variable.
+  # The actual script is defined in ./templates/clickhouse.yaml.
+  initdbScriptsSecret: init-clickhouse-database
+  # Run a single instance of Clickhouse
+  zookeeper:
+    enabled: false
+  shards: 1
+  replicaCount: 1
+
 ## Either enable mysql here, or use your own data_source connection string
 ## in the config block below.
 mysql:
@@ -301,6 +326,10 @@ config:
     # cache_api_url: "grpcs://buildbuddy-grpc.example.com"
     # default_redis_target: redis:6379 # ENTERPRISE ONLY
     default_to_dense_mode: false
+  olap_database:
+    ## Use an external database connection string here, or deploy clickhouse using this chart with clickhouse.enabled
+    ##   "clickhouse://<USERNAME>:<PASSWORD>@(<HOST>:9000)/<DATABASE_NAME>"
+    data_source: "" # Either set this or clickhouse.enabled, not both!
   database:
     ## Use an external database connection string here, or deploy mysql using this chart with mysql.enabled
     ## mysql:     "mysql://<USERNAME>:<PASSWORD>@tcp(<HOST>:3306)/<DATABASE_NAME>"

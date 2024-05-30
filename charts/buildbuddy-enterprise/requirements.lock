@@ -26,5 +26,8 @@ dependencies:
 - name: grafana
   repository: https://grafana.github.io/helm-charts
   version: 6.6.2
-digest: sha256:4fbcbc840442d4741d89c9c0dfa23a87af688d79fed2ed9e60e84eaa2d47fbe7
-generated: "2024-06-20T18:36:39.689263774Z"
+- name: clickhouse
+  repository: https://charts.bitnami.com/bitnami
+  version: 6.2.0
+digest: sha256:7d4bed8645a250732fd6e38f50c63a6179e22f3ab47b1d756c4b3bdf5f1e547a
+generated: "2024-06-25T17:27:00.572881+02:00"

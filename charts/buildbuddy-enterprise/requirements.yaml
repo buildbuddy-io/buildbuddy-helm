@@ -39,3 +39,7 @@ dependencies:
     version: 6.6.2
     repository: https://grafana.github.io/helm-charts
     condition: grafana.enabled
+  - name: clickhouse
+    version: 6.2.0
+    repository: https://charts.bitnami.com/bitnami
+    condition: clickhouse.enabled
