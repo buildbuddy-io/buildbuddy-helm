@@ -395,7 +395,7 @@ extraVolumeMounts: []
 
 ## Container image that is used to ping mysql until it's up.
 initContainerImage:
-  repository: appropriate/curl
+  repository: busybox
   tag: latest
   imagePullPolicy: IfNotPresent
 
