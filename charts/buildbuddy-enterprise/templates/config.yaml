@@ -19,6 +19,10 @@ data:
   {{- print "\n\nDIRECT CONFIGURATION NOT SUPPORTED:\n-----------------------------------\n\n" $message | fail }}
   {{- end }}
 
+  {{- if .Values.clickhouse.enabled }}
+  {{- $_ := set $c.olap_database "data_source" (print "clickhouse://" .Values.clickhouse.auth.username ":" .Values.clickhouse.auth.password "@" .Release.Name "-clickhouse:9000/" .Values.clickhouse.auth.database) }}
+  {{- end }}
+
   {{- if .Values.mysql.enabled }}
   {{- $_ := set $c.database "data_source" (print "mysql://" .Values.mysql.mysqlUser ":" .Values.mysql.mysqlPassword "@tcp(" .Release.Name "-mysql:3306)/" .Values.mysql.mysqlDatabase) }}
   {{- else if not .Values.config.database.data_source }}

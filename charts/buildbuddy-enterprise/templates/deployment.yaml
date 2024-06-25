@@ -56,6 +56,12 @@ spec:
         imagePullPolicy: {{ .Values.initContainerImage.imagePullPolicy }}
         command: ["sh", "-c", "until nc -z {{ .Release.Name }}-mysql 3306; do echo waiting for {{ .Release.Name }}-mysql service; sleep 5; done;"]
       {{- end }}
+      {{- if .Values.clickhouse.enabled }}
+      - name: "init-clickhouse"
+        image: "{{ .Values.initContainerImage.repository }}:{{ .Values.initContainerImage.tag }}"
+        imagePullPolicy: {{ .Values.initContainerImage.imagePullPolicy }}
+        command: ["sh", "-c", "until nc -z {{ .Release.Name }}-clickhouse 9000; do echo waiting for {{ .Release.Name }}-clickhouse service; sleep 5; done;"]
+      {{- end }}
       {{- if .Values.extraInitContainers }}
       {{- .Values.extraInitContainers | toYaml | nindent 6 }}
       {{- end }}
