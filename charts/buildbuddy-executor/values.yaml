@@ -114,6 +114,10 @@ extraInitContainers: []
 ## Additional containers
 extraContainers: []
 
+## Path on the node to mount 'executor-data' volume.
+## If not set, 'executor-data' will use emptyDir.
+# executorDataVolumeHostPath: ""
+
 # Add additional volumes and mounts
 extraVolumes: []
 extraVolumeMounts: []

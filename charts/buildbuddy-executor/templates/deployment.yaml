@@ -167,7 +167,12 @@ spec:
         - name: user-config-buildbuddy
           emptyDir: {}
         - name: executor-data
+          {{- if .Values.executorDataVolumeHostPath }}
+          hostPath:
+            path: {{ .Values.executorDataVolumeHostPath }}
+          {{- else }}
           emptyDir: {}
+          {{- end }}
         - name: config
           secret:
             secretName: {{ include "buildbuddy.fullname" . }}-config
