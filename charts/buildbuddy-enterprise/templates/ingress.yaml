@@ -65,56 +65,6 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "buildbuddy.fullname" . }}-at-grpc
-  labels:
-    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-    helm.sh/chart: {{ include "buildbuddy.chart" . }}
-  annotations:
-    {{- if lt .Capabilities.KubeVersion.Minor "18" }}
-    kubernetes.io/ingress.class: {{ .Values.ingress.class }}
-    {{- end }}
-    nginx.ingress.kubernetes.io/backend-protocol: "grpc"
-    nginx.ingress.kubernetes.io/server-alias: "~.*@{{ .Values.ingress.grpcHost | replace "." "\\\\." }}"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      grpc_set_header x-ssl-cert $ssl_client_escaped_cert;
-      grpc_set_header x-buildbuddy-api-key $api_key;
-      grpc_set_header x-buildbuddy-auth-type $host_auth_type;
-      grpc_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504 non_idempotent;
-      grpc_next_upstream_tries 3;
-    {{- if .Values.ingress.sslEnabled }}
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | default "letsencrypt-prod"}}
-    {{- else }}
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    {{- end }}
-    {{- with .Values.ingress.annotations }}
-    {{- . | toYaml | nindent 4 }}
-    {{- end }}
-spec:
-  {{- if ge .Capabilities.KubeVersion.Minor "18" }}
-  ingressClassName: {{ .Values.ingress.class }}
-  {{- end }}
-  rules:
-    - http:
-        paths:
-          - pathType: ImplementationSpecific
-            backend:
-              service:
-                name: {{ include "buildbuddy.name" . }}
-                port:
-                  name: grpc
-  {{ if .Values.ingress.sslEnabled }}
-  tls:
-    - secretName: {{ .Values.ingress.grpcHost }}-tls
-      hosts:
-        - {{ .Values.ingress.grpcHost }}
-  {{ end }}
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
   name: {{ include "buildbuddy.fullname" . }}-http
   labels:
     app.kubernetes.io/name: {{ include "buildbuddy.name" . }}

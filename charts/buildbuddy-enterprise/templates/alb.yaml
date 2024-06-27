@@ -49,42 +49,6 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "buildbuddy.fullname" . }}-at-grpc
-  labels:
-    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-    helm.sh/chart: {{ include "buildbuddy.chart" . }}
-  annotations:
-    alb.ingress.kubernetes.io/backend-protocol: "HTTPS"
-    alb.ingress.kubernetes.io/backend-protocol-version: "GRPC"
-    alb.ingress.kubernetes.io/certificate-arn: {{ .Values.ingress.alb.certificateArn }}
-    alb.ingress.kubernetes.io/ssl-redirect: "443"
-
-    {{- with .Values.ingress.annotations }}
-    {{- . | toYaml | nindent 4 }}
-    {{- end }}
-spec:
-  {{ if ge .Capabilities.KubeVersion.Minor "18" }}
-  ingressClassName: "alb"
-  {{ end }}
-  rules:
-    - http:
-        paths:
-          - pathType: ImplementationSpecific
-            backend:
-              service:
-                name: {{ include "buildbuddy.name" . }}
-                port:
-                  name: grpc
-  tls:
-    - secretName: {{ .Values.ingress.grpcHost }}-tls
-      hosts:
-        - {{ .Values.ingress.grpcHost }}
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
   name: {{ include "buildbuddy.fullname" . }}-http
   labels:
     app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
