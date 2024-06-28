@@ -87,9 +87,6 @@ spec:
               .Values.clickhouse.enabled 
               .Values.config.app.olap_database.data_source
           }}
-          {{- if not (hasKey .Values.config.app "enable_write_to_olap_db") }}
-            - --app.enable_write_to_olap_db=true
-          {{- end }}
           {{- if not (hasKey .Values.config.app "enable_target_tracking") }}
             - --app.enable_target_tracking=true
           {{- end }}
