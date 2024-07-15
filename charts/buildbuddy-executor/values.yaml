@@ -118,6 +118,18 @@ extraContainers: []
 ## If not set, 'executor-data' will use emptyDir.
 # executorDataVolumeHostPath: ""
 
+## Path on the node to mount Podman 'containers-lib' volume,
+## which is mounted to /var/lib/containers inside the Executor pod.
+##
+## If not set, 'containers-lib' will use emptyDir.
+# podmanGraphRootVolumeHostPath: ""
+
+## Path on the node to mount Podman 'containers-run' volume,
+## which is mounted to /run/containers inside the Executor pod.
+##
+## If not set, 'containers-run' will use emptyDir.
+# podmanRunRootVolumeHostPath: ""
+
 # Add additional volumes and mounts
 extraVolumes: []
 extraVolumeMounts: []

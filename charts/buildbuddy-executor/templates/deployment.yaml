@@ -183,9 +183,19 @@ spec:
         {{- end }}
         {{- if .Values.config.executor.enable_podman }}
         - name: containers-lib
+          {{- if .Values.podmanGraphRootVolumeHostPath }}
+          hostPath:
+            path: {{ .Values.podmanGraphRootVolumeHostPath}}
+          {{- else }}
           emptyDir: {}
+          {{- end }}
         - name: containers-run
+          {{- if .Values.podmanRunRootVolumeHostPath }}
+          hostPath:
+            path: {{ .Values.podmanRunRootVolumeHostPath}}
+          {{- else }}
           emptyDir: {}
+          {{- end }}
         {{- end }}
         {{- if .Values.extraVolumes -}}
         {{ .Values.extraVolumes | toYaml | nindent 8 }}
