@@ -1,0 +1,15 @@
+# Example values.yaml to setup Migration Cache.
+#
+# We do NOT recommend using this for most self-hosted installations of BuildBuddy.
+# Please contact our support for more information.
+cache:
+  max_size_bytes: 10000000000 # 10 GB
+  migration:
+    double_read_percentage: 1
+    src:
+      disk:
+        root_directory: "/data/buildbuddy/cache/"
+    dest:
+      pebble:
+        root_directory: "/data/buildbuddy/pebble-cache/"
+
