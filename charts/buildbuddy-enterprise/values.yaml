@@ -431,3 +431,12 @@ initContainerImage:
 ## Affinity (optional) could be used to configured 'app' pods to be deployed in separate nodes,
 ## or nodes with a certain type of storage volume available.
 affinity: {}
+
+# # Configuration for Deployment Rollout Staggering
+# The 'minReadySeconds' config delays the rollout process during a Deployment's RollingUpdate or
+# StatefulSet.  This delay allows the new App pods time for initialization and prevents the immediate
+# replacement of the old App pods.  This is useful to maintain high cache availability in deployments
+# with low replication factor (<=2).   By setting this config, the impact of 'helm upgrade' on ongoing
+# operations is minimized, ensuring a smoother transition between different chart releases.
+#
+# minReadySeconds: 300
