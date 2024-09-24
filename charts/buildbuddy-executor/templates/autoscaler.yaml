@@ -20,11 +20,15 @@ spec:
     {{- .Values.autoscaler.behavior | toYaml | nindent 4 }}
 {{ end }}
   metrics:
-  - type: Pods
-    pods:
-      metric:
-        name: buildbuddy_remote_execution_queue_length
-      target:
-        type: AverageValue
-        averageValue: {{ .Values.autoscaler.averageQueueLength }}
+  {{- if .Values.autoscaler.metrics }}
+    {{- .Values.autoscaler.metrics | toYaml | nindent 4 }}
+  {{- else }}
+    - type: Pods
+      pods:
+        metric:
+          name: buildbuddy_remote_execution_queue_length
+        target:
+          type: AverageValue
+          averageValue: {{ .Values.autoscaler.averageQueueLength }}
+  {{- end }}
 {{ end }}
