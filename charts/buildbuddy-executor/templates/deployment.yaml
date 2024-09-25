@@ -12,7 +12,7 @@ metadata:
     {{- end }}
 spec:
   {{- if .Values.runtimeClassName }}
-  {{- .Values.runtimeClassName | toYaml | nindent 4 }}
+  runtimeClassName: {{ .Values.runtimeClassName }}
   {{- end }}
   {{- if not .Values.autoscaler.enabled }}
   replicas: {{ .Values.replicas | default 1 }}
