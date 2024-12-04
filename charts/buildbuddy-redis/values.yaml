@@ -5,7 +5,7 @@
 ## The BuildBuddy container image to use.
 image:
   repository: redis
-  tag: 5.0.4
+  tag: 7.2.4
   imagePullPolicy: IfNotPresent
 
 ## The number of app replicas to run.
