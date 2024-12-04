@@ -61,7 +61,7 @@ spec:
       tolerations:
         {{- toYaml .Values.tolerations | nindent 8 }}
       {{- end }}
-      {{- if .Values.serviceAccount.name }}
+      {{- if and .Values.serviceAccount .Values.serviceAccount.name }}
       serviceAccountName: {{ .Values.serviceAccount.name }}
       {{- end }}
       containers:
