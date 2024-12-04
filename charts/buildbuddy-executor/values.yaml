@@ -153,3 +153,11 @@ extraVolumeMounts: []
 ## Affinity (optional) could be used to configured 'executor' pods to be deployed
 ## on nodes with a certain type of storage volume or hardware available.
 affinity: {}
+
+## Optionally, set a different service account for the executor pods. Setting
+## this is not required for normal 'executor' operation; the `default` SA is
+## sufficient. It is available in case you need to grant the pods additional
+## permissions via SA. Note that the chart does not create the SA, so you should
+## create it on your own.
+serviceAccount:
+  name: default
