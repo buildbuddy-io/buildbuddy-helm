@@ -19,18 +19,16 @@ metadata:
     kubernetes.io/ingress.class: {{ .Values.ingress.class }}
     {{- end }}
     nginx.ingress.kubernetes.io/backend-protocol: "grpc"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      grpc_set_header x-ssl-cert $ssl_client_escaped_cert;
+      grpc_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504 non_idempotent;
+      grpc_next_upstream_tries 3;
     {{- if .Values.certmanager.enabled }}
     nginx.ingress.kubernetes.io/server-snippet: |
       ssl_verify_client optional;
       ssl_verify_depth 1;
       ssl_client_certificate /client-ca/tls.crt;
     {{ end }}
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      grpc_set_header x-ssl-cert $ssl_client_escaped_cert;
-      grpc_set_header x-buildbuddy-api-key $api_key;
-      grpc_set_header x-buildbuddy-auth-type $cert_auth_type;
-      grpc_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504 non_idempotent;
-      grpc_next_upstream_tries 3;
     {{- if .Values.ingress.sslEnabled }}
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | default "letsencrypt-prod"}}
