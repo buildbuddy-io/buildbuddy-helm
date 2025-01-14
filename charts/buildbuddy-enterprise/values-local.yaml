@@ -1,0 +1,29 @@
+# Values to be used when deploying locally using 
+#
+#   helm delete buildbuddy \
+#     && helm install -f values-local.yaml buildbuddy .
+#
+
+# Keep resource to minimal
+resources:
+  limits:
+    cpu: "1"
+    memory: "0.5Gi"
+  requests:
+    cpu: "1"
+    memory: "0.5Gi"
+
+prometheus:
+  enabled: true
+
+grafana:
+  enabled: true
+  adminPassword: admin
+  persistence:
+    enabled: false
+
+ingress:
+  enabled: true
+  # nip.io will resolve to the IP address in the subdomain, in this case, 127.0.0.1, which is localhost.
+  httpHost: buildbuddy.127.0.0.1.nip.io
+  grpcHost: buildbuddy-grpc.127.0.0.1.nip.io
