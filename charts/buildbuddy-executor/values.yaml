@@ -108,9 +108,9 @@ config:
     root_directory: "/buildbuddy/remotebuilds/"
     local_cache_directory: "/buildbuddy/filecache/"
     local_cache_size_bytes: 5000000000  # 5GB
-    ## Use podman to spin up 'runner' child containers inside executor container.
-    enable_podman: true
-    default_isolation_type: podman
+    ## Use oci to spin up 'runner' child containers inside executor container.
+    enable_oci: true
+    default_isolation_type: oci
 
 # Configuration for Deployment Rollout Staggering
 # The 'minReadySeconds' config delays the rollout process during a RollingUpdate.  This delay allows the

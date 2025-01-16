@@ -158,11 +158,11 @@ spec:
             {{- end }}
           {{- if .Values.containerSecurityContext }}
           securityContext:
-            {{- if .Values.config.executor.enable_podman }}
+            {{- if or (.Values.config.executor.enable_podman) (.Values.config.executor.enable_oci) }}
             privileged: true
             {{- end }}
             {{- .Values.containerSecurityContext | toYaml | nindent 12 }}
-          {{- else if .Values.config.executor.enable_podman }}
+          {{- else if or (.Values.config.executor.enable_podman) (.Values.config.executor.enable_oci) }}
           securityContext:
             privileged: true
           {{- end }}
