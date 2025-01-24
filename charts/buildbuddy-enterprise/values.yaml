@@ -156,23 +156,17 @@ ingress:
           default "";
           ~serialNumber=(?<api_key>[^,]*) "api_key_from_cert";
         }
-        if ($cert_auth_type != "") {
-          grpc_set_header x-buildbuddy-auth-type $cert_auth_type;
-        }
+        grpc_set_header x-buildbuddy-auth-type $cert_auth_type;
         map $host $host_auth_type {
           default "";
           ~^(?<api_key>[^@]*)@ "api_key_from_host";
         }
-        if ($host_auth_type != "") {
-          grpc_set_header x-buildbuddy-auth-type $host_auth_type;
-        }
+        grpc_set_header x-buildbuddy-auth-type $host_auth_type;
         map $http_x_buildbuddy_api_key $api_key {
           default "";
           "~." $http_x_buildbuddy_api_key;
         }
-        if ($api_key != "") {
-          grpc_set_header x-buildbuddy-api-key $api_key;
-        }
+        grpc_set_header x-buildbuddy-api-key $api_key;
   # metrics:
   #   enabled: true
   #   service:
