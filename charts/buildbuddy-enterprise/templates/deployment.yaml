@@ -135,7 +135,7 @@ spec:
               containerPort: {{ .Values.service.internalMetricsPort }}
             {{ end }}
           livenessProbe:
-            initialDelaySeconds: 10
+            initialDelaySeconds: {{ .Values.initialDelaySeconds | default 1 }}
             timeoutSeconds: 5
             failureThreshold: 3
             httpGet:
