@@ -124,6 +124,16 @@ config:
 ## Additional env vars
 extraEnvVars: []
 
+## Probe configuration
+## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
+## Example:
+##   extraLivenessProbeConfigs:
+##     timeoutSeconds: 10
+##   extraReadinessProbeConfigs:
+##     timeoutSeconds: 10
+extraLivenessProbeConfig: {}
+extraReadinessProbeConfig: {}
+
 ## Additional init containers
 extraInitContainers: []
 

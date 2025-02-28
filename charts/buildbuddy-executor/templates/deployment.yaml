@@ -128,6 +128,9 @@ spec:
               httpHeaders:
                 - name: server-type
                   value: buildbuddy-executor
+          {{- if .Values.extraLivenessProbeConfig }}
+            {{- .Values.extraLivenessProbeConfig | toYaml | nindent 12 }}
+          {{- end }}
           readinessProbe:
             httpGet:
               path: /readyz
@@ -135,6 +138,9 @@ spec:
               httpHeaders:
                 - name: server-type
                   value: buildbuddy-executor
+          {{- if .Values.extraReadinessProbeConfig }}
+            {{- .Values.extraReadinessProbeConfig | toYaml | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - mountPath: /root/.config/buildbuddy/
               name: user-config-buildbuddy
