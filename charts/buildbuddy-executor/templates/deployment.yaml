@@ -15,7 +15,7 @@ spec:
   replicas: {{ .Values.replicas | default 1 }}
   {{- end }}
   strategy:
-    type: RollingUpdate
+    {{- .Values.strategy | toYaml | nindent 4 }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
