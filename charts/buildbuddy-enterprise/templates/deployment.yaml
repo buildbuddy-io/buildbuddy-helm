@@ -84,6 +84,10 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          {{- if .Values.containerSecurityContext }}
+          securityContext:
+          {{- .Values.containerSecurityContext | toYaml | nindent 12 }}
+          {{- end }}
           args:
           {{- if .Values.args }}
             {{- .Values.args | toYaml | nindent 12 }}
