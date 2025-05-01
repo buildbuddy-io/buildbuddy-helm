@@ -33,6 +33,13 @@ spec:
       app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   serviceName: {{ include "buildbuddy.fullname" . }}
+  # This is a bit of a hack to limit the speed at which replicas are updated
+  # to minimize impact on remote executions. When redis restarts, Bazel will retry
+  # impacted actions but multiple redis restarts can prematurely exhaust Bazel retry
+  # attempts.
+  # The individual redis pods are accessed via a headless service that does not depend
+  # on the readiness state of the pods.
+  minReadySeconds: 3600
   template:
     metadata:
       annotations:
@@ -88,6 +95,13 @@ spec:
           ports:
             - name: redis
               containerPort: {{ .Values.service.internalRedisPort }}
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - info
+            initialDelaySeconds: 10
+            periodSeconds: 5
           volumeMounts:
             - mountPath: /redis-master-data
               name: data
@@ -124,6 +138,7 @@ spec:
     app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
   clusterIP: None
+  publishNotReadyAddresses: true
   ports:
     - name: redis
       protocol: 'TCP'
