@@ -11,6 +11,8 @@ image:
 # Whether to create a sharded deployment using a StatefulSet.
 # If set to false, a single replica deployment is created.
 # For most users a single replica Redis instance will be sufficient.
+# Note: since this option affects the type of resources that are created
+# a consistent value should be specified for all helm commands (e.g. upgrade, delete, etc.)
 sharded: false
 ## The number of Redis shards (replicas) to run.
 ## Only used if "sharded" is set to true.
@@ -32,6 +34,7 @@ replicas: 3
 
 
 # config specifies options to render in the redis configuration file.
+# The keys and values are materialized as-is inside the redis config.
 # Additional options may be added, if needed.
 config:
   ## Maximum memory redis will use, should be less than the kubernetes resource limits below.
@@ -48,6 +51,9 @@ resources:
     memory: "5Gi"
 
 ## Exposes the Redis service via a service.
+# Only applicable to non-sharded deployments.
+# For sharded deployments, individual shards must be configured
+# in the BuildBuddy application config.
 service:
   type: ClusterIP
   internalRedisPort: 6379

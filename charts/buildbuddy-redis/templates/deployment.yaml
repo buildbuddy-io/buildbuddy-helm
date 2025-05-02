@@ -12,7 +12,7 @@ metadata:
     {{- .Values.extraPodLabels | toYaml | nindent 4 }}
     {{- end }}
 spec:
-  replicas: {{ .Values.replicas | default 1 }}
+  replicas: 1
   strategy:
     type: RollingUpdate
   selector:
