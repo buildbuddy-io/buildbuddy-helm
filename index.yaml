@@ -11593,6 +11593,75 @@ entries:
     version: 0.0.2
   buildbuddy-enterprise:
   - apiVersion: v1
+    appVersion: 2.158.0
+    created: "2025-05-06T23:52:27.377483707Z"
+    dependencies:
+    - condition: mysql.enabled
+      name: mysql
+      repository: https://charts.helm.sh/stable
+      version: 1.6.4
+    - alias: redis
+      condition: redis.enabled
+      name: buildbuddy-redis
+      repository: https://helm.buildbuddy.io
+      version: 0.0.11
+    - alias: ingress
+      condition: ingress.controller.enabled,ingress.enabled
+      name: ingress-nginx
+      repository: https://kubernetes.github.io/ingress-nginx
+      version: 4.0.16
+    - alias: certmanager
+      condition: certmanager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: 1.6.1
+    - alias: executor
+      condition: executor.enabled
+      name: buildbuddy-executor
+      repository: https://helm.buildbuddy.io
+      version: 0.0.336
+    - condition: prometheus.enabled
+      name: metrics-server
+      repository: https://charts.bitnami.com/bitnami
+      version: 6.2.0
+    - condition: prometheus.enabled
+      name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 15.14.0
+    - condition: prometheus.enabled
+      name: prometheus-adapter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 3.4.0
+    - condition: grafana.enabled
+      name: grafana
+      repository: https://grafana.github.io/helm-charts
+      version: 8.8.2
+    - condition: clickhouse.enabled
+      name: clickhouse
+      repository: https://charts.bitnami.com/bitnami
+      version: 6.2.0
+    description: BuildBuddy Enterprise
+    digest: 4d13ababe92073b7d857e18aa6965ea3a573dd1ecbaefc9eb2f5c8107046d349
+    home: https://buildbuddy.io
+    icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
+    keywords:
+    - buildbuddy
+    - bazel
+    - build
+    - test
+    - remote-cache
+    - rbe
+    - enterprise
+    maintainers:
+    - email: siggi@buildbuddy.io
+      name: siggisim
+    - email: tyler@buildbuddy.io
+      name: tylerwilliams
+    name: buildbuddy-enterprise
+    urls:
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-enterprise-0.0.361/buildbuddy-enterprise-0.0.361.tgz
+    version: 0.0.361
+  - apiVersion: v1
     appVersion: 2.157.0
     created: "2025-05-01T22:09:44.450991731Z"
     dependencies:
