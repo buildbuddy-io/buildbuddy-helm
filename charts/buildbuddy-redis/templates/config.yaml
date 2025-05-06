@@ -8,7 +8,14 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: {{ include "buildbuddy.chart" . }}
 data:
+  {{- /* Make a deep copy of the default config */ -}}
+  {{- $c := deepCopy .Values.config }}
+  {{- /* maxMemory used to be a top level values option. If it's still being used copy it over to the config object. */ -}}
+  {{- if hasKey .Values "maxMemory" }}
+    {{- $_ := set $c "maxmemory" .Values.maxMemory }}
+  {{- end }}
   redis-config-file: |
-    maxmemory {{ .Values.maxMemory }}
-    maxmemory-policy allkeys-lru
-                
+{{- range $k, $v := $c }}
+    {{ $k }} {{ $v }}
+{{- end }}
+

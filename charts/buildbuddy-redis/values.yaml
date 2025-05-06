@@ -2,17 +2,21 @@
 ## This is a YAML-formatted file.
 ## Declare variables to be passed into your templates.
 
-## The BuildBuddy container image to use.
+## The Redis container image to use.
 image:
   repository: redis
   tag: 5.0.4
   imagePullPolicy: IfNotPresent
 
-## The number of app replicas to run.
-## If setting this number higher than 1, make sure to configure a mysql database (not sqlite) and gcs storage
-## so data can be shared across replicas.
-## Using multiple replicas with a sqlite3 database or disk storage is not supported.
-replicas: 1
+# Whether to create a sharded deployment using a StatefulSet.
+# If set to false, a single replica deployment is created.
+# For most users a single replica Redis instance will be sufficient.
+# Note: since this option affects the type of resources that are created
+# a consistent value should be specified for all helm commands (e.g. upgrade, delete, etc.)
+sharded: false
+## The number of Redis shards (replicas) to run.
+## Only used if "sharded" is set to true.
+replicas: 3
 
 ## The nodeSelector used for placing pods in separate node pools/groups
 # nodeSelector:
@@ -28,8 +32,14 @@ replicas: 1
 #     operator: Equal
 #     value: x86_64
 
-## Maximum memory redis will use, should be less than the kubernetes resource limits below.
-maxMemory: "5gb"
+
+# config specifies options to render in the redis configuration file.
+# The keys and values are materialized as-is inside the redis config.
+# Additional options may be added, if needed.
+config:
+  ## Maximum memory redis will use, should be less than the kubernetes resource limits below.
+  maxmemory: "5gb"
+  maxmemory-policy: "allkeys-lru"
 
 ## The default resources to give redis.
 resources:
@@ -40,7 +50,10 @@ resources:
     cpu: "1"
     memory: "5Gi"
 
-## Exposes the Redis service via a LoadBalancer on the given ports.
+## Exposes the Redis service via a service.
+# Only applicable to non-sharded deployments.
+# For sharded deployments, individual shards must be configured
+# in the BuildBuddy application config.
 service:
   type: ClusterIP
   internalRedisPort: 6379
