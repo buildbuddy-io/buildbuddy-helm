@@ -444,3 +444,11 @@ affinity: {}
 # operations is minimized, ensuring a smoother transition between different chart releases.
 #
 # minReadySeconds: 300
+
+## Optionally, set a different service account for the 'app' pods. Setting
+## this is not required for normal 'app' operation; the `default` SA is
+## sufficient. It is available in case you need to grant the pods additional
+## permissions via SA. Note that the chart does not create the SA, so you should
+## create it on your own.
+# serviceAccount:
+#   name: default
