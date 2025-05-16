@@ -48,6 +48,9 @@ spec:
         {{- .Values.extraPodLabels | toYaml | nindent 8 }}
         {{- end }}
     spec:
+      {{- if and .Values.serviceAccount .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
       {{- if .Values.securityContext }}
       securityContext:
       {{- .Values.securityContext | toYaml | nindent 8 }}
