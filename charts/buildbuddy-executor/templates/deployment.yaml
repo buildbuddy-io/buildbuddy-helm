@@ -23,6 +23,10 @@ spec:
   {{- if .Values.minReadySeconds}}
   minReadySeconds: {{ .Values.minReadySeconds }}
   {{- end }}
+  {{- if .Values.topologySpreadConstraints }}
+  topologySpreadConstraints:
+    {{ .Values.topologySpreadConstraints | toYaml | indent 4 }}
+  {{- end }}
   template:
     metadata:
       annotations:
