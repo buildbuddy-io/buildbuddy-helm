@@ -5,7 +5,7 @@
 ## The BuildBuddy container image to use.
 image:
   repository: gcr.io/flame-public/buildbuddy-app-onprem
-  tag: v2.173.0
+  tag: v2.174.0
   imagePullPolicy: IfNotPresent
 
 ## The number of app replicas to run.
