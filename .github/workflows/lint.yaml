@@ -36,6 +36,21 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
         uses: helm/kind-action@v1.12.0
 
+      - name: Add Helm repositories
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          find charts -name "requirements.yaml" -exec grep 'repository:' {} + | awk '{print $2}' | sort -u | while read -r repo; do
+            repo_name=$(echo "$repo" | sed -e 's,https://,,; s,http://,,; s,/.*,,; s,\..*,,')
+            helm repo add "$repo_name" "$repo"
+          done
+
+      - name: Build Helm dependencies
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          for chart in $(ct list-changed --target-branch ${{ github.event.repository.default_branch }} --chart-dirs charts); do
+            helm dependency build "$chart"
+          done
+
       - name: Run chart-testing (lint)
         if: steps.list-changed.outputs.changed == 'true'
         run: |
