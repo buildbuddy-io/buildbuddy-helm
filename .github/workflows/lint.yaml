@@ -39,7 +39,7 @@ jobs:
       - name: Add Helm repositories
         if: steps.list-changed.outputs.changed == 'true'
         run: |
-          find charts -name "requirements.yaml" -exec grep 'repository:' {} + | awk '{print $2}' | sort -u | while read -r repo; do
+          find charts -name "requirements.yaml" -exec grep 'repository: https://' {} + | awk '{print $2}' | sort -u | while read -r repo; do
             repo_name=$(echo "$repo" | sed -e 's,https://,,; s,http://,,; s,/.*,,; s,\..*,,')
             helm repo add "$repo_name" "$repo"
           done
