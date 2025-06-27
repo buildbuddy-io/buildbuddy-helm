@@ -24,12 +24,23 @@ jobs:
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2
 
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }} --chart-dirs charts)
+          if [[ -n "$changed" ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create kind cluster
         if: steps.list-changed.outputs.changed == 'true'
         uses: helm/kind-action@v1.12.0
 
       - name: Run chart-testing (lint-and-install)
+        if: steps.list-changed.outputs.changed == 'true'
         run: |
           ct lint-and-install \
              --check-version-increment=true \
-             --target-branch ${{ github.event.repository.default_branch }}
+             --target-branch ${{ github.event.repository.default_branch }} \
+             --chart-dirs charts \
+             --helm-dependency-build
