@@ -1153,14 +1153,14 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "count(buildbuddy_remote_execution_tasks_executing > 0) / count(buildbuddy_remote_execution_tasks_executing)",
+              "expr": "count(sum by (pod_name) (buildbuddy_remote_execution_tasks_executing) > 0) / count(sum by (pod_name) (buildbuddy_remote_execution_tasks_executing))",
               "interval": "",
               "legendFormat": "Working",
               "queryType": "randomWalk",
               "refId": "A"
             },
             {
-              "expr": "1 - count(buildbuddy_remote_execution_tasks_executing > 0) / count(buildbuddy_remote_execution_tasks_executing)",
+              "expr": "1 - count(sum by (pod_name) (buildbuddy_remote_execution_tasks_executing) > 0) / count(sum by (pod_name) (buildbuddy_remote_execution_tasks_executing))",
               "interval": "",
               "legendFormat": "Idle",
               "refId": "B"
