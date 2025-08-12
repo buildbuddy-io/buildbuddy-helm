@@ -2,6 +2,44 @@ apiVersion: v1
 entries:
   buildbuddy:
   - apiVersion: v1
+    appVersion: 2.193.0
+    created: "2025-08-12T21:52:53.42324996Z"
+    dependencies:
+    - condition: mysql.enabled
+      name: mysql
+      repository: https://charts.helm.sh/stable
+      version: 1.6.4
+    - alias: ingress
+      condition: ingress.controller.enabled,ingress.enabled
+      name: ingress-nginx
+      repository: https://kubernetes.github.io/ingress-nginx
+      version: 4.0.16
+    - alias: certmanager
+      condition: certmanager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: 1.6.1
+    description: BuildBuddy Open Source
+    digest: 4908b23fd0e38e59f42f200256c4e3d212608c489ef6cb854bd6030f8e92333b
+    home: https://buildbuddy.io
+    icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
+    keywords:
+    - buildbuddy
+    - bazel
+    - build
+    - test
+    - remote-cache
+    - rbe
+    maintainers:
+    - email: siggi@buildbuddy.io
+      name: siggisim
+    - email: tyler@buildbuddy.io
+      name: tylerwilliams
+    name: buildbuddy
+    urls:
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-0.0.339/buildbuddy-0.0.339.tgz
+    version: 0.0.339
+  - apiVersion: v1
     appVersion: 2.192.0
     created: "2025-08-07T20:09:32.1832283Z"
     dependencies:
@@ -37121,6 +37159,46 @@ entries:
     - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-enterprise-0.0.1/buildbuddy-enterprise-0.0.1.tgz
     version: 0.0.1
   buildbuddy-executor:
+  - apiVersion: v1
+    appVersion: 2.193.0
+    created: "2025-08-12T21:52:53.557527517Z"
+    dependencies:
+    - condition: prometheus.enabled
+      name: metrics-server
+      repository: https://charts.bitnami.com/bitnami
+      version: 6.2.0
+    - condition: prometheus.enabled
+      name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 15.14.0
+    - condition: prometheus.enabled
+      name: prometheus-adapter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 3.4.0
+    description: BuildBuddy Executor
+    digest: 2a2f1b69c3af56375ebb7ec723cfbf77c50078235edfedb73841f5391e623ab0
+    home: https://buildbuddy.io
+    icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
+    keywords:
+    - buildbuddy
+    - bazel
+    - build
+    - test
+    - remote-cache
+    - rbe
+    - enterprise
+    maintainers:
+    - email: siggi@buildbuddy.io
+      name: siggisim
+    - email: tyler@buildbuddy.io
+      name: tylerwilliams
+    name: buildbuddy-executor
+    sources:
+    - https://github.com/buildbuddy-io/buildbuddy
+    - https://github.com/buildbuddy-io/buildbuddy-helm
+    urls:
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-executor-0.0.361/buildbuddy-executor-0.0.361.tgz
+    version: 0.0.361
   - apiVersion: v1
     appVersion: 2.192.0
     created: "2025-08-07T20:09:32.309367882Z"
