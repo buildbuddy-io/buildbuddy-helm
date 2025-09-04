@@ -168,11 +168,11 @@ spec:
             {{- end }}
           {{- if .Values.containerSecurityContext }}
           securityContext:
-            {{- if or (.Values.config.executor.enable_podman) (.Values.config.executor.enable_oci) }}
+            {{- if or (.Values.config.executor.enable_podman) (.Values.config.executor.enable_oci) (.Values.config.executor.enable_firecracker) }}
             privileged: true
             {{- end }}
             {{- .Values.containerSecurityContext | toYaml | nindent 12 }}
-          {{- else if or (.Values.config.executor.enable_podman) (.Values.config.executor.enable_oci) }}
+          {{- else if or (.Values.config.executor.enable_podman) (.Values.config.executor.enable_oci) (.Values.config.executor.enable_firecracker) }}
           securityContext:
             privileged: true
           {{- end }}
