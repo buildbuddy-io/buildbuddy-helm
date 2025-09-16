@@ -1,8 +1,8 @@
 apiVersion: v1
 description: BuildBuddy Open Source
 name: buildbuddy
-version: 0.0.345 # Chart version
-appVersion: 2.200.0 # Version of deployed app
+version: 0.0.346 # Chart version
+appVersion: 2.201.0 # Version of deployed app
 keywords:
   - buildbuddy
   - bazel
