@@ -105,19 +105,23 @@ podDisruptionBudget:
     # maxUnavailable: 40%
     minAvailable: 60%
 
-# NOTE: These acts as the default values for the config.yaml file read by the
-# buildbuddy server itself. You can override the config object just like any
-# Helm template value. Since it is an object, the object you provide will merge
-# with these defaults.
+# NOTE: These act as the default values for the config.yaml file read by the
+# executor. You can override the config object just like any Helm template value.
+# Since it is an object, the object you provide will merge with these defaults.
 config:
   executor:
     # app_target: "grpcs://your.buildbuddy.install:443" # auto populated if deploying via buildbuddy-enterprise chart
     root_directory: "/buildbuddy/remotebuilds/"
     local_cache_directory: "/buildbuddy/filecache/"
     local_cache_size_bytes: 5000000000  # 5GB
-    ## Use oci to spin up 'runner' child containers inside executor container.
+    # Use BuildBuddy's OCI runtime solution (based on crun) to spin up child
+    # containers ("runners") inside the executor container.
+    #
+    # cgroup v2 is required for this to work. If you need cgroup v1 support, set
+    # enable_oci=false and enable_podman=true, which will use the older
+    # podman-based isolation. Note that podman is also migrating to cgroup v2,
+    # so you should migrate to cgroup v2 as soon as possible.
     enable_oci: true
-    default_isolation_type: oci
 
 # Configuration for Deployment Rollout Staggering
 # The 'minReadySeconds' config delays the rollout process during a RollingUpdate.  This delay allows the
