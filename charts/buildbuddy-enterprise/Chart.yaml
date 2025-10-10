@@ -1,8 +1,8 @@
 apiVersion: v1
 description: BuildBuddy Enterprise
 name: buildbuddy-enterprise
-version: 0.0.403 # Chart version
-appVersion: 2.207.0 # Version of deployed app
+version: 0.0.404 # Chart version
+appVersion: 2.208.0 # Version of deployed app
 keywords:
   - buildbuddy
   - bazel
