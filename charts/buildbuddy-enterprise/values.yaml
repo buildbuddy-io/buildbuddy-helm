@@ -135,7 +135,11 @@ ingress:
       - name: client-ca-volume
         mountPath: /client-ca/ # Client CA must be mounted in the directory /client-ca/
         readOnly: true
+    # This is needed for nginx.ingress.kubernetes.io/configuration-snippet to work
+    allowSnippetAnnotations: true
     config:
+      # This is needed for nginx.ingress.kubernetes.io/configuration-snippet to work
+      annotations-risk-level: Critical
       load-balance: "round_robin"
       ## The defaults here are low - this sets them for all servers.
       proxy-body-size: "0"
