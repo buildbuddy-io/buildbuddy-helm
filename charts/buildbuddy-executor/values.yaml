@@ -183,6 +183,12 @@ affinity: {}
 # serviceAccount:
 #   name: default
 
+## Optionally, set a runtimeClassName for the executor pods. This allows you to
+## select a specific container runtime configuration. This setting is not
+## required for normal 'executor' operation; often the kubernetes cluster's
+## default runtime class handling will be sufficient.
+# runtimeClassName: nvidia
+
 ## TopologySpreadConstraints for pod assignment
 ## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
 ##
