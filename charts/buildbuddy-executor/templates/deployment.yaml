@@ -68,6 +68,9 @@ spec:
       {{- if and .Values.serviceAccount .Values.serviceAccount.name }}
       serviceAccountName: {{ .Values.serviceAccount.name }}
       {{- end }}
+      {{- if .Values.runtimeClassName }}
+      runtimeClassName: {{ .Values.runtimeClassName }}
+      {{- end }}
       containers:
         {{- if .Values.extraContainers }}
         {{- toYaml .Values.extraContainers | nindent 8 }}
