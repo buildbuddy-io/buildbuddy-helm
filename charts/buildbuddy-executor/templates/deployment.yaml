@@ -23,10 +23,6 @@ spec:
   {{- if .Values.minReadySeconds}}
   minReadySeconds: {{ .Values.minReadySeconds }}
   {{- end }}
-  {{- if .Values.topologySpreadConstraints }}
-  topologySpreadConstraints:
-    {{ .Values.topologySpreadConstraints | toYaml | indent 4 }}
-  {{- end }}
   template:
     metadata:
       annotations:
@@ -64,6 +60,10 @@ spec:
       {{- if .Values.tolerations}}
       tolerations:
         {{- toYaml .Values.tolerations | nindent 8 }}
+      {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- .Values.topologySpreadConstraints | toYaml | nindent 8 }}
       {{- end }}
       {{- if and .Values.serviceAccount .Values.serviceAccount.name }}
       serviceAccountName: {{ .Values.serviceAccount.name }}
