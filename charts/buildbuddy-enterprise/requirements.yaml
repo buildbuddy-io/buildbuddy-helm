@@ -43,3 +43,7 @@ dependencies:
     version: 6.2.0
     repository: https://charts.bitnami.com/bitnami
     condition: clickhouse.enabled
+  - name: gateway-helm
+    version: v1.2.4
+    repository: oci://docker.io/envoyproxy
+    condition: gateway.enabled
