@@ -1,0 +1,166 @@
+{{- if and .Values.gateway.enabled (eq .Values.gateway.class "envoy-gateway") -}}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ include "buildbuddy.name" . }}-gateway
+  {{- if .Values.gateway.tls.enabled }}
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.gateway.tls.clusterIssuer | default "letsencrypt-prod" | quote }}
+  {{- end }}
+  labels:
+    {{- include "buildbuddy.labels" . | nindent 4 }}
+spec:
+  gatewayClassName: {{ .Values.gateway.class }}
+  listeners:
+    - name: http
+      {{- if .Values.gateway.tls.enabled }}
+      protocol: HTTPS
+      {{- else }}
+      protocol: HTTP
+      {{- end }}
+      port: {{ .Values.gateway.tls.enabled | ternary 443 80 }}
+      hostname: {{ .Values.gateway.httpHost | quote }}
+      allowedRoutes:
+        namespaces:
+          from: Same
+      {{- if .Values.gateway.tls.enabled }}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: {{ .Values.gateway.httpHost }}-tls
+      {{- end }}
+    - name: grpc
+      {{- if .Values.gateway.tls.enabled }}
+      protocol: HTTPS
+      {{- else }}
+      protocol: HTTP
+      {{- end }}
+      port: {{ .Values.gateway.grpcPort }}
+      hostname: {{ .Values.gateway.grpcHost | quote }}
+      allowedRoutes:
+        namespaces:
+          from: Same
+        kinds:
+          - kind: GRPCRoute
+      {{- if .Values.gateway.tls.enabled }}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: {{ .Values.gateway.grpcHost }}-tls
+      {{- end }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "buildbuddy.name" . }}-http
+  labels:
+    {{- include "buildbuddy.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+    - name: {{ include "buildbuddy.name" . }}-gateway
+      sectionName: http
+  hostnames:
+    - {{ .Values.gateway.httpHost | quote }}
+  rules:
+    - backendRefs:
+        - name: {{ include "buildbuddy.name" . }}
+          port: {{ .Values.service.externalHTTPPort }}
+      {{- if .Values.gateway.timeout.request }}
+      timeouts:
+        request: {{ .Values.gateway.timeout.request }}
+      {{- end }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: GRPCRoute
+metadata:
+  name: {{ include "buildbuddy.name" . }}-grpc
+  labels:
+    {{- include "buildbuddy.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+    - name: {{ include "buildbuddy.name" . }}-gateway
+      sectionName: grpc
+  hostnames:
+    - {{ .Values.gateway.grpcHost | quote }}
+  rules:
+    - backendRefs:
+        - name: {{ include "buildbuddy.name" . }}
+          port: {{ .Values.service.externalGRPCPort }}
+      {{- if .Values.gateway.timeout.request }}
+      timeouts:
+        request: {{ .Values.gateway.timeout.request }}
+      {{- end }}
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: ClientTrafficPolicy
+metadata:
+  name: {{ include "buildbuddy.name" . }}-client-policy
+  labels:
+    {{- include "buildbuddy.labels" . | nindent 4 }}
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: {{ include "buildbuddy.name" . }}-gateway
+  {{- if .Values.gateway.timeout.idle }}
+  timeout:
+    http:
+      idleTimeout: {{ .Values.gateway.timeout.idle }}
+  {{- end }}
+  {{- if or .Values.gateway.connection .Values.gateway.http2 }}
+  {{- if .Values.gateway.connection }}
+  connection:
+    {{- if .Values.gateway.connection.bufferLimit }}
+    bufferLimit: {{ .Values.gateway.connection.bufferLimit }}
+    {{- end }}
+    {{- if .Values.gateway.connection.connectionLimit }}
+    connectionLimit:
+      value: {{ .Values.gateway.connection.connectionLimit }}
+    {{- end }}
+  {{- end }}
+  {{- if .Values.gateway.http2 }}
+  http2:
+    {{- if .Values.gateway.http2.maxConcurrentStreams }}
+    maxConcurrentStreams: {{ .Values.gateway.http2.maxConcurrentStreams }}
+    {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- if and .Values.gateway.tls.clientValidation.enabled .Values.gateway.tls.clientValidation.caCertSecret }}
+  tls:
+    clientValidation:
+      caCertificateRefs:
+        - kind: Secret
+          name: {{ .Values.gateway.tls.clientValidation.caCertSecret }}
+  {{- end }}
+{{- if and .Values.gateway.tls.enabled .Values.gateway.tls.useCertManager }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Values.gateway.httpHost }}-tls
+  labels:
+    {{- include "buildbuddy.labels" . | nindent 4 }}
+spec:
+  secretName: {{ .Values.gateway.httpHost }}-tls
+  issuerRef:
+    name: {{ .Values.gateway.tls.clusterIssuer | default "letsencrypt-prod" }}
+    kind: ClusterIssuer
+  dnsNames:
+    - {{ .Values.gateway.httpHost }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Values.gateway.grpcHost }}-tls
+  labels:
+    {{- include "buildbuddy.labels" . | nindent 4 }}
+spec:
+  secretName: {{ .Values.gateway.grpcHost }}-tls
+  issuerRef:
+    name: {{ .Values.gateway.tls.clusterIssuer | default "letsencrypt-prod" }}
+    kind: ClusterIssuer
+  dnsNames:
+    - {{ .Values.gateway.grpcHost }}
+{{- end }}
+{{- end }}

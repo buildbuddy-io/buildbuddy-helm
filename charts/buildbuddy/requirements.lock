@@ -8,5 +8,8 @@ dependencies:
 - name: cert-manager
   repository: https://charts.jetstack.io
   version: v1.6.1
-digest: sha256:a41d9eb3e7ab1aa35cb426cbd4029fb20c6d32ba759d26c408144f6f6ecd56a2
-generated: "2025-10-31T15:39:28.410840504+01:00"
+- name: gateway-helm
+  repository: oci://docker.io/envoyproxy
+  version: v1.2.4
+digest: sha256:8cfb82f07472dc367640785a6e91e624da19a2ae12c8083d82609b53dc3da8e9
+generated: "2025-11-21T10:59:22.352948248+01:00"

@@ -106,9 +106,29 @@ ingress:
         grpc_send_timeout 7200s;
         client_body_timeout 7200s;
         client_body_buffer_size 4m;
-        http2_idle_timeout 7200s;
         http2_max_concurrent_streams 10000;
-        http2_max_requests 100000;
+        keepalive_timeout 2h;
+        keepalive_requests 100000;
+
+## Gateway API (recommended alternative to ingress-nginx which is EOL March 2026)
+gateway:
+  enabled: false
+  class: "envoy-gateway"  # Currently only "envoy-gateway" is supported
+  httpHost: buildbuddy.example.com
+  grpcHost: buildbuddy-grpc.example.com
+  grpcPort: 1985
+  tls:
+    enabled: false
+    useCertManager: true
+    clusterIssuer: "letsencrypt-prod"
+  timeout:
+    idle: "7200s"  # 2-hour idle timeout
+    # request: "7200s"
+  connection:
+    bufferLimit: "4Mi"
+    connectionLimit: 10000
+  http2:
+    maxConcurrentStreams: 10000
 
 certmanager:
   ## Before enabling certmanager, make sure to install the CRDs on your cluster with:

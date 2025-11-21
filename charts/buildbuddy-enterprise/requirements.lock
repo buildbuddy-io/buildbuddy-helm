@@ -29,5 +29,8 @@ dependencies:
 - name: clickhouse
   repository: https://charts.bitnami.com/bitnami
   version: 6.2.0
-digest: sha256:c19b6be12ff24915ce4f20c563ad25fba479b40e9eda81cff584cdc6be631557
-generated: "2025-11-04T19:18:05.989314646Z"
+- name: gateway-helm
+  repository: oci://docker.io/envoyproxy
+  version: v1.2.4
+digest: sha256:13054916d8e4202806d19891c61ef40389456319ed6392739d28aaa36ac81e6e
+generated: "2025-11-21T10:59:40.995277017+01:00"

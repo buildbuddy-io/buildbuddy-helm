@@ -150,8 +150,8 @@ ingress:
         grpc_send_timeout 7200s;
         client_body_timeout 7200s;
         client_body_buffer_size 4m;
-        http2_idle_timeout 7200s;
         http2_max_concurrent_streams 10000;
+        keepalive_timeout 2h;
         keepalive_requests 100000;
       # This snippet handles pulling api keys from the cert or host and
       # shoving them into the $api_key variable / can be used in headers.
@@ -192,6 +192,29 @@ ingress:
   ##             to a valid certificate ARN on AWS. Example below.
   # alb:
   #   certificateArn: "arn:aws:acm:us-west-2:xxxxx:certificate/xxxxxxx"
+
+## Gateway API (recommended alternative to ingress-nginx which is EOL March 2026)
+gateway:
+  enabled: false
+  class: "envoy-gateway"  # Currently only "envoy-gateway" is supported
+  httpHost: buildbuddy.example.com
+  grpcHost: buildbuddy-grpc.example.com
+  grpcPort: 1985
+  tls:
+    enabled: false
+    useCertManager: true
+    clusterIssuer: "letsencrypt-prod"
+    clientValidation:
+      enabled: false
+      # caCertSecret: "buildbuddy-client-ca"
+  timeout:
+    idle: "7200s"  # 2-hour idle timeout
+    # request: "7200s"
+  connection:
+    bufferLimit: "4Mi"
+    connectionLimit: 10000
+  http2:
+    maxConcurrentStreams: 10000
 
 certmanager:
   ## Before enabling certmanager, make sure to install the CRDs on your cluster with:

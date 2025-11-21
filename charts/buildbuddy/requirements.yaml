@@ -13,3 +13,7 @@ dependencies:
   version: 1.6.1
   repository: https://charts.jetstack.io
   condition: certmanager.enabled
+- name: gateway-helm
+  version: v1.2.4
+  repository: oci://docker.io/envoyproxy
+  condition: gateway.enabled
