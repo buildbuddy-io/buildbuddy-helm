@@ -106,9 +106,9 @@ ingress:
         grpc_send_timeout 7200s;
         client_body_timeout 7200s;
         client_body_buffer_size 4m;
-        http2_idle_timeout 7200s;
         http2_max_concurrent_streams 10000;
-        http2_max_requests 100000;
+        keepalive_timeout 2h;
+        keepalive_requests 100000;
 
 certmanager:
   ## Before enabling certmanager, make sure to install the CRDs on your cluster with:

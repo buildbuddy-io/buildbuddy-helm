@@ -150,8 +150,8 @@ ingress:
         grpc_send_timeout 7200s;
         client_body_timeout 7200s;
         client_body_buffer_size 4m;
-        http2_idle_timeout 7200s;
         http2_max_concurrent_streams 10000;
+        keepalive_timeout 2h;
         keepalive_requests 100000;
       # This snippet handles pulling api keys from the cert or host and
       # shoving them into the $api_key variable / can be used in headers.
