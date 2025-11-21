@@ -193,6 +193,29 @@ ingress:
   # alb:
   #   certificateArn: "arn:aws:acm:us-west-2:xxxxx:certificate/xxxxxxx"
 
+## Gateway API (recommended alternative to ingress-nginx which is EOL March 2026)
+gateway:
+  enabled: false
+  class: "envoy-gateway"  # Currently only "envoy-gateway" is supported
+  httpHost: buildbuddy.example.com
+  grpcHost: buildbuddy-grpc.example.com
+  grpcPort: 1985
+  tls:
+    enabled: false
+    useCertManager: true
+    clusterIssuer: "letsencrypt-prod"
+    clientValidation:
+      enabled: false
+      # caCertSecret: "buildbuddy-client-ca"
+  timeout:
+    idle: "7200s"  # 2-hour idle timeout
+    # request: "7200s"
+  connection:
+    bufferLimit: "4Mi"
+    connectionLimit: 10000
+  http2:
+    maxConcurrentStreams: 10000
+
 certmanager:
   ## Before enabling certmanager, make sure to install the CRDs on your cluster with:
   ## kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.16.1/cert-manager.crds.yaml
