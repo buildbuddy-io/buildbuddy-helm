@@ -102,6 +102,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.uid
+            # Silence podman cgroups v1 deprecation warning -
+            # the deprecation notice winds up in stderr and can get cached in action results.
+            - name: PODMAN_IGNORE_CGROUPSV1_WARNING
+              value: 'true'
             {{- if not .Values.config.executor.memory_bytes }}
             - name: SYS_MEMORY_BYTES
               valueFrom:
