@@ -8,6 +8,10 @@ image:
   tag: enterprise-v2.226.0
   imagePullPolicy: IfNotPresent
 
+## Image pull secrets for private container registries
+# imagePullSecrets:
+#   - name: my-registry-secret
+
 ## The number of executor replicas to run.
 replicas: 3
 
