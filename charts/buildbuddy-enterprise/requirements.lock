@@ -13,7 +13,7 @@ dependencies:
   version: v1.6.1
 - name: buildbuddy-executor
   repository: https://helm.buildbuddy.io
-  version: 0.0.397
+  version: 0.0.398
 - name: metrics-server
   repository: https://charts.bitnami.com/bitnami
   version: 6.2.0
@@ -29,5 +29,5 @@ dependencies:
 - name: clickhouse
   repository: https://charts.bitnami.com/bitnami
   version: 6.2.0
-digest: sha256:efddb66295eddd6e7bcdeb17a6db700c56623643c876476e4ec122e924bbd62e
-generated: "2026-01-15T19:01:38.692719883Z"
+digest: sha256:7ab4ee6427acb1496f0b146712c7ca2401f765d712bca5aeda1a5d3f3721c6f2
+generated: "2026-01-20T18:25:52.054608761Z"
