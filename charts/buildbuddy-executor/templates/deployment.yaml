@@ -194,6 +194,7 @@ spec:
           {{- if .Values.executorDataVolumeHostPath }}
           hostPath:
             path: {{ .Values.executorDataVolumeHostPath }}
+            type: DirectoryOrCreate
           {{- else }}
           emptyDir: {}
           {{- end }}
@@ -210,6 +211,7 @@ spec:
           {{- if .Values.podmanGraphRootVolumeHostPath }}
           hostPath:
             path: {{ .Values.podmanGraphRootVolumeHostPath}}
+            type: DirectoryOrCreate
           {{- else }}
           emptyDir: {}
           {{- end }}
@@ -217,6 +219,7 @@ spec:
           {{- if .Values.podmanRunRootVolumeHostPath }}
           hostPath:
             path: {{ .Values.podmanRunRootVolumeHostPath}}
+            type: DirectoryOrCreate
           {{- else }}
           emptyDir: {}
           {{- end }}
