@@ -15,8 +15,8 @@ dependencies:
   repository: https://helm.buildbuddy.io
   version: 0.0.400
 - name: metrics-server
-  repository: https://charts.bitnami.com/bitnami
-  version: 6.2.0
+  repository: https://kubernetes-sigs.github.io/metrics-server/
+  version: 3.11.0
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
   version: 15.14.0
@@ -29,5 +29,5 @@ dependencies:
 - name: clickhouse
   repository: https://charts.bitnami.com/bitnami
   version: 6.2.0
-digest: sha256:523ddcf09838c44e91ee404b3f500fd061c4e7189747063c82e52e9f1f45bfe8
-generated: "2026-01-27T22:29:30.714023219Z"
+digest: sha256:1bcd7d5a9c5a1efe271a6f4bd92d92f2a460226dbb1d54f1df5256cc15156c0d
+generated: "2026-01-29T14:14:10.286591599+01:00"
