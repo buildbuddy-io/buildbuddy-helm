@@ -24,8 +24,8 @@ dependencies:
     repository: https://helm.buildbuddy.io
     condition: executor.enabled
   - name: metrics-server
-    version: 6.2.0
-    repository: https://charts.bitnami.com/bitnami
+    version: 3.11.0
+    repository: https://kubernetes-sigs.github.io/metrics-server/
     condition: prometheus.enabled
   - name: prometheus
     version: 15.14.0
