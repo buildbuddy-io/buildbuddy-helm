@@ -28,6 +28,6 @@ dependencies:
   version: 8.8.2
 - name: clickhouse
   repository: https://charts.bitnami.com/bitnami
-  version: 6.2.0
-digest: sha256:82a31f71b30ae3fe6065bc5ad81d5319e522eca8478f0d22f9c97da5a5314ed6
-generated: "2026-02-05T19:48:11.092605013Z"
+  version: 9.4.4
+digest: sha256:7c523c3eaf6a7ea39569782c84ef6de7019ce00540d3b773b5c46fa8cee3e2d4
+generated: "2026-02-06T12:26:58.71548248+01:00"
