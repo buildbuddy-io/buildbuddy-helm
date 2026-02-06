@@ -205,10 +205,17 @@ certmanager:
 
 ## Either enable clickhouse here, or use your own data_source connection string
 ## in the config block below.
+## TODO(sluongng): migrate off bitnami chart and image
 clickhouse:
   enabled: false
   image:
-    tag: 23.8
+    repository: bitnamilegacy/clickhouse
+    tag: "25.3.3"
+  keeper:
+    enabled: false
+    image:
+      repository: bitnamilegacy/clickhouse-keeper
+      tag: "25.3.3"
   auth:
     username: buildbuddy
     password: buildbuddy
@@ -222,9 +229,6 @@ clickhouse:
   # for CLICKHOUSE_DB variable.
   # The actual script is defined in ./templates/clickhouse.yaml.
   initdbScriptsSecret: init-clickhouse-database
-  # Run a single instance of Clickhouse
-  zookeeper:
-    enabled: false
   shards: 1
   replicaCount: 1
 
