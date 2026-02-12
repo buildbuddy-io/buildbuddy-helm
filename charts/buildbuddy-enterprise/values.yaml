@@ -460,3 +460,8 @@ affinity: {}
 ## create it on your own.
 # serviceAccount:
 #   name: default
+
+podDisruptionBudget:
+  enabled: false
+  spec:
+    maxUnavailable: 1
