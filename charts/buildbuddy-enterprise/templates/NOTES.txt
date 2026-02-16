@@ -15,7 +15,21 @@ You can connect to BuildBuddy by using the IP printed by this command on port {{
     echo `kubectl get --namespace {{ .Release.Namespace }} service {{  include "buildbuddy.name" . }} -o jsonpath='{.status.loadBalancer.ingress[0].*}'`
 {{ end -}}
 {{ end -}}
-{{ if .Values.ingress.enabled }}
+{{- $gatewayHTTPHost := default .Values.ingress.httpHost .Values.gateway.httpHost }}
+{{- $gatewayGRPCHost := default .Values.ingress.grpcHost .Values.gateway.grpcHost }}
+{{ if .Values.gateway.enabled }}
+Update your DNS settings and add A records that point {{ $gatewayHTTPHost }} and {{ $gatewayGRPCHost }} at your Envoy Gateway external address.
+
+Once you configure your DNS, BuildBuddy will be available at the URL:
+
+{{ if .Values.gateway.sslEnabled }}
+    https://{{ $gatewayHTTPHost }}
+{{ else }}
+    http://{{ $gatewayHTTPHost }}
+{{ end }}
+{{ else if .Values.ingress.enabled }}
+Note: ingress-nginx support is deprecated and kept for migration compatibility. Prefer `gateway.enabled=true` for new deployments.
+
 Update your DNS settings and add A records that point {{ .Values.ingress.httpHost }} and {{ .Values.ingress.grpcHost }} at the IP printed when you run the following command:
 
     echo `kubectl get --namespace default service {{ .Release.Name }}-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[0].*}'`
@@ -28,7 +42,7 @@ Once you configure your DNS, BuildBuddy will be available at the URL:
     http://{{ .Values.ingress.httpHost }}
 {{ end }}
 {{ else }}
-To expose BuildBuddy via an Ingress you need to set hosts and enable ingress.
+To expose BuildBuddy via Gateway (preferred) or Ingress (deprecated), configure hosts and enable one option.
 
     helm install {{ .Release.Name }} --set ingress.httpHost=buildbuddy.yourdomain.com --set ingress.grpcHost=buildbuddy-grpc.yourdomain.com --set ingress.enabled=true --set ingress.sslEnabled=true --set certmanager.enabled=true --set certmanager.emailAddress=myemail@gmail.com buildbuddy/buildbuddy-enterprise
 {{ end }}

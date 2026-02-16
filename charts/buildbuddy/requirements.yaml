@@ -8,6 +8,11 @@ dependencies:
   version: 4.14.3
   repository: https://kubernetes.github.io/ingress-nginx
   condition: ingress.controller.enabled,ingress.enabled
+- name: gateway-helm
+  alias: gatewaycontroller
+  version: v1.7.0
+  repository: oci://docker.io/envoyproxy
+  condition: gatewaycontroller.enabled
 - name: cert-manager
   alias: certmanager
   version: 1.6.1
