@@ -1,0 +1,111 @@
+{{- if .Values.gateway.enabled }}
+{{- $gatewayName := printf "%s-gateway" (include "buildbuddy.fullname" .) -}}
+{{- $httpHost := default .Values.ingress.httpHost .Values.gateway.httpHost -}}
+{{- $grpcHost := default .Values.ingress.grpcHost .Values.gateway.grpcHost -}}
+{{- $httpTLSSecretName := default (printf "%s-tls" $httpHost) .Values.gateway.httpTLSSecretName -}}
+{{- $grpcTLSSecretName := default (printf "%s-tls" $grpcHost) .Values.gateway.grpcTLSSecretName -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ $gatewayName }}
+  labels:
+    {{- include "buildbuddy.labels" . | nindent 4 }}
+  {{- with .Values.gateway.annotations }}
+  annotations:
+    {{- . | toYaml | nindent 4 }}
+  {{- end }}
+spec:
+  gatewayClassName: {{ .Values.gateway.className }}
+  listeners:
+  {{- if .Values.gateway.sslEnabled }}
+    - name: https
+      hostname: {{ $httpHost | quote }}
+      port: {{ .Values.gateway.ports.https }}
+      protocol: HTTPS
+      allowedRoutes:
+        namespaces:
+          from: Same
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: {{ $httpTLSSecretName }}
+    - name: grpcs
+      hostname: {{ $grpcHost | quote }}
+      port: {{ .Values.gateway.ports.https }}
+      protocol: HTTPS
+      allowedRoutes:
+        namespaces:
+          from: Same
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: {{ $grpcTLSSecretName }}
+  {{- else }}
+    - name: http
+      hostname: {{ $httpHost | quote }}
+      port: {{ .Values.gateway.ports.http }}
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: grpc
+      hostname: {{ $grpcHost | quote }}
+      port: {{ .Values.gateway.ports.http }}
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: Same
+  {{- end }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}-http
+  labels:
+    {{- include "buildbuddy.labels" . | nindent 4 }}
+  {{- with .Values.gateway.httpRouteAnnotations }}
+  annotations:
+    {{- . | toYaml | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+    - name: {{ $gatewayName }}
+      sectionName: {{ ternary "https" "http" .Values.gateway.sslEnabled }}
+  hostnames:
+    - {{ $httpHost | quote }}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: {{ include "buildbuddy.name" . }}
+          port: {{ .Values.service.externalHTTPPort }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}-grpc
+  labels:
+    {{- include "buildbuddy.labels" . | nindent 4 }}
+  {{- with .Values.gateway.grpcRouteAnnotations }}
+  annotations:
+    {{- . | toYaml | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+    - name: {{ $gatewayName }}
+      sectionName: {{ ternary "grpcs" "grpc" .Values.gateway.sslEnabled }}
+  hostnames:
+    - {{ $grpcHost | quote }}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: {{ include "buildbuddy.name" . }}
+          port: {{ .Values.service.externalGRPCPort }}
+{{- end }}

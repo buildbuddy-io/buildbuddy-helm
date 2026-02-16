@@ -25,6 +25,9 @@ spec:
       protocol: 'TCP'
       port: {{ .Values.service.externalGRPCPort }}
       targetPort: {{ .Values.service.internalGRPCPort }}
+      {{- if ge .Capabilities.KubeVersion.Minor "20" }}
+      appProtocol: kubernetes.io/h2c
+      {{- end }}
     {{ if and .Values.service.externalHTTPSPort .Values.service.internalHTTPSPort }}
     - name: https
       protocol: 'TCP'
@@ -36,6 +39,9 @@ spec:
       protocol: 'TCP'
       port: {{ .Values.service.externalGRPCSPort }}
       targetPort: {{ .Values.service.internalGRPCSPort }}
+      {{- if ge .Capabilities.KubeVersion.Minor "20" }}
+      appProtocol: kubernetes.io/h2c
+      {{- end }}
     {{ end }}
     {{ if and .Values.service.externalMetricsPort .Values.service.internalMetricsPort }}
     - name: metrics
