@@ -14,6 +14,12 @@ image:
 ## Using multiple replicas with a sqlite3 database or disk storage is not supported.
 replicas: 1
 
+## Number of seconds after container start before running liveness checks.
+initialDelaySeconds: 10
+
+## Number of seconds after container start before running readiness checks.
+readinessInitialDelaySeconds: 0
+
 ## The (optional) nodeSelector used for placing executors and apps in separate node pools/groups (useful when autoscaling executors)
 # nodeSelector:
 #   # GCP
