@@ -148,6 +148,7 @@ spec:
                 - name: server-type
                   value: buildbuddy-server
           readinessProbe:
+            initialDelaySeconds: {{ .Values.readinessInitialDelaySeconds | default 0 }}
             httpGet:
               path: /readyz
               port: http
