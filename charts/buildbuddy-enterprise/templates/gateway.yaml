@@ -1,0 +1,222 @@
+{{- if .Values.gateway.enabled }}
+{{- $gatewayName := printf "%s-gateway" (include "buildbuddy.fullname" .) -}}
+{{- $httpRouteName := printf "%s-http" (include "buildbuddy.fullname" .) -}}
+{{- $grpcRouteName := printf "%s-grpc" (include "buildbuddy.fullname" .) -}}
+{{- $httpHost := default .Values.ingress.httpHost .Values.gateway.httpHost -}}
+{{- $grpcHost := default .Values.ingress.grpcHost .Values.gateway.grpcHost -}}
+{{- $httpTLSSecretName := default (printf "%s-tls" $httpHost) .Values.gateway.httpTLSSecretName -}}
+{{- $grpcTLSSecretName := default (printf "%s-tls" $grpcHost) .Values.gateway.grpcTLSSecretName -}}
+{{- $createGatewayClass := or .Values.gatewaycontroller.enabled .Values.gateway.createClass -}}
+{{- $gatewaycontrollerControllerName := dig "config" "envoyGateway" "gateway" "controllerName" "gateway.envoyproxy.io/gatewayclass-controller" .Values.gatewaycontroller -}}
+{{- if and .Values.gatewaycontroller.enabled (ne .Values.gateway.controllerName $gatewaycontrollerControllerName) -}}
+{{- fail (printf "gateway.controllerName (%q) must match gatewaycontroller.config.envoyGateway.gateway.controllerName (%q) when gatewaycontroller.enabled=true" .Values.gateway.controllerName $gatewaycontrollerControllerName) -}}
+{{- end -}}
+{{- if $createGatewayClass }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: {{ .Values.gateway.className }}
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+spec:
+  controllerName: {{ .Values.gateway.controllerName }}
+---
+{{- end }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ $gatewayName }}
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+  {{- with .Values.gateway.annotations }}
+  annotations:
+    {{- . | toYaml | nindent 4 }}
+  {{- end }}
+spec:
+  gatewayClassName: {{ .Values.gateway.className }}
+  listeners:
+  {{- if .Values.gateway.sslEnabled }}
+    - name: https
+      hostname: {{ $httpHost | quote }}
+      port: {{ .Values.gateway.ports.https }}
+      protocol: HTTPS
+      allowedRoutes:
+        namespaces:
+          from: Same
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: {{ $httpTLSSecretName }}
+    - name: grpcs
+      hostname: {{ $grpcHost | quote }}
+      port: {{ .Values.gateway.ports.https }}
+      protocol: HTTPS
+      allowedRoutes:
+        namespaces:
+          from: Same
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: {{ $grpcTLSSecretName }}
+  {{- else }}
+    - name: http
+      hostname: {{ $httpHost | quote }}
+      port: {{ .Values.gateway.ports.http }}
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: grpc
+      hostname: {{ $grpcHost | quote }}
+      port: {{ .Values.gateway.ports.http }}
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: Same
+  {{- end }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $httpRouteName }}
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+  {{- with .Values.gateway.httpRouteAnnotations }}
+  annotations:
+    {{- . | toYaml | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+    - name: {{ $gatewayName }}
+      sectionName: {{ ternary "https" "http" .Values.gateway.sslEnabled }}
+  hostnames:
+    - {{ $httpHost | quote }}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: {{ include "buildbuddy.name" . }}
+          port: {{ .Values.service.externalHTTPPort }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $grpcRouteName }}
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+  {{- with .Values.gateway.grpcRouteAnnotations }}
+  annotations:
+    {{- . | toYaml | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+    - name: {{ $gatewayName }}
+      sectionName: {{ ternary "grpcs" "grpc" .Values.gateway.sslEnabled }}
+  hostnames:
+    - {{ $grpcHost | quote }}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: {{ include "buildbuddy.name" . }}
+          port: {{ .Values.service.externalGRPCPort }}
+{{- if and .Values.gateway.sslEnabled .Values.gateway.clientValidation.enabled }}
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: ClientTrafficPolicy
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}-gateway-client-validation
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: {{ $gatewayName }}
+      sectionName: grpcs
+  tls:
+    clientValidation:
+      optional: {{ .Values.gateway.clientValidation.optional }}
+      caCertificateRefs:
+        - kind: Secret
+          name: {{ required "gateway.clientValidation.caCertificateSecretName must be set when gateway.clientValidation.enabled=true" .Values.gateway.clientValidation.caCertificateSecretName }}
+{{- end }}
+{{- if and .Values.gateway.sslEnabled .Values.gateway.apiKeyFromClientCert.enabled }}
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyExtensionPolicy
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}-gateway-api-key-mapping
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: {{ $grpcRouteName }}
+  lua:
+    - type: Inline
+      inline: |
+        function envoy_on_request(request_handle)
+          local headers = request_handle:headers()
+          local ssl = request_handle:streamInfo():downstreamSslConnection()
+
+          local encoded_pem = ""
+          if ssl ~= nil then
+            encoded_pem = ssl:urlEncodedPemEncodedPeerCertificate()
+          end
+          if encoded_pem ~= nil and encoded_pem ~= "" then
+            headers:replace("x-ssl-cert", encoded_pem)
+          else
+            headers:remove("x-ssl-cert")
+          end
+
+          local api_key = headers:get("x-buildbuddy-api-key")
+
+          if api_key == nil or api_key == "" then
+            local authority = headers:get(":authority")
+            if authority ~= nil then
+              local host_key = string.match(authority, "^([^@]+)@")
+              if host_key ~= nil and host_key ~= "" then
+                api_key = host_key
+              end
+            end
+          end
+
+          if (api_key == nil or api_key == "") and ssl ~= nil then
+            local cert_key = ssl:serialNumberPeerCertificate()
+            if cert_key ~= nil and cert_key ~= "" then
+              api_key = cert_key
+            end
+          end
+
+          if api_key ~= nil and api_key ~= "" then
+            headers:replace("x-buildbuddy-api-key", api_key)
+          end
+        end
+{{- end }}
+{{- end }}

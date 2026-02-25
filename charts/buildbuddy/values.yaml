@@ -53,7 +53,7 @@ service:
   # loadBalancerIP:
   loadBalancerSourceRanges: []
 
-## You have two options for exposing BuildBuddy with TLS over HTTPS and GRPCS.
+## You have three options for exposing BuildBuddy with TLS over HTTPS and GRPCS.
 ## 1) Via the load balancer
 ##   - Point your DNS at the load balancer IP, you can get this by deploying and running:
 ##        echo `kubectl get --namespace default service buildbuddy -o jsonpath='{.status.loadBalancer.ingress[0].*}'`
@@ -61,7 +61,8 @@ service:
 ##   - Adding http and grpc host names to config.ssl.host_whitelist
 ##   - Wait a bit for dns propagation to happen and certs to be issued (this can take a while).
 ##
-## 2) Ingress
+## 2) Ingress (deprecated)
+##   - Prefer Gateway API (option 3) for new deployments.
 ##   - Enable ingress with ingress.enabled and ingress.sslEnabled
 ##   - Configure http and grpc host names with ingress.httpHost and ingress.grpcHost
 ##   - Enable cert manager with certmanager.enabled
@@ -71,7 +72,19 @@ service:
 ##   - Point your DNS at the ingress controller IP, you can get this by deploying and running:
 ##        echo `kubectl get service my-release-ingress-controller -o jsonpath='{.status.loadBalancer.ingress[0].*}'`
 ##   - Wait a bit for dns propagation to happen and certs to be issued (this can take a while).
+##
+## 3) Gateway API (Envoy Gateway)
+##   - Install Gateway API CRDs and an Envoy Gateway controller in your cluster.
+##   - Enable gateway with gateway.enabled and set gateway.className.
+##   - Optionally set gatewaycontroller.enabled=true to deploy Envoy Gateway
+##     (controller + CRDs) as a chart dependency. This chart will create
+##     gateway.className automatically in that mode.
+##   - Configure http and grpc host names with gateway.httpHost and gateway.grpcHost
+##     (or leave them empty to fall back to ingress.httpHost and ingress.grpcHost).
+##   - If gateway.sslEnabled is true, provide TLS secrets via gateway.httpTLSSecretName
+##     and gateway.grpcTLSSecretName (or use defaults: <host>-tls).
 
+## Deprecated: ingress-nginx is kept for backward compatibility. Prefer gateway.enabled.
 ingress:
   enabled: false
   class: "nginx"
@@ -109,6 +122,46 @@ ingress:
         http2_max_concurrent_streams 10000;
         keepalive_timeout 2h;
         keepalive_requests 100000;
+
+gateway:
+  enabled: false
+  className: envoy-gateway
+  ## Must match gatewaycontroller.config.envoyGateway.gateway.controllerName
+  ## when gatewaycontroller.enabled=true.
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+
+  ## Create a GatewayClass for gateway.className.
+  ## Automatically enabled when gatewaycontroller.enabled=true.
+  createClass: false
+  sslEnabled: false
+
+  ## Leave host values empty to default to ingress.httpHost / ingress.grpcHost.
+  httpHost: ""
+  grpcHost: ""
+
+  ports:
+    http: 80
+    https: 443
+
+  ## Leave secret names empty to default to <host>-tls.
+  httpTLSSecretName: ""
+  grpcTLSSecretName: ""
+
+  annotations: {}
+  httpRouteAnnotations: {}
+  grpcRouteAnnotations: {}
+
+gatewaycontroller:
+  ## Installs Envoy Gateway (controller + CRDs) from the official upstream chart.
+  ## When enabled with gateway.enabled=true, this chart also creates gateway.className.
+  ## This can be enabled alongside ingress-nginx during migrations.
+  enabled: false
+  ## To override the Envoy Gateway controllerName, also set gateway.controllerName
+  ## to the same value so GatewayClass and controller stay aligned.
+  # config:
+  #   envoyGateway:
+  #     gateway:
+  #       controllerName: gateway.envoyproxy.io/gatewayclass-controller
 
 certmanager:
   ## Before enabling certmanager, make sure to install the CRDs on your cluster with:

@@ -97,11 +97,23 @@ The following table lists the configurable parameters of the BuildBuddy Open Sou
 | `service.annotations`                | Service annotations                                                                                                                                                                                                                                                                                                         | `[]`                                                                                                                                 |
 | `service.loadBalancerIP`             | A user-specified IP address for service type LoadBalancer to use as External IP (if supported)                                                                                                                                                                                                                              | `nil`                                                                                                                                |
 | `service.loadBalancerSourceRanges`   | list of IP CIDRs allowed access to load balancer (if supported)                                                                                                                                                                                                                                                             | `[]`                                                                                                                                 |
-| `ingress.enabled`                    | If `true`, an ingress is created                                                                                                                                                                                                                                                                                            | `false`                                                                                                                              |
-| `ingress.sslEnabled`                 | If `true`, ssl is enabled for the ingress (certmanager should also be enabled for automatic cert configuration)                                                                                                                                                                                                             | `false`                                                                                                                              |
+| `ingress.enabled`                    | **Deprecated**: If `true`, nginx ingress resources are created. Prefer `gateway.enabled` for new deployments.                                                                                                                                                                                                              | `false`                                                                                                                              |
+| `ingress.sslEnabled`                 | **Deprecated with ingress**: If `true`, ssl is enabled for the ingress (certmanager should also be enabled for automatic cert configuration)                                                                                                                                                                               | `false`                                                                                                                              |
 | `ingress.httpHost`                   | The hostname that will handle http traffic                                                                                                                                                                                                                                                                                  | `[buildbuddy.example.com]`                                                                                                           |
 | `ingress.grpcHost`                   | The hostname that will handle grpc traffic                                                                                                                                                                                                                                                                                  | `[buildbuddy-grpc.example.com]`                                                                                                      |
-| `ingress.controller.enabled`         | If `true`, an ingress controller is created. If undefined (default), `ingress.enabled` is used instead to decide this.                                                                                                                                                                                                      | undefined (defaults to `ingress.enabled`)                                                                                            |
+| `ingress.controller.enabled`         | **Deprecated with ingress**: If `true`, an ingress controller is created. If undefined (default), `ingress.enabled` is used instead to decide this.                                                                                                                                                                        | undefined (defaults to `ingress.enabled`)                                                                                            |
+| `gateway.enabled`                    | If `true`, Gateway API resources are created for Envoy Gateway                                                                                                                                                                                                                                                              | `false`                                                                                                                              |
+| `gateway.className`                  | GatewayClass name to use for the Gateway resource                                                                                                                                                                                                                                                                           | `envoy-gateway`                                                                                                                      |
+| `gateway.controllerName`             | Controller name to set when creating a GatewayClass (must match `gatewaycontroller.config.envoyGateway.gateway.controllerName` when `gatewaycontroller.enabled=true`)                                                                                                                                                     | `gateway.envoyproxy.io/gatewayclass-controller`                                                                                      |
+| `gateway.createClass`                | If `true`, create `gateway.className` as a GatewayClass (auto-created when `gatewaycontroller.enabled=true`)                                                                                                                                                                                                               | `false`                                                                                                                              |
+| `gateway.sslEnabled`                 | If `true`, HTTPS listeners are configured and TLS secrets are required                                                                                                                                                                                                                                                      | `false`                                                                                                                              |
+| `gateway.httpHost`                   | HTTP hostname for Gateway routing (falls back to `ingress.httpHost` when empty)                                                                                                                                                                                                                                            | `""`                                                                                                                                 |
+| `gateway.grpcHost`                   | GRPC hostname for Gateway routing (falls back to `ingress.grpcHost` when empty)                                                                                                                                                                                                                                            | `""`                                                                                                                                 |
+| `gateway.apiKeyFromClientCert.enabled` | If `true`, Envoy maps API key headers from request header / `foo@host` / client cert serial on gRPC routes                                                                                                                                                                                                                | `false`                                                                                                                              |
+| `gateway.clientValidation.enabled`   | If `true`, configures Envoy Gateway mTLS client validation on the Gateway `grpcs` listener                                                                                                                                                                                                                                 | `false`                                                                                                                              |
+| `gateway.clientValidation.optional`  | If `true`, client cert is optional during mTLS validation                                                                                                                                                                                                                                                                   | `true`                                                                                                                               |
+| `gateway.clientValidation.caCertificateSecretName` | Secret name containing `ca.crt` used to validate client certs                                                                                                                                                                                                                                                    | `buildbuddy-client-ca`                                                                                                               |
+| `gatewaycontroller.enabled`          | If `true`, installs the Envoy Gateway controller chart (including CRDs) and auto-creates `gateway.className` when `gateway.enabled=true`                                                                                                                                                                                   | `false`                                                                                                                              |
 | `certmanager.enabled`                | If `true`, an cert-manager will be installed (kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.16.1/cert-manager.crds.yaml) must be run before deploying to create necessary CRDs                                                                                            | `false`                                                                                                                              |
 | `certmanager.emailAddress`           | The email address to use for letsencrypt cert registration                                                                                                                                                                                                                                                                  | `your-email@gmail.com`                                                                                                               |
 | `mysql.enabled`                      | Enables deployment of a mysql server                                                                                                                                                                                                                                                                                        | `false`                                                                                                                              |
@@ -163,8 +175,9 @@ config:
     data_source: "" # Either set this or mysql.enabled, not both!
 ```
 
-### Example ingress and certs configuration
+### Example ingress and certs configuration (deprecated)
 
+Note: nginx ingress is deprecated and kept for migration compatibility. Prefer the Envoy Gateway example below for new deployments.
 Note: make sure to run `kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.16.1/cert-manager.crds.yaml` to install CRDs before deploying this configuration.
 
 ```yaml
@@ -192,9 +205,47 @@ config:
     enable_ssl: true
 ```
 
+### Example Envoy Gateway configuration
+
+Note: this configuration installs the Envoy Gateway controller and creates the matching GatewayClass automatically.
+
+```yaml
+gateway:
+  enabled: true
+  className: envoy-gateway
+  sslEnabled: true
+  httpHost: buildbuddy.example.com
+  grpcHost: buildbuddy-grpc.example.com
+  httpTLSSecretName: buildbuddy.example.com-tls
+  grpcTLSSecretName: buildbuddy-grpc.example.com-tls
+  apiKeyFromClientCert:
+    enabled: true
+  clientValidation:
+    enabled: true
+    optional: true
+    caCertificateSecretName: buildbuddy-client-ca
+
+gatewaycontroller:
+  enabled: true
+
+mysql:
+  enabled: true
+  mysqlUser: "sampleUser"
+  mysqlPassword: "samplePassword"
+
+config:
+  app:
+    build_buddy_url: "https://buildbuddy.example.com"
+    events_api_url: "grpcs://buildbuddy-grpc.example.com"
+    cache_api_url: "grpcs://buildbuddy-grpc.example.com"
+  ssl:
+    enable_ssl: true
+```
+
 ## Example with auth (required for enterprise features)
 
 Auth can be configured with any provider that supports OpenID Connect (OIDC) including Google GSuite, Okta, Auth0 and others.
+This ingress-based example is deprecated; prefer Gateway API for new deployments.
 
 ```yaml
 ingress:
