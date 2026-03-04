@@ -193,6 +193,10 @@ affinity: {}
 ## default runtime class handling will be sufficient.
 # runtimeClassName: nvidia
 
+## Optionally, set a priorityClassName for the executor pods. This allows you
+## to influence pod scheduling and preemption behavior if desired.
+# priorityClassName: buildbuddy-executor-high
+
 ## TopologySpreadConstraints for pod assignment
 ## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
 ##
