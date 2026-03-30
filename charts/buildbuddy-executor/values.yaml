@@ -32,14 +32,15 @@ replicas: 3
 #     operator: Equal
 #     value: x86_64
 
-## The default resources to give the app.
+## The default resources to give the executor.
+## These should fit on a M7gd-8xlarge (AWS) or c4-standard-32-lssd (gcp) or similar.
 resources:
   limits:
-    cpu: "2"
-    memory: "10Gi"
+    cpu: "30"
+    memory: "110Gi"
   requests:
-    cpu: "1"
-    memory: "5Gi"
+    cpu: "30"
+    memory: "110Gi"
 
 ## Configures what port the BuildBuddy executors operate on.
 service:
