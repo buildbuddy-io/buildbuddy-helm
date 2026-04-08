@@ -4,7 +4,7 @@
 
 ## The BuildBuddy Executor container image to use.
 image:
-  repository: gcr.io/flame-public/buildbuddy-executor-enterprise
+  repository: buildbuddy.bbcr.io/public/buildbuddy-executor-enterprise
   tag: enterprise-v2.257.0
   imagePullPolicy: IfNotPresent
 
