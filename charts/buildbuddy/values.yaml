@@ -4,7 +4,7 @@
 
 ## The BuildBuddy container image to use.
 image:
-  repository: gcr.io/flame-public/buildbuddy-app-onprem
+  repository: buildbuddy.bbcr.io/public/buildbuddy-app-onprem
   tag: v2.257.0
   imagePullPolicy: IfNotPresent
 
