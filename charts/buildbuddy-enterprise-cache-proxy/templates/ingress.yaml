@@ -1,0 +1,47 @@
+{{- if .Values.ingress.enabled }}
+{{- $grpcHost := required "ingress.grpcHost is required when ingress.enabled is true" .Values.ingress.grpcHost }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}-grpc
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "grpc"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      grpc_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504 non_idempotent;
+      grpc_next_upstream_tries 3;
+    {{- if .Values.ingress.sslEnabled }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | default "letsencrypt-prod" }}
+    {{- else }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    {{- end }}
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  rules:
+    - host: {{ $grpcHost | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "buildbuddy.fullname" . }}
+                port:
+                  name: grpc
+  {{- if .Values.ingress.sslEnabled }}
+  tls:
+    - secretName: {{ .Values.ingress.grpcTlsSecretName | default (printf "%s-grpc-tls" (include "buildbuddy.fullname" .)) }}
+      hosts:
+        - {{ $grpcHost | quote }}
+  {{- end }}
+{{- end }}

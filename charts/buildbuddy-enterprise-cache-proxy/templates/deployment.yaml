@@ -1,0 +1,176 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+    {{- if .Values.extraPodLabels }}
+    {{- .Values.extraPodLabels | toYaml | nindent 4 }}
+    {{- end }}
+spec:
+  replicas: {{ .Values.replicas | default 1 }}
+  strategy:
+    {{- .Values.strategy | toYaml | nindent 4 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  {{- if .Values.minReadySeconds }}
+  minReadySeconds: {{ .Values.minReadySeconds }}
+  {{- end }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.service.internalMetricsPort }}"
+        checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
+        {{- if .Values.extraPodAnnotations }}
+        {{- .Values.extraPodAnnotations | toYaml | nindent 8 }}
+        {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        helm.sh/chart: {{ include "buildbuddy.chart" . }}
+        {{- if .Values.extraPodLabels }}
+        {{- .Values.extraPodLabels | toYaml | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ include "buildbuddy.serviceAccountName" . }}
+      {{- if .Values.extraInitContainers }}
+      initContainers:
+      {{- .Values.extraInitContainers | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.securityContext }}
+      securityContext:
+      {{- .Values.securityContext | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity:
+        {{- toYaml .Values.affinity | nindent 8 }}
+      {{- end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations:
+        {{- toYaml .Values.tolerations | nindent 8 }}
+      {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- .Values.topologySpreadConstraints | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      containers:
+        {{- if .Values.extraContainers }}
+        {{- toYaml .Values.extraContainers | nindent 8 }}
+        {{- end }}
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          args:
+            - "--config_file=/config.yaml"
+            - "--server_type=cache-proxy"
+          {{- if .Values.resources }}
+          resources:
+            {{- .Values.resources | toYaml | nindent 12 }}
+          {{- end }}
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: MY_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MY_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MY_NODENAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: K8S_POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+          {{- if .Values.extraEnvVars }}
+            {{- .Values.extraEnvVars | toYaml | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.internalHTTPPort }}
+            - name: https
+              containerPort: {{ .Values.service.internalHTTPSPort }}
+            - name: grpc
+              containerPort: {{ .Values.service.internalGRPCPort }}
+            - name: grpcs
+              containerPort: {{ .Values.service.internalGRPCSPort }}
+            - name: dist
+              containerPort: {{ .Values.service.internalDistPort }}
+            - name: metrics
+              containerPort: {{ .Values.service.internalMetricsPort }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+              httpHeaders:
+                - name: server-type
+                  value: cache-proxy
+          {{- if .Values.extraLivenessProbeConfig }}
+            {{- .Values.extraLivenessProbeConfig | toYaml | nindent 12 }}
+          {{- end }}
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+              httpHeaders:
+                - name: server-type
+                  value: cache-proxy
+          {{- if .Values.extraReadinessProbeConfig }}
+            {{- .Values.extraReadinessProbeConfig | toYaml | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /buildbuddy/
+              name: cache-proxy-data
+            - mountPath: /config.yaml
+              name: config
+              subPath: config.yaml
+            {{- if .Values.extraVolumeMounts }}
+            {{- .Values.extraVolumeMounts | toYaml | nindent 12 }}
+            {{- end }}
+          {{- if .Values.containerSecurityContext }}
+          securityContext:
+            {{- .Values.containerSecurityContext | toYaml | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: cache-proxy-data
+          {{- if .Values.cacheProxyDataVolumeHostPath }}
+          hostPath:
+            path: {{ .Values.cacheProxyDataVolumeHostPath }}
+            type: DirectoryOrCreate
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: config
+          secret:
+            secretName: {{ include "buildbuddy.fullname" . }}-config
+        {{- if .Values.extraVolumes }}
+        {{- .Values.extraVolumes | toYaml | nindent 8 }}
+        {{- end }}

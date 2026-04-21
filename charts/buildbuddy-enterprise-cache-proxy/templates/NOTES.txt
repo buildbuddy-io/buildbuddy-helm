@@ -1,0 +1,10 @@
+Thank you for installing BuildBuddy Enterprise Cache Proxy!
+
+The cache proxy is a caching layer that sits in front of your BuildBuddy
+remote cache, serving frequently-requested blobs locally and reducing
+round-trips to the upstream cache.
+
+If you have any questions - join our Slack channel at:
+    https://slack.buildbuddy.io/
+
+Happy Building!
