@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}
+  {{- if .Values.service.annotations }}
+  annotations:
+    {{- toYaml .Values.service.annotations | nindent 4 }}
+  {{- end }}
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  type: {{ .Values.service.type }}
+  ports:
+    - name: http
+      protocol: "TCP"
+      port: {{ .Values.service.externalHTTPPort }}
+      targetPort: {{ .Values.service.internalHTTPPort }}
+    - name: grpc
+      protocol: "TCP"
+      port: {{ .Values.service.externalGRPCPort }}
+      targetPort: {{ .Values.service.internalGRPCPort }}
+    {{- if and .Values.service.externalHTTPSPort .Values.service.internalHTTPSPort }}
+    - name: https
+      protocol: "TCP"
+      port: {{ .Values.service.externalHTTPSPort }}
+      targetPort: {{ .Values.service.internalHTTPSPort }}
+    {{- end }}
+    {{- if and .Values.service.externalGRPCSPort .Values.service.internalGRPCSPort }}
+    - name: grpcs
+      protocol: "TCP"
+      port: {{ .Values.service.externalGRPCSPort }}
+      targetPort: {{ .Values.service.internalGRPCSPort }}
+    {{- end }}
+    {{- if and .Values.service.externalMetricsPort .Values.service.internalMetricsPort }}
+    - name: metrics
+      protocol: "TCP"
+      port: {{ .Values.service.externalMetricsPort }}
+      targetPort: {{ .Values.service.internalMetricsPort }}
+    {{- end }}
+---
+{{- /* Headless service used by cache-proxy pods to reach each other directly
+       for the distributed cache layer. */}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "buildbuddy.fullname" . }}-headless
+  labels:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "buildbuddy.chart" . }}
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: dist
+      protocol: "TCP"
+      port: {{ .Values.service.internalDistPort }}
+      targetPort: {{ .Values.service.internalDistPort }}

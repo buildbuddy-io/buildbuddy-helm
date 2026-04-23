@@ -1,0 +1,173 @@
+## Default values for BuildBuddy Enterprise Cache Proxy.
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
+
+## The BuildBuddy Enterprise Cache Proxy container image to use.
+image:
+  repository: buildbuddy.bbcr.io/public/buildbuddy-cache-proxy-enterprise
+  tag: enterprise-v2.261.0
+  imagePullPolicy: IfNotPresent
+
+## The number of cache-proxy replicas to run.
+replicas: 3
+
+## The nodeSelector used for placing cache-proxy pods on a specific node pool.
+# nodeSelector:
+#   cloud.google.com/gke-nodepool: my-cache-proxy-pool
+
+## Taints to tolerate when scheduling pods.
+# tolerations:
+#   - effect: NoSchedule
+#     key: workload
+#     operator: Equal
+#     value: cache-proxy
+
+## Default resources. Cache proxies are memory-hungry — size to fit your
+## working set.
+resources:
+  limits:
+    cpu: "4"
+    memory: "16Gi"
+  requests:
+    cpu: "4"
+    memory: "16Gi"
+
+## Ports exposed by the cache-proxy container.
+service:
+  type: LoadBalancer
+  internalHTTPPort: 8080
+  internalHTTPSPort: 8081
+  internalGRPCPort: 1985
+  internalGRPCSPort: 1986
+  internalMetricsPort: 9090
+  internalDistPort: 5151
+  externalHTTPPort: 8080
+  externalGRPCPort: 1985
+  # externalHTTPSPort: 8081
+  # externalGRPCSPort: 1986
+  # externalMetricsPort: 9090
+  # annotations: {}
+
+## Custom deployment strategy.
+strategy:
+  type: RollingUpdate
+#   rollingUpdate:
+#     maxSurge: 1
+#     maxUnavailable: 0
+
+podDisruptionBudget:
+  enabled: true
+  spec:
+    # Only one of minAvailable or maxUnavailable may be specified
+    maxUnavailable: 1
+    # minAvailable: 50%
+
+## RBAC for Kubernetes peer discovery.
+## The distributed cache uses the Kubernetes API to discover peer cache-proxy
+## pods. This requires a ServiceAccount with permission to list pods and get
+## replicasets / statefulsets in the release namespace.
+rbac:
+  create: true
+
+## Service account. If `create` is true, a ServiceAccount is created with the
+## RBAC permissions needed for Kubernetes peer discovery. Set `name` to use an
+## existing ServiceAccount instead.
+serviceAccount:
+  create: true
+  # name: ""
+
+## Ingress configuration. Disabled by default — most users will front the
+## cache proxy with their own gateway or a Service of type LoadBalancer. When
+## enabled, a single gRPC-backed Ingress is created pointing at the chart's
+## ClusterIP Service on port `grpc`.
+ingress:
+  enabled: false
+  ## IngressClassName (e.g. "nginx"). Leave empty to use the cluster default.
+  className: nginx
+  ## Hostname clients will use to reach the cache proxy (e.g.
+  ## "cache-proxy.example.com"). Required when ingress.enabled is true.
+  grpcHost: ""
+  ## When true, terminate TLS at the ingress using a cert-manager issued cert.
+  sslEnabled: false
+  ## cert-manager ClusterIssuer used when sslEnabled is true.
+  # clusterIssuer: letsencrypt-prod
+  ## Override the TLS secret name. Defaults to "<release>-grpc-tls".
+  # grpcTlsSecretName: ""
+  ## Extra annotations merged into the Ingress.
+  annotations: {}
+
+# NOTE: These act as the default values for the config.yaml file read by the
+# cache-proxy. You can override the config object just like any Helm template
+# value. Since it is an object, the object you provide will merge with these
+# defaults.
+#
+# See https://www.buildbuddy.io/docs/config for the full list of config options.
+config:
+  cache:
+    max_size_bytes: 10000000000 # 10 GB
+    pebble:
+      root_directory: /buildbuddy/pebble_disk_cache/
+    distributed_cache:
+      listen_addr: 0.0.0.0:5151
+      cluster_size: 1
+      # Automatically discover peer cache-proxy pods via the Kubernetes API.
+      # Requires RBAC (see rbac.create / serviceAccount.create above).
+      kubernetes_discovery: true
+  auth:
+    # The cache proxy delegates JWT verification to the upstream BuildBuddy
+    # app via the remote authenticator. It does not need its own signing key
+    # — the upstream app signs JWTs with auth.jwt_es256_private_key and the
+    # proxy fetches public keys from it.
+    remote:
+      # Always request ES256-signed JWTs from the remote auth service instead
+      # of HMAC HS256. Requires the upstream app to be configured with
+      # auth.jwt_es256_private_key.
+      use_es256_jwts: true
+  ssl:
+    enable_ssl: false
+
+## Additional env vars
+extraEnvVars: []
+
+## Probe configuration
+## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes
+extraLivenessProbeConfig: {}
+extraReadinessProbeConfig: {}
+
+## Additional init containers
+extraInitContainers: []
+
+## Additional containers
+extraContainers: []
+
+## Path on the node to mount the 'cache-proxy-data' volume. If unset, an
+## emptyDir is used (data is lost on pod restart).
+# cacheProxyDataVolumeHostPath: ""
+
+## Additional volumes and mounts
+extraVolumes: []
+extraVolumeMounts: []
+
+## Extra pod labels / annotations
+extraPodLabels: {}
+extraPodAnnotations: {}
+
+## Affinity rules for cache-proxy pods
+affinity: {}
+
+## Optionally, set a priorityClassName for the cache-proxy pods.
+# priorityClassName: buildbuddy-cache-proxy-high
+
+## TopologySpreadConstraints for pod assignment.
+## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+topologySpreadConstraints: []
+
+## Pod-level securityContext
+# securityContext: {}
+
+## Container-level securityContext
+# containerSecurityContext: {}
+
+## Delay the rollout to give new cache-proxy pods time to warm up before the
+## old pods are removed. Helps preserve cache hit rates across upgrades.
+# minReadySeconds: 300
