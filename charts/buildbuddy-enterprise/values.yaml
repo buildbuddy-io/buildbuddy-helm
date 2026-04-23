@@ -5,7 +5,7 @@
 ## The BuildBuddy container image to use.
 image:
   repository: buildbuddy.bbcr.io/public/buildbuddy-app-enterprise
-  tag: enterprise-v2.261.0
+  tag: enterprise-v2.262.0
   imagePullPolicy: IfNotPresent
 
 ## The number of app replicas to run.
