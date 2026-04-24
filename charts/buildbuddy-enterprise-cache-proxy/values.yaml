@@ -11,6 +11,9 @@ image:
 ## The number of cache-proxy replicas to run.
 replicas: 3
 
+## The upstream BuildBuddy cache that this proxy sits in front of.
+cacheTarget: grpcs://remote.buildbuddy.io
+
 ## The nodeSelector used for placing cache-proxy pods on a specific node pool.
 # nodeSelector:
 #   cloud.google.com/gke-nodepool: my-cache-proxy-pool

@@ -52,6 +52,7 @@ Some common ones:
 | `image.repository`                            | Container image repository                                           | `buildbuddy.bbcr.io/public/buildbuddy-proxy-enterprise`          |
 | `image.tag`                                   | Container image tag                                                  | `enterprise-v2.261.0`                                            |
 | `replicas`                                    | Number of cache-proxy replicas                                       | `3`                                                              |
+| `cacheTarget`                                 | Upstream BuildBuddy cache the proxy sits in front of                 | `grpcs://remote.buildbuddy.io`                                   |
 | `resources`                                   | Pod CPU/memory requests and limits                                   | `4 CPU / 16Gi`                                                   |
 | `config`                                      | The `config.yaml` contents passed to the cache proxy                 | See [values.yaml](./values.yaml)                                 |
 | `rbac.create`                                 | Create the Role/RoleBinding used for Kubernetes peer discovery       | `true`                                                           |

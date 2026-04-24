@@ -12,8 +12,8 @@ data:
   {{- /* Make a deep copy of the default config */}}
   {{- $c := deepCopy .Values.config }}
 
-  {{- /* Force cache_proxy.remote_cache to the upstream BuildBuddy cache. */}}
-  {{- $remoteCache := "grpcs://remote.buildbuddy.io" }}
+  {{- /* Set cache_proxy.remote_cache to the value of .Values.cacheTarget. */}}
+  {{- $remoteCache := .Values.cacheTarget }}
   {{- if not $c.cache_proxy }}
   {{- $_ := set $c "cache_proxy" dict }}
   {{- end }}
