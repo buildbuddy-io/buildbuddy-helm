@@ -49,7 +49,7 @@ Some common ones:
 
 | Parameter                                     | Description                                                          | Default                                                          |
 | --------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `image.repository`                            | Container image repository                                           | `buildbuddy.bbcr.io/public/buildbuddy-cache-proxy-enterprise`    |
+| `image.repository`                            | Container image repository                                           | `buildbuddy.bbcr.io/public/buildbuddy-proxy-enterprise`    |
 | `image.tag`                                   | Container image tag                                                  | `enterprise-v2.259.0`                                            |
 | `replicas`                                    | Number of cache-proxy replicas                                       | `3`                                                              |
 | `resources`                                   | Pod CPU/memory requests and limits                                   | `4 CPU / 16Gi`                                                   |
