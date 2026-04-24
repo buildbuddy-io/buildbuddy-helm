@@ -4,7 +4,7 @@
 
 ## The BuildBuddy Enterprise Cache Proxy container image to use.
 image:
-  repository: buildbuddy.bbcr.io/public/buildbuddy-cache-proxy-enterprise
+  repository: buildbuddy.bbcr.io/public/buildbuddy-proxy-enterprise
   tag: enterprise-v2.261.0
   imagePullPolicy: IfNotPresent
 
