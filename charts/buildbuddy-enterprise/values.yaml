@@ -393,7 +393,8 @@ config:
   #   client_id: MY_CLIENT_ID
   #   client_secret: MY_CLIENT_SECRET
   remote_execution:
-    enable_remote_exec: false
+    enable_remote_exec: false # Set to true to enable remote build execution (RBE)
+    use_measured_task_sizes: true # Enable auto-sizing for tasks
 
 grafana:
   enabled: false
