@@ -5,8 +5,8 @@ This repository collects a set of [Helm](https://helm.sh) charts curated by [Bui
 Click on the following links to see installation instructions for each chart:
 
 - [buildbuddy](charts/buildbuddy/)
-- [buildbuddy-cache-proxy](charts/buildbuddy-cache-proxy/)
 - [buildbuddy-enterprise](charts/buildbuddy-enterprise/)
+- [buildbuddy-enterprise-cache-proxy](charts/buildbuddy-enterprise-cache-proxy/)
 - [buildbuddy-executor](charts/buildbuddy-executor/)
 
 ## Usage
