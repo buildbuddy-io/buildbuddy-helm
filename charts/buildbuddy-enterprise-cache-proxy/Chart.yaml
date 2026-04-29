@@ -1,7 +1,7 @@
 apiVersion: v1
 description: BuildBuddy Enterprise Cache Proxy
 name: buildbuddy-enterprise-cache-proxy
-version: 0.0.3 # Chart version
+version: 0.0.4 # Chart version
 appVersion: 2.261.0 # Version of deployed cache proxy
 keywords:
   - buildbuddy
