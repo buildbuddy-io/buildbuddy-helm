@@ -112,7 +112,6 @@ config:
       root_directory: /buildbuddy/pebble_disk_cache/
     distributed_cache:
       listen_addr: 0.0.0.0:5151
-      cluster_size: 1
       # Automatically discover peer cache-proxy pods via the Kubernetes API.
       # Requires RBAC (see rbac.create / serviceAccount.create above).
       kubernetes_discovery: true
