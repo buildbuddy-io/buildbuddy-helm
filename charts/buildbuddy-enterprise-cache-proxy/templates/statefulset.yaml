@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "buildbuddy.fullname" . }}
   labels:
@@ -12,8 +12,10 @@ metadata:
     {{- end }}
 spec:
   replicas: {{ .Values.replicas | default 1 }}
-  strategy:
-    {{- .Values.strategy | toYaml | nindent 4 }}
+  serviceName: {{ include "buildbuddy.fullname" . }}-headless
+  podManagementPolicy: Parallel
+  updateStrategy:
+    {{- .Values.updateStrategy | toYaml | nindent 4 }}
   selector:
     matchLabels:
       app: {{ include "buildbuddy.fullname" . }}
