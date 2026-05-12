@@ -50,7 +50,7 @@ Some common ones:
 | Parameter                                     | Description                                                          | Default                                                          |
 | --------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | `image.repository`                            | Container image repository                                           | `buildbuddy.bbcr.io/public/buildbuddy-proxy-enterprise`          |
-| `image.tag`                                   | Container image tag                                                  | `enterprise-v2.266.0`                                            |
+| `image.tag`                                   | Container image tag                                                  | `enterprise-v2.267.0`                                            |
 | `replicas`                                    | Number of cache-proxy replicas                                       | `3`                                                              |
 | `cacheTarget`                                 | Upstream BuildBuddy cache the proxy sits in front of                 | `grpcs://remote.buildbuddy.io`                                   |
 | `resources`                                   | Pod CPU/memory requests and limits                                   | `4 CPU / 16Gi`                                                   |
