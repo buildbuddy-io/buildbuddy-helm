@@ -97,7 +97,8 @@ ingress:
   ## Override the TLS secret name. Defaults to "<release>-grpc-tls".
   # grpcTlsSecretName: ""
   ## Extra annotations merged into the Ingress.
-  annotations: {}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
 
 # NOTE: These act as the default values for the config.yaml file read by the
 # cache-proxy. You can override the config object just like any Helm template

@@ -55,6 +55,7 @@ Some common ones:
 | `cacheTarget`                                 | Upstream BuildBuddy cache the proxy sits in front of                 | `grpcs://remote.buildbuddy.io`                                   |
 | `resources`                                   | Pod CPU/memory requests and limits                                   | `4 CPU / 16Gi`                                                   |
 | `config`                                      | The `config.yaml` contents passed to the cache proxy                 | See [values.yaml](./values.yaml)                                 |
+| `ingress.annotations`                         | Extra annotations merged into the cache-proxy gRPC Ingress           | `proxy-body-size: "0"`                                           |
 | `rbac.create`                                 | Create the Role/RoleBinding used for Kubernetes peer discovery       | `true`                                                           |
 | `serviceAccount.create`                       | Create the ServiceAccount used by cache-proxy pods                   | `true`                                                           |
 | `podDisruptionBudget.enabled`                 | Enable a PodDisruptionBudget                                         | `true`                                                           |
