@@ -30,7 +30,25 @@ data:
   {{- end }}
 
   {{- if .Values.redis.enabled }}
-  {{- $_ := set $c.app "default_redis_target" "redis:6379" }}
+  {{- $redisName := default "redis" .Values.redis.nameOverride | trunc 63 | trimSuffix "-" }}
+  {{- $redisPort := .Values.redis.service.internalRedisPort | default 6379 | int }}
+  {{- if .Values.redis.sharded }}
+  {{- $redisFullname := "" }}
+  {{- if .Values.redis.fullnameOverride }}
+    {{- $redisFullname = .Values.redis.fullnameOverride | trunc 63 | trimSuffix "-" }}
+  {{- else if contains $redisName .Release.Name }}
+    {{- $redisFullname = .Release.Name | trunc 63 | trimSuffix "-" }}
+  {{- else }}
+    {{- $redisFullname = printf "%s-%s" .Release.Name $redisName | trunc 63 | trimSuffix "-" }}
+  {{- end }}
+  {{- $redisShards := list }}
+  {{- range $i := until (.Values.redis.replicas | int) }}
+    {{- $redisShards = append $redisShards (printf "redis://%s-%d.%s:%d" $redisFullname $i $redisFullname $redisPort) }}
+  {{- end }}
+  {{- $_ := set $c.app "default_sharded_redis" (dict "shards" $redisShards) }}
+  {{- else }}
+  {{- $_ := set $c.app "default_redis_target" (printf "%s:%d" $redisName $redisPort) }}
+  {{- end }}
   {{- end }}
 
   {{- if .Values.distributed.enabled }}
