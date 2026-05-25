@@ -91,6 +91,8 @@ The following table lists the configurable parameters of the BuildBuddy Open Sou
 | `extraContainers`             | Additional containers                                                                                                                                                                                                                                                                                                                             | `[]`                                                                                                                               |
 | `customExecutorCommand`       | Custom command for running the executor                                                                                                                                                                                                                                                                                                           | `null`                                                                                                                             |
 | `priorityClassName`           | Optional Kubernetes priority class name assigned to executor pods                                                                                                                                                                                                                                                                                 | `null`                                                                                                                             |
+| `dnsConfig`                   | Pod DNS configuration (e.g. `options.ndots`, `searches`, `nameservers`)                                                                                                                                                                                                                                                                             | `null`                                                                                                                             |
+| `dnsPolicy`                   | Pod DNS policy (`ClusterFirst`, `Default`, `None`, etc.)                                                                                                                                                                                                                                                                                          | `null`                                                                                                                             |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
@@ -121,6 +123,15 @@ config:
     app_target: "grpcs://remote.buildbuddy.io:443"
     local_cache_size_bytes: 50000000000 # 50GB
     api_key: "YOUR_EXECUTOR_ENABLED_API_KEY"
+```
+
+### Example DNS configuration
+
+```yaml
+dnsConfig:
+  options:
+    - name: ndots
+      value: "3"
 ```
 
 ### Example autoscaling configuration
