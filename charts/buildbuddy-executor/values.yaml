@@ -210,3 +210,11 @@ affinity: {}
 #       matchLabels:
 #         foo: bar
 topologySpreadConstraints: []
+
+## Pod DNS configuration (see https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-dns-config).
+## Common use: lower ndots to reduce lookup latency for fully-qualified hostnames.
+# dnsConfig:
+#   options:
+#     - name: ndots
+#       value: "3"
+# dnsPolicy: ClusterFirst
