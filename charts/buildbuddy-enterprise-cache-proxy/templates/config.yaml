@@ -19,6 +19,9 @@ data:
   {{- end }}
   {{- $_ := set $c.cache_proxy "remote_cache" $remoteCache }}
 
+  {{- /* Set cache_proxy.app_target to cache_proxy.remote_cache. */}}
+  {{- $_ := set $c.cache_proxy "app_target" $remoteCache }}
+
   {{- /* Set cache_proxy.remote_hit_tracker to cache_proxy.remote_cache. */}}
   {{- $_ := set $c.cache_proxy "remote_hit_tracker" (dict "target" $remoteCache) }}
 
