@@ -118,7 +118,7 @@ config:
     # app_target: "grpcs://your.buildbuddy.install:443" # auto populated if deploying via buildbuddy-enterprise chart
     root_directory: "/buildbuddy/remotebuilds/"
     local_cache_directory: "/buildbuddy/filecache/"
-    local_cache_size_bytes: 5000000000  # 5GB
+    local_cache_size_bytes: 100000000000  # 100GB
     # Use BuildBuddy's OCI runtime solution (based on crun) to spin up child
     # containers ("runners") inside the executor container.
     #
