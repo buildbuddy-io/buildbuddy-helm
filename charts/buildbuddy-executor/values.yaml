@@ -127,6 +127,10 @@ config:
     # podman-based isolation. Note that podman is also migrating to cgroup v2,
     # so you should migrate to cgroup v2 as soon as possible.
     enable_oci: true
+    # Collect resource usage metrics over time for every execution. These are
+    # visible in the "Executions" page in the UI. Requires a small amount of
+    # extra cache upload per execution (~50 bytes for most executions).
+    record_usage_timelines: true
 
 # Configuration for Deployment Rollout Staggering
 # The 'minReadySeconds' config delays the rollout process during a RollingUpdate.  This delay allows the
