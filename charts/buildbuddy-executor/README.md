@@ -93,6 +93,7 @@ The following table lists the configurable parameters of the BuildBuddy Open Sou
 | `priorityClassName`           | Optional Kubernetes priority class name assigned to executor pods                                                                                                                                                                                                                                                                                 | `null`                                                                                                                             |
 | `dnsConfig`                   | Pod DNS configuration (e.g. `options.ndots`, `searches`, `nameservers`)                                                                                                                                                                                                                                                                             | `null`                                                                                                                             |
 | `dnsPolicy`                   | Pod DNS policy (`ClusterFirst`, `Default`, `None`, etc.)                                                                                                                                                                                                                                                                                          | `null`                                                                                                                             |
+| `terminationGracePeriodSeconds` | Seconds Kubernetes waits for executor pods to terminate gracefully before forcefully killing them                                                                                                                                                                                                                                               | `null` (Kubernetes default: 30)                                                                                                    |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
@@ -132,6 +133,12 @@ dnsConfig:
   options:
     - name: ndots
       value: "3"
+```
+
+### Example termination grace period configuration
+
+```yaml
+terminationGracePeriodSeconds: 60
 ```
 
 ### Example autoscaling configuration

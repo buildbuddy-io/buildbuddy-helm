@@ -218,3 +218,9 @@ topologySpreadConstraints: []
 #     - name: ndots
 #       value: "3"
 # dnsPolicy: ClusterFirst
+
+## Optionally, set terminationGracePeriodSeconds for executor pods. This controls
+## how long Kubernetes waits for the pod to shut down gracefully before forcefully
+## terminating it. Increase this if executors need more time to drain in-flight
+## remote execution work during rollouts or scale-downs.
+# terminationGracePeriodSeconds: 60
