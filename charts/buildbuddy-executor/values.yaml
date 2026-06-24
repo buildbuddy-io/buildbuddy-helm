@@ -218,3 +218,16 @@ topologySpreadConstraints: []
 #     - name: ndots
 #       value: "3"
 # dnsPolicy: ClusterFirst
+
+## Optionally, set terminationGracePeriodSeconds for executor pods. This controls
+## how long Kubernetes waits for the pod to shut down gracefully before forcefully
+## terminating it. Increase this if executors need more time to drain in-flight
+## remote execution work during rollouts or scale-downs.
+##
+## When increasing this value, also set config.max_shutdown_duration (a top-level
+## BuildBuddy config option) to a few seconds less than terminationGracePeriodSeconds
+## so the executor process can finish draining work before Kubernetes sends SIGKILL.
+## For example:
+# terminationGracePeriodSeconds: 60
+# config:
+#   max_shutdown_duration: 55s
