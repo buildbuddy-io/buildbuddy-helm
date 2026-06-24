@@ -93,7 +93,7 @@ The following table lists the configurable parameters of the BuildBuddy Open Sou
 | `priorityClassName`           | Optional Kubernetes priority class name assigned to executor pods                                                                                                                                                                                                                                                                                 | `null`                                                                                                                             |
 | `dnsConfig`                   | Pod DNS configuration (e.g. `options.ndots`, `searches`, `nameservers`)                                                                                                                                                                                                                                                                             | `null`                                                                                                                             |
 | `dnsPolicy`                   | Pod DNS policy (`ClusterFirst`, `Default`, `None`, etc.)                                                                                                                                                                                                                                                                                          | `null`                                                                                                                             |
-| `terminationGracePeriodSeconds` | Seconds Kubernetes waits for executor pods to terminate gracefully before forcefully killing them                                                                                                                                                                                                                                               | `null` (Kubernetes default: 30)                                                                                                    |
+| `terminationGracePeriodSeconds` | Seconds Kubernetes waits for executor pods to terminate gracefully before forcefully killing them. When set, also configure `config.max_shutdown_duration` to a few seconds less so the executor can drain in-flight work before Kubernetes sends SIGKILL. See [example](#example-termination-grace-period-configuration). | `null` (Kubernetes default: 30)                                                                                                    |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
@@ -137,8 +137,15 @@ dnsConfig:
 
 ### Example termination grace period configuration
 
+When increasing the pod termination grace period, also set `config.max_shutdown_duration`
+(a top-level BuildBuddy config option) to a few seconds less. This gives the executor
+process time to drain in-flight remote execution work before Kubernetes forcefully
+terminates the pod.
+
 ```yaml
 terminationGracePeriodSeconds: 60
+config:
+  max_shutdown_duration: 55s
 ```
 
 ### Example autoscaling configuration
