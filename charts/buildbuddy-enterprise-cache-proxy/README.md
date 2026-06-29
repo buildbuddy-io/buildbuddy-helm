@@ -53,6 +53,7 @@ Some common ones:
 | `image.tag`                                   | Container image tag                                                  | `enterprise-v2.281.0`                                            |
 | `replicas`                                    | Number of cache-proxy replicas                                       | `3`                                                              |
 | `cacheTarget`                                 | Upstream BuildBuddy cache the proxy sits in front of                 | `grpcs://remote.buildbuddy.io`                                   |
+| `config.auth.reparse_jwts`                    | Disable process-local JWT reparsing for remote-authenticated proxies | `false`                                                          |
 | `resources`                                   | Pod CPU/memory requests and limits                                   | `4 CPU / 16Gi`                                                   |
 | `config`                                      | The `config.yaml` contents passed to the cache proxy                 | See [values.yaml](./values.yaml)                                 |
 | `ingress.annotations`                         | Extra annotations merged into the cache-proxy gRPC Ingress           | `proxy-body-size: "0"`                                           |

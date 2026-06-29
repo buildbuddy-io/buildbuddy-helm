@@ -134,6 +134,10 @@ config:
       # of HMAC HS256. Requires the upstream app to be configured with
       # auth.jwt_es256_private_key.
       use_es256_jwts: true
+    # Do not reparse JWTs using process-local signing keys; cache proxies
+    # should rely on remote auth claims, especially when talking to
+    # BuildBuddy Cloud.
+    reparse_jwts: false
   ssl:
     enable_ssl: false
 
