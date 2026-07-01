@@ -11,6 +11,7 @@ metadata:
 data:
   {{- /* Make a deep copy of the default config */}}
   {{- $c := deepCopy .Values.config }}
+  {{- $schedulerRPCScheme := include "buildbuddy.schedulerRPCScheme" . }}
 
   {{- /* Update the copied default config based on .Values */}}
 
@@ -53,6 +54,9 @@ data:
 
   {{- if .Values.distributed.enabled }}
   {{- $_ := set $c.cache "redis_target" "" }}
+  {{- if eq $schedulerRPCScheme "grpcs" }}
+  {{- $_ := set $c.remote_execution "scheduler_rpc_scheme" "grpcs" }}
+  {{- end }}
   {{- else if (and .Values.redis.enabled (or $c.cache.gcs $c.cache.s3)) }}
   {{- $_ := set $c.cache "redis_target" "redis:6379" }}
   {{- end }}

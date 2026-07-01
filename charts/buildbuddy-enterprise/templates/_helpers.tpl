@@ -30,3 +30,17 @@ Create chart name and version as used by the chart label.
 {{- define "buildbuddy.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Scheduler RPC scheme used for app-to-app scheduler traffic.
+*/}}
+{{- define "buildbuddy.schedulerRPCScheme" -}}
+{{- $scheme := default "grpc" .Values.distributed.schedulerRPCScheme | toString | lower -}}
+{{- if not (has $scheme (list "grpc" "grpcs")) -}}
+{{- fail "distributed.schedulerRPCScheme must be either \"grpc\" or \"grpcs\"" -}}
+{{- end -}}
+{{- if and (eq $scheme "grpcs") (not .Values.service.internalGRPCSPort) -}}
+{{- fail "distributed.schedulerRPCScheme=grpcs requires service.internalGRPCSPort to be set" -}}
+{{- end -}}
+{{- $scheme -}}
+{{- end -}}
