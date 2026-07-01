@@ -110,6 +110,14 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.uid
+            - name: SYS_MEMORY_BYTES
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.memory
+            - name: SYS_MILLICPU
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.cpu
           {{- if .Values.extraEnvVars }}
             {{- .Values.extraEnvVars | toYaml | nindent 12 }}
           {{- end }}
