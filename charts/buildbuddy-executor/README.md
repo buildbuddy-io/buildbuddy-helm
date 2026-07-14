@@ -84,6 +84,7 @@ The following table lists the configurable parameters of the BuildBuddy Open Sou
 | `service.internalHTTPPort`    | The port on our docker image that serves http traffic                                                                                                                                                                                                                                                                                             | `8080`                                                                                                                             |
 | `service.internalGRPCPort`    | The port on our docker image that serves grpc traffic                                                                                                                                                                                                                                                                                             | `1985`                                                                                                                             |
 | `service.internalMetricsPort` | The port on our docker image that serves prometheus traffic                                                                                                                                                                                                                                                                                       | `9090`                                                                                                                             |
+| `proxy.enabled`               | Deploy a [BuildBuddy Enterprise Cache Proxy](../buildbuddy-enterprise-cache-proxy) and default `config.executor.cache_target` to its in-cluster gRPC Service. Any cache-proxy chart value can be passed under `proxy`.                                                                                               | `false`                                                                                                                            |
 | `extraPodAnnotations`         | Extra pod annotations to be used in the deployments                                                                                                                                                                                                                                                                                               | `[]`                                                                                                                               |
 | `extraPodLabels`              | Extra pod labels to be used in the deployments                                                                                                                                                                                                                                                                                                    | `[]`                                                                                                                               |
 | `extraEnvVars`                | Extra environments variables to be used in the deployments                                                                                                                                                                                                                                                                                        | `[]`                                                                                                                               |
@@ -124,6 +125,28 @@ config:
     app_target: "grpcs://remote.buildbuddy.io:443"
     local_cache_size_bytes: 50000000000 # 50GB
     api_key: "YOUR_EXECUTOR_ENABLED_API_KEY"
+```
+
+### Example deploy a cache proxy with the executors
+
+Enable the bundled cache-proxy chart to automatically point the executors at
+its in-cluster gRPC Service. An explicit `config.executor.cache_target` takes
+precedence over the generated target. The cache proxy must use its own Cache
+proxy key rather than the executor-enabled API key.
+
+```yaml
+config:
+  executor:
+    app_target: "grpcs://remote.buildbuddy.io:443"
+    api_key: "YOUR_EXECUTOR_ENABLED_API_KEY"
+
+proxy:
+  enabled: true
+  service:
+    type: ClusterIP
+  config:
+    cache_proxy:
+      api_key: "YOUR_CACHE_PROXY_API_KEY"
 ```
 
 ### Example DNS configuration

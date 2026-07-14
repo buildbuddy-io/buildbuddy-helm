@@ -30,3 +30,19 @@ Create chart name and version as used by the chart label.
 {{- define "buildbuddy.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Create the fullname used by the proxy dependency's Service.
+*/}}
+{{- define "buildbuddy.proxyFullname" -}}
+{{- if .Values.proxy.fullnameOverride -}}
+{{- .Values.proxy.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default "proxy" .Values.proxy.nameOverride -}}
+{{- if contains $name .Release.Name -}}
+{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
