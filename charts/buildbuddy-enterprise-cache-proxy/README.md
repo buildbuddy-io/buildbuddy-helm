@@ -50,7 +50,7 @@ Some common ones:
 | Parameter                                     | Description                                                          | Default                                                          |
 | --------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | `image.repository`                            | Container image repository                                           | `buildbuddy.bbcr.io/public/buildbuddy-proxy-enterprise`          |
-| `image.tag`                                   | Container image tag                                                  | `enterprise-v2.285.0`                                            |
+| `image.tag`                                   | Container image tag                                                  | `enterprise-v2.286.0`                                            |
 | `replicas`                                    | Number of cache-proxy replicas                                       | `3`                                                              |
 | `cacheTarget`                                 | Upstream BuildBuddy cache the proxy sits in front of                 | `grpcs://remote.buildbuddy.io`                                   |
 | `config.auth.reparse_jwts`                    | Disable process-local JWT reparsing for remote-authenticated proxies | `false`                                                          |
