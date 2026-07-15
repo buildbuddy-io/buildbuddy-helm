@@ -48,6 +48,13 @@ service:
   internalGRPCPort: 1985
   internalMetricsPort: 9090
 
+## Optionally deploy a BuildBuddy Enterprise Cache Proxy alongside the
+## executors. Any buildbuddy-enterprise-cache-proxy chart value can be set here.
+## When enabled, config.executor.cache_target defaults to the proxy's in-cluster
+## gRPC Service unless it is set explicitly.
+proxy:
+  enabled: false
+
 # Required to enable autoscaling based on custom metrics
 prometheus:
   enabled: false

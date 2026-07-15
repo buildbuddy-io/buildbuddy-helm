@@ -1,4 +1,9 @@
 dependencies:
+  - name: buildbuddy-enterprise-cache-proxy
+    alias: proxy
+    version: 0.0.26
+    repository: https://helm.buildbuddy.io
+    condition: proxy.enabled
   - name: metrics-server
     version: 3.11.0
     repository: https://kubernetes-sigs.github.io/metrics-server/

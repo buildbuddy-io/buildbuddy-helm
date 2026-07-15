@@ -17,6 +17,11 @@ data:
   {{- if not .Values.config.executor.app_target }}
   {{- $_ := set $c.executor "app_target" (print "grpc://buildbuddy-enterprise:1985") }}
   {{- end }}
+
+  {{- if and .Values.proxy.enabled (not (hasKey .Values.config.executor "cache_target")) }}
+  {{- $proxyTarget := printf "grpc://%s:%v" (include "buildbuddy.proxyFullname" .) .Values.proxy.service.externalGRPCPort }}
+  {{- $_ := set $c.executor "cache_target" $proxyTarget }}
+  {{- end }}
   
   {{- /* Render the processed config as an encoded YAML string */}}
   {{- /* NOTE: Mounted at /config.yaml on the buildbuddy pod */}}
