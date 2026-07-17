@@ -26,6 +26,34 @@ deployment on a [Kubernetes](https://kubernetes.io/) cluster using the
 
 This chart runs the Cache Proxy using BuildBuddy-recommended settings.
 
+## Deployment guidance
+
+Cache Proxy pods form a distributed cache. Consistent hashing assigns cached
+artifacts to the running pods, and reads and writes are routed to the pod that
+owns each artifact. Prefer fewer, larger proxy pods to reduce overhead, while
+keeping enough replicas and failure-domain spread for high availability.
+
+As a starting point, provision these totals across all proxy pods:
+
+- 1 proxy CPU for every 20-30 executor CPUs.
+- 1 GB of proxy memory for every 4-5 GB of executor memory.
+
+For example, a deployment with 1,000 executor CPUs and 2 TB of executor memory
+should start with about 33-50 total proxy CPUs and 400-500 GB of total proxy
+memory. Divide those totals across the proxy replicas. Monitor resource
+utilization and tune these values for your cache traffic and enabled features.
+
+Store proxy data on local SSD-backed storage. The chart's default `emptyDir`
+volume and the optional `cacheProxyDataVolumeHostPath` only select how storage
+is mounted; neither guarantees that the underlying node storage is an SSD.
+Schedule proxies onto appropriately configured nodes and spread replicas across
+failure domains.
+
+Deploying proxies and executors in the same cluster lets the executor pool
+autoscale while keeping cache traffic within the cluster. See the
+[Cache Proxy documentation](https://www.buildbuddy.io/docs/enterprise-proxy)
+for complete deployment and configuration guidance.
+
 ## Installing the Chart
 
 To install the chart with the release name `my-release`:
