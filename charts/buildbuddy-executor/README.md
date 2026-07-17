@@ -134,6 +134,15 @@ its in-cluster gRPC Service. An explicit `config.executor.cache_target` takes
 precedence over the generated target. The cache proxy must use its own Cache
 proxy key rather than the executor-enabled API key.
 
+Running proxies and executors in the same cluster keeps cache traffic local
+while the executor pool autoscales. As a starting point, allocate 1 proxy CPU per
+20-30 executor CPUs and 1 GB of proxy memory per 4-5 GB of executor memory,
+measured across all proxy pods. Prefer fewer, larger proxy pods while preserving
+high availability, and use local SSD-backed proxy storage. Monitor utilization
+and tune for your workload. See the
+[Cache Proxy documentation](https://www.buildbuddy.io/docs/enterprise-proxy) for
+complete deployment guidance.
+
 ```yaml
 config:
   executor:

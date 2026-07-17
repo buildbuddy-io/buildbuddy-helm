@@ -4,6 +4,18 @@ The cache proxy is a caching layer that sits in front of your BuildBuddy
 remote cache, serving frequently-requested blobs locally and reducing
 round-trips to the upstream cache.
 
+Deployment reminders:
+  * Proxies form a distributed, consistent-hash cache. Prefer fewer, larger
+    proxies while keeping enough replicas for high availability.
+  * Across all proxy pods, start with 1 proxy CPU per 20-30 executor CPUs and 1
+    GB of proxy memory per 4-5 GB of executor memory, then monitor and tune.
+  * Use local SSD-backed storage. emptyDir and hostPath do not guarantee SSDs.
+  * Run proxies and executors in the same cluster to keep cache traffic local
+    as executors autoscale.
+
+For complete deployment guidance:
+    https://www.buildbuddy.io/docs/enterprise-proxy
+
 If you have any questions - join our Slack channel at:
     https://slack.buildbuddy.io/
 

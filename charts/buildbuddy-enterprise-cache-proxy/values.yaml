@@ -8,7 +8,9 @@ image:
   tag: enterprise-v2.287.0
   imagePullPolicy: IfNotPresent
 
-## The number of cache-proxy replicas to run.
+## The number of cache-proxy replicas to run. Cache proxies use consistent
+## hashing to distribute cached artifacts across the running pods. Prefer fewer,
+## larger proxies while keeping enough replicas for high availability.
 replicas: 3
 
 ## The upstream BuildBuddy cache that this proxy sits in front of.
@@ -25,8 +27,13 @@ cacheTarget: grpcs://remote.buildbuddy.io
 #     operator: Equal
 #     value: cache-proxy
 
-## Default resources. Cache proxies are memory-hungry — size to fit your
-## working set.
+## Per-pod resources. As a starting point, allocate a total of 1 proxy CPU per
+## 20-30 executor CPUs and 1 GB of proxy memory per 4-5 GB of executor memory,
+## divided across all proxy replicas. For 1,000 executor CPUs and 2 TB of
+## executor memory, this is about 33-50 total proxy CPUs and 400-500 GB of total
+## proxy memory. Monitor utilization and tune for your cache traffic and enabled
+## features. See the deployment guide:
+## https://www.buildbuddy.io/docs/enterprise-proxy
 resources:
   limits:
     cpu: "4"
@@ -110,9 +117,9 @@ config:
   cache_proxy:
     proxy_type: "customer"
     # API key the cache proxy uses to authenticate to the upstream BuildBuddy
-    # cache/app. Set this to an executor-enabled API key. The remote_cache,
-    # app_target, and remote_hit_tracker fields are auto-populated from
-    # .Values.cacheTarget.
+    # cache/app. Set this to a Cache proxy key, not an executor-enabled API key.
+    # The remote_cache, app_target, and remote_hit_tracker fields are
+    # auto-populated from .Values.cacheTarget.
     # api_key: "YOUR_API_KEY"
   cache:
     max_size_bytes: 10000000000 # 10 GB
@@ -156,7 +163,10 @@ extraInitContainers: []
 extraContainers: []
 
 ## Path on the node to mount the 'cache-proxy-data' volume. If unset, an
-## emptyDir is used (data is lost on pod restart).
+## emptyDir is used (data is lost when the pod is removed or rescheduled). Use
+## local SSD-backed storage for proxy data. Neither emptyDir nor hostPath
+## guarantees that the underlying node storage is an SSD; schedule proxies onto
+## appropriately configured nodes.
 # cacheProxyDataVolumeHostPath: ""
 
 ## Additional volumes and mounts
