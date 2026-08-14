@@ -52,6 +52,12 @@ distributed:
   enabled: false
   # Per-replica disk
   size: 100Gi
+  # Scheme used by app replicas to dial peer schedulers via the StatefulSet
+  # headless DNS name. Set to "grpcs" to encrypt scheduler-to-scheduler RPCs.
+  # Requires BuildBuddy app support from:
+  # https://github.com/buildbuddy-io/buildbuddy/pull/12574
+  # and certificates trusted for the pod or headless DNS names.
+  schedulerRPCScheme: grpc
   # Enable the use of pd-ssd on GCP
   # ssd: true
   # Configure alternative storage class name (use either storageClass OR ssd, not both)
