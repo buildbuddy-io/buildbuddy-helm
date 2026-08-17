@@ -48,8 +48,8 @@ spec:
         {{- .Values.extraPodLabels | toYaml | nindent 8 }}
         {{- end }}
     spec:
-      {{- if and .Values.serviceAccount .Values.serviceAccount.name }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- with (include "buildbuddy.serviceAccountName" .) }}
+      serviceAccountName: {{ . }}
       {{- end }}
       {{- if .Values.securityContext }}
       securityContext:
@@ -96,6 +96,10 @@ spec:
             {{- .Values.resources | toYaml | nindent 12 }}
           {{- end }}
           env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             - name: MY_NAME
               valueFrom:
                 fieldRef:

@@ -30,3 +30,16 @@ Create chart name and version as used by the chart label.
 {{- define "buildbuddy.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Service account name used by the app pods. Empty if no service account is
+created or named, in which case the pods use the namespace's default SA.
+*/}}
+{{- define "buildbuddy.serviceAccountName" -}}
+{{- $sa := .Values.serviceAccount | default dict -}}
+{{- if $sa.create -}}
+{{- default (include "buildbuddy.fullname" .) $sa.name -}}
+{{- else -}}
+{{- $sa.name | default "" -}}
+{{- end -}}
+{{- end -}}

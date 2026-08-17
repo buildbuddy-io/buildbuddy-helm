@@ -47,7 +47,10 @@ resources:
 #args:
 #  - "--auto_migrate_db=false"
 
-# Enables distributed disk caching configuration
+# Enables distributed disk caching configuration.
+# To have the app pods discover their distributed cache peers via the
+# Kubernetes API instead of Redis, set cache.distributed_cache.kubernetes_discovery
+# in the config below and enable rbac.create and serviceAccount.create.
 distributed:
   enabled: false
   # Per-replica disk
@@ -372,6 +375,14 @@ config:
     max_size_bytes: 10000000000 # 10 GB
     pebble:
       root_directory: /data/buildbuddy/pebble-cache/
+    ## Distributed cache (requires distributed.enabled above). With
+    ## kubernetes_discovery, peer app pods are discovered via the Kubernetes
+    ## API instead of Redis; this requires the RBAC permissions granted by
+    ## rbac.create and serviceAccount.create below.
+    # distributed_cache:
+    #   listen_addr: "0.0.0.0:5151"
+    #   replication_factor: 2
+    #   kubernetes_discovery: true
   ssl:
     enable_ssl: false
     client_ca_cert_file: "" # DO NOT EDIT: Automatically configured using certmanager
@@ -466,13 +477,25 @@ affinity: {}
 #
 # minReadySeconds: 300
 
+## RBAC for Kubernetes peer discovery.
+## When the distributed cache is configured with
+## cache.distributed_cache.kubernetes_discovery, the app pods discover their
+## peers via the Kubernetes API. This requires a ServiceAccount with permission
+## to list pods and get replicasets / statefulsets in the release namespace.
+## Setting rbac.create creates a Role/RoleBinding granting those permissions to
+## the chart's ServiceAccount (see serviceAccount below).
+rbac:
+  create: false
+
 ## Optionally, set a different service account for the 'app' pods. Setting
 ## this is not required for normal 'app' operation; the `default` SA is
 ## sufficient. It is available in case you need to grant the pods additional
-## permissions via SA. Note that the chart does not create the SA, so you should
-## create it on your own.
-# serviceAccount:
-#   name: default
+## permissions via SA (e.g. for Kubernetes peer discovery, see rbac above).
+## If `create` is true, a ServiceAccount named after the release is created;
+## set `name` to use an existing ServiceAccount instead.
+serviceAccount:
+  create: false
+  # name: default
 
 podDisruptionBudget:
   enabled: true
