@@ -112,6 +112,9 @@ The following table lists the configurable parameters of the BuildBuddy Open Sou
 | `redis.enabled`                      | Enables deployment of a redis as a caching layer for smaller artifacts                                                                                                                                                                                                                                                      | `false`                                                                                                                              |
 | `redis.sharded`                      | If `true`, deploys the bundled Redis chart as a sharded StatefulSet and configures BuildBuddy with `app.default_sharded_redis.shards`                                                                                                                                                                                       | `false`                                                                                                                              |
 | `redis.replicas`                     | The number of Redis shards to run when `redis.sharded` is `true`                                                                                                                                                                                                                                                            | `3`                                                                                                                                  |
+| `rbac.create`                        | Create the Role/RoleBinding used for Kubernetes peer discovery of distributed cache peers                                                                                                                                                                                                                                   | `false`                                                                                                                              |
+| `serviceAccount.create`              | Create a ServiceAccount for the app pods                                                                                                                                                                                                                                                                                    | `false`                                                                                                                              |
+| `serviceAccount.name`                | Use an existing ServiceAccount for the app pods (or override the name of the created one)                                                                                                                                                                                                                                   | `nil`                                                                                                                                |
 | `extraPodAnnotations`                | Extra pod annotations to be used in the deployments                                                                                                                                                                                                                                                                         | `[]`                                                                                                                                 |
 | `extraPodLabels`                     | Extra pod labels to be used in the deployments                                                                                                                                                                                                                                                                              | `[]`                                                                                                                                 |
 | `extraPodSpec`                     | Extra pod spec to be used in the deployments                                                                                                                                                                                                                                                                              | `[]`                                                                                                                                 |
@@ -193,6 +196,38 @@ config:
   ssl:
     enable_ssl: true
 ```
+
+### Example distributed cache with Kubernetes peer discovery
+
+When the distributed cache is enabled, app replicas shard cache data among
+themselves. With `kubernetes_discovery`, peers are discovered via the
+Kubernetes API instead of Redis. The chart creates a `ServiceAccount`, `Role`,
+and `RoleBinding` granting the minimum permissions needed (`get/list/watch
+pods`, `get replicasets/statefulsets` in the release namespace).
+
+```yaml
+replicas: 3
+
+distributed:
+  enabled: true
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+
+config:
+  cache:
+    distributed_cache:
+      listen_addr: "0.0.0.0:5151"
+      replication_factor: 2
+      kubernetes_discovery: true
+```
+
+If you prefer to manage RBAC yourself, leave `rbac.create` and
+`serviceAccount.create` set to `false`, and reference your existing
+ServiceAccount with `serviceAccount.name`.
 
 ## Example with auth (required for enterprise features)
 
