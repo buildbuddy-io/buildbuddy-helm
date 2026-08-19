@@ -123,6 +123,7 @@ podDisruptionBudget:
 config:
   executor:
     # app_target: "grpcs://your.buildbuddy.install:443" # auto populated if deploying via buildbuddy-enterprise chart
+    metadata_directory: "/buildbuddy/metadata/"
     root_directory: "/buildbuddy/remotebuilds/"
     local_cache_directory: "/buildbuddy/filecache/"
     local_cache_size_bytes: 100000000000  # 100GB
@@ -164,8 +165,26 @@ extraInitContainers: []
 extraContainers: []
 
 ## Path on the node to mount 'executor-data' volume.
-## If not set, 'executor-data' will use emptyDir.
+## If not set, 'executor-data' will use emptyDir. Setting this also adds
+## required pod anti-affinity so at most one executor from this release can run
+## on each Kubernetes node.
 # executorDataVolumeHostPath: ""
+
+## Kubernetes VolumeSource for executor metadata, mounted at
+## /buildbuddy/metadata. The executor stores its generated host_id here.
+##
+## The default (null) uses a release-specific node hostPath under
+## /var/lib/buildbuddy/executor-metadata. When executorDataVolumeHostPath is
+## set, the default instead uses its existing metadata subdirectory to preserve
+## the stored host ID across upgrades.
+##
+## A hostPath metadata source automatically adds required pod anti-affinity so
+## at most one executor from this release can run on each Kubernetes node.
+## The default replicas therefore require the same number of schedulable nodes.
+## Custom non-hostPath sources must be writable and provide replica-exclusive
+## storage, or be used with a single replica. Set emptyDir: {} to opt out of
+## pod-replacement persistence and the automatic anti-affinity.
+executorMetadataVolume: null
 
 ## Path on the node to mount Podman 'containers-lib' volume,
 ## which is mounted to /var/lib/containers inside the Executor pod.

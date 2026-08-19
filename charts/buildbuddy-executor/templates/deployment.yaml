@@ -1,3 +1,25 @@
+{{- $metadataVolume := .Values.executorMetadataVolume -}}
+{{- $metadataUsesHostPath := or (not $metadataVolume) (hasKey $metadataVolume "hostPath") -}}
+{{- $usesNodeHostPath := or $metadataUsesHostPath .Values.executorDataVolumeHostPath -}}
+{{- $strategy := deepCopy .Values.strategy -}}
+{{- if and $usesNodeHostPath (eq (get $strategy "type") "RollingUpdate") -}}
+{{- $rollingUpdate := deepCopy (default (dict) (get $strategy "rollingUpdate")) -}}
+{{- $_ := set $rollingUpdate "maxSurge" 0 -}}
+{{- $maxUnavailable := toString (get $rollingUpdate "maxUnavailable") -}}
+{{- if or (not (hasKey $rollingUpdate "maxUnavailable")) (eq $maxUnavailable "0") (eq $maxUnavailable "0%") -}}
+{{- $_ := set $rollingUpdate "maxUnavailable" 1 -}}
+{{- end -}}
+{{- $_ := set $strategy "rollingUpdate" $rollingUpdate -}}
+{{- end -}}
+{{- $affinity := deepCopy (default (dict) .Values.affinity) -}}
+{{- if $usesNodeHostPath -}}
+{{- $podAntiAffinity := deepCopy (default (dict) (get $affinity "podAntiAffinity")) -}}
+{{- $required := default (list) (get $podAntiAffinity "requiredDuringSchedulingIgnoredDuringExecution") -}}
+{{- $selectorLabels := dict "app.kubernetes.io/name" (include "buildbuddy.name" .) "app.kubernetes.io/instance" .Release.Name -}}
+{{- $term := dict "labelSelector" (dict "matchLabels" $selectorLabels) "topologyKey" "kubernetes.io/hostname" -}}
+{{- $_ := set $podAntiAffinity "requiredDuringSchedulingIgnoredDuringExecution" (append $required $term) -}}
+{{- $_ := set $affinity "podAntiAffinity" $podAntiAffinity -}}
+{{- end -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,7 +37,7 @@ spec:
   replicas: {{ .Values.replicas | default 1 }}
   {{- end }}
   strategy:
-    {{- .Values.strategy | toYaml | nindent 4 }}
+    {{- $strategy | toYaml | nindent 4 }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
@@ -49,9 +71,9 @@ spec:
       securityContext:
       {{- .Values.securityContext | toYaml | nindent 8 }}
       {{- end }}
-      {{- if .Values.affinity}}
+      {{- if $affinity }}
       affinity:
-        {{- toYaml .Values.affinity | nindent 8 }}
+        {{- toYaml $affinity | nindent 8 }}
       {{- end }}
       {{- if .Values.nodeSelector}}
       nodeSelector:
@@ -107,10 +129,18 @@ spec:
             {{- .Values.resources | toYaml | nindent 12 }}
           {{- end }}
           env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             - name: MY_HOSTNAME
               valueFrom:
                 fieldRef:
-                  fieldPath: status.podIP
+                  fieldPath: spec.nodeName
+            - name: MY_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
             - name: K8S_POD_UID
               valueFrom:
                 fieldRef:
@@ -170,6 +200,8 @@ spec:
               name: user-config-buildbuddy
             - mountPath: /buildbuddy/
               name: executor-data
+            - mountPath: /buildbuddy/metadata/
+              name: executor-metadata
             - mountPath: /config.yaml
               name: config
               subPath: config.yaml
@@ -206,6 +238,18 @@ spec:
             type: DirectoryOrCreate
           {{- else }}
           emptyDir: {}
+          {{- end }}
+        - name: executor-metadata
+          {{- if $metadataVolume }}
+          {{- $metadataVolume | toYaml | nindent 10 }}
+          {{- else }}
+          hostPath:
+            {{- if .Values.executorDataVolumeHostPath }}
+            path: {{ printf "%s/metadata" (trimSuffix "/" .Values.executorDataVolumeHostPath) | quote }}
+            {{- else }}
+            path: {{ printf "/var/lib/buildbuddy/executor-metadata/%s/%s" .Release.Namespace (include "buildbuddy.fullname" .) | quote }}
+            {{- end }}
+            type: DirectoryOrCreate
           {{- end }}
         - name: config
           secret:
