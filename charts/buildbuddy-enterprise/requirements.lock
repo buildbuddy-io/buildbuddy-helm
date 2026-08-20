@@ -13,7 +13,7 @@ dependencies:
   version: v1.6.1
 - name: buildbuddy-executor
   repository: https://helm.buildbuddy.io
-  version: 0.0.460
+  version: 0.0.461
 - name: metrics-server
   repository: https://kubernetes-sigs.github.io/metrics-server/
   version: 3.11.0
@@ -29,5 +29,5 @@ dependencies:
 - name: clickhouse
   repository: https://charts.bitnami.com/bitnami
   version: 9.4.4
-digest: sha256:b06864e5401f0db5e603968e8f97f83e1c817741eb62094c1a2540739b7a47bb
-generated: "2026-08-18T20:25:00.442182928Z"
+digest: sha256:947f2a8f12259b94b6d7839e16edd258257c62e7e4233b9f7ecd506922e79ea1
+generated: "2026-08-20T22:56:54.569614886Z"
