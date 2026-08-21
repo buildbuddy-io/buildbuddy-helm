@@ -91,6 +91,8 @@ The following table lists the configurable parameters of the BuildBuddy Open Sou
 | `extraInitContainers`         | Additional init containers                                                                                                                                                                                                                                                                                                                        | `[]`                                                                                                                               |
 | `extraContainers`             | Additional containers                                                                                                                                                                                                                                                                                                                             | `[]`                                                                                                                               |
 | `customExecutorCommand`       | Custom command for running the executor                                                                                                                                                                                                                                                                                                           | `null`                                                                                                                             |
+| `executorDataVolumeHostPath`  | Optional node hostPath for the executor cache and build-data volume mounted at `/buildbuddy`. Enabling it adds required one-executor-per-node anti-affinity.                                                                                                                                                                                       | `null` (`emptyDir`)                                                                                                                 |
+| `executorMetadataVolume`      | Kubernetes VolumeSource for generated executor host-ID metadata. The default is a release-specific node hostPath and adds required one-executor-per-node anti-affinity.                                                                                                                                                                            | `null` (managed node `hostPath`)                                                                                                    |
 | `priorityClassName`           | Optional Kubernetes priority class name assigned to executor pods                                                                                                                                                                                                                                                                                 | `null`                                                                                                                             |
 | `dnsConfig`                   | Pod DNS configuration (e.g. `options.ndots`, `searches`, `nameservers`)                                                                                                                                                                                                                                                                             | `null`                                                                                                                             |
 | `dnsPolicy`                   | Pod DNS policy (`ClusterFirst`, `Default`, `None`, etc.)                                                                                                                                                                                                                                                                                          | `null`                                                                                                                             |
@@ -125,6 +127,52 @@ config:
     app_target: "grpcs://remote.buildbuddy.io:443"
     local_cache_size_bytes: 50000000000 # 50GB
     api_key: "YOUR_EXECUTOR_ENABLED_API_KEY"
+```
+
+### Executor identity and metadata persistence
+
+Executor registrations have distinct host, pod, and process identities:
+
+- The executor generates a random host ID and stores it in
+  `/buildbuddy/metadata/host_id`. BuildBuddy uses this ID for cache affinity.
+- `MY_HOSTNAME` and `MY_NODE_NAME` contain the Kubernetes node name. The
+  scheduler registration log correlates this hostname with the host ID and
+  executor ID.
+- `MY_POD_NAME` contains the Kubernetes pod name for monitoring and log
+  correlation.
+- The executor ID remains a random UUID generated on every process start, so a
+  container restart in the same pod creates a distinct executor registration.
+
+By default, `executorMetadataVolume` mounts a release-specific node `hostPath`
+at `/buildbuddy/metadata`. A replacement pod on the same node reuses that
+node's generated host ID. A pod scheduled on another node uses the ID already
+stored on that node, or generates a new one. Replacing or deleting the node
+also removes this identity unless the host path is retained outside the node.
+
+The metadata volume is separate from `executor-data`, which remains an
+`emptyDir` by default. This avoids making the executor cache and build data
+node-persistent merely to preserve the host ID. If the legacy
+`executorDataVolumeHostPath` is configured, the metadata volume defaults to
+its existing `metadata` subdirectory so upgrades keep the stored host ID.
+
+Multiple executor processes must not use the same metadata directory or host
+ID. Whenever the effective metadata volume or `executor-data` is a node
+`hostPath`, the chart adds required pod anti-affinity on
+`kubernetes.io/hostname`, allowing at most one executor pod from the release
+on each node. Rolling updates use zero surge and replace one executor at a time
+by default so the new pod can schedule after the old pod leaves its node. An
+explicit nonzero `strategy.rollingUpdate.maxUnavailable` is preserved. The
+default three replicas therefore require three eligible Kubernetes nodes;
+otherwise some executor pods remain pending.
+
+Set `executorMetadataVolume` to any Kubernetes VolumeSource to customize the
+storage. A custom source must be writable and exclusive to one replica; a
+shared PVC is not safe for multiple executor processes. For ephemeral per-pod
+identity and no automatic one-per-node constraint, use:
+
+```yaml
+executorMetadataVolume:
+  emptyDir: {}
 ```
 
 ### Example deploy a cache proxy with the executors
