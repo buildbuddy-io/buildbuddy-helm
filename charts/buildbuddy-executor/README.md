@@ -127,6 +127,27 @@ config:
     api_key: "YOUR_EXECUTOR_ENABLED_API_KEY"
 ```
 
+### Example Firecracker executor configuration
+
+[`values-firecracker.yaml`](values-firecracker.yaml) configures a
+three-replica, Firecracker-only executor deployment with local snapshot
+sharing. Before installing it, provision at least three Linux nodes that expose
+`/dev/kvm`, label each node, verify the configured path is backed by its local
+SSD, and replace the API key placeholder with an executor-enabled API key.
+Download the values file before installing the chart:
+
+```bash
+kubectl label node <node-name> buildbuddy.io/kvm=true
+curl --fail --location \
+  --output values-firecracker.yaml \
+  https://raw.githubusercontent.com/buildbuddy-io/buildbuddy-helm/master/charts/buildbuddy-executor/values-firecracker.yaml
+helm install my-release buildbuddy/buildbuddy-executor \
+  --values ./values-firecracker.yaml
+```
+
+Review the example's CPU, memory, node-local storage, task IP range, and local
+cache sizes for your executor nodes and network before deploying it.
+
 ### Example deploy a cache proxy with the executors
 
 Enable the bundled cache-proxy chart to automatically point the executors at

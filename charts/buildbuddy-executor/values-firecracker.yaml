@@ -1,0 +1,90 @@
+# Example values for running a Firecracker-only BuildBuddy Executor deployment.
+#
+# The Kubernetes nodes selected for this deployment must run Linux, support
+# hardware virtualization (or nested virtualization), and expose /dev/kvm.
+# Each replica requires a separate labeled node with local SSD storage. The
+# 1.15TB cache size below assumes at least 1.6TB of usable local SSD and leaves
+# headroom for workspaces, snapshots, and filesystem overhead. Adjust it for
+# the actual usable capacity, and verify the configured path is backed by the
+# mounted SSD before installing.
+
+replicas: 3
+
+# Label each compatible node before installing, for example:
+# kubectl label node <node-name> buildbuddy.io/kvm=true
+nodeSelector:
+  kubernetes.io/os: linux
+  buildbuddy.io/kvm: "true"
+
+# This label is selected by the required pod anti-affinity below.
+extraPodLabels:
+  buildbuddy.io/firecracker-executor: "true"
+
+# Keep executors on separate nodes so that they do not share a node-local
+# executor data directory or contend for the same KVM and network resources.
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            buildbuddy.io/firecracker-executor: "true"
+        topologyKey: kubernetes.io/hostname
+
+# With one executor per node, allow an old pod to stop before its replacement
+# is scheduled so that three-replica rolling updates cannot deadlock.
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 0
+    maxUnavailable: 1
+
+resources:
+  requests:
+    cpu: "21"
+    memory: 78Gi
+  limits:
+    cpu: "21"
+    memory: 78Gi
+
+# Store executor data on node-local SSD. Verify this path is backed by the SSD
+# on every selected executor node before installing.
+executorDataVolumeHostPath: "/mnt/disks/local/0/buildbuddy"
+
+config:
+  executor:
+    app_target: "grpcs://remote.buildbuddy.io:443"
+    api_key: "YOUR_EXECUTOR_ENABLED_API_KEY"
+
+    # This example enables only Firecracker. To run a mixed OCI and Firecracker
+    # deployment, set enable_oci to true and select Firecracker per action with
+    # the execution property workload-isolation-type=firecracker.
+    enable_oci: false
+    enable_firecracker: true
+
+    # Bound the file cache so workspaces, snapshots, and filesystem overhead
+    # retain node-local SSD headroom. Adjust this for the actual usable capacity.
+    local_cache_size_bytes: 1_150_000_000_000 # 1.15TB
+
+    # Firecracker allocates guest networks from this IPv4 /16. Replace this if
+    # it overlaps any node, pod, service, VPC, VPN, or corporate network.
+    task_ip_range: "192.168.0.0/16"
+
+    # Reserve memory for mmap-backed Firecracker snapshot files. This is
+    # subtracted from schedulable task memory.
+    mmap_memory_bytes: 10_000_000_000 # 10GB
+
+    # Remote snapshot sharing additionally allows executors to exchange
+    # snapshots through the remote cache, at the cost of extra cache usage.
+    # enable_remote_snapshot_sharing: true
+
+# The executor chart automatically runs the container as privileged when
+# Firecracker is enabled. Mount the host's KVM device into the pod as well.
+extraVolumes:
+  - name: dev-kvm
+    hostPath:
+      path: /dev/kvm
+      type: CharDevice
+
+extraVolumeMounts:
+  - name: dev-kvm
+    mountPath: /dev/kvm
