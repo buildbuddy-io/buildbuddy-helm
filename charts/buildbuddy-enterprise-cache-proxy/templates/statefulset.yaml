@@ -188,6 +188,13 @@ spec:
         {{- .Values.extraVolumes | toYaml | nindent 8 }}
         {{- end }}
   {{- if .Values.persistence.enabled }}
+  {{- /*
+    Kubernetes forbids updating volumeClaimTemplates on an existing StatefulSet,
+    so everything below is frozen once a release is installed and any change
+    here makes `helm upgrade` fail. Keep this block free of values that move on
+    their own -- in particular do NOT add the `helm.sh/chart` label, which
+    carries the chart version and would break upgrades on every version bump.
+  */}}
   volumeClaimTemplates:
     - metadata:
         name: cache-proxy-data
@@ -195,7 +202,6 @@ spec:
           app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
           app.kubernetes.io/instance: {{ .Release.Name }}
           app.kubernetes.io/managed-by: {{ .Release.Service }}
-          helm.sh/chart: {{ include "buildbuddy.chart" . }}
         {{- if .Values.persistence.annotations }}
         annotations:
           {{- .Values.persistence.annotations | toYaml | nindent 10 }}

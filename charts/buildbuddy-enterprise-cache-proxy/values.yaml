@@ -168,6 +168,12 @@ extraContainers: []
 ## Note: PVCs created from a volumeClaimTemplate are NOT deleted when the
 ## release is uninstalled or when replicas are scaled down; delete them by hand
 ## if you no longer need the data.
+##
+## Note: Kubernetes does not allow a StatefulSet's volumeClaimTemplates to be
+## changed after creation, so the settings below are effectively fixed once
+## installed -- changing any of them (including toggling `enabled`) makes
+## `helm upgrade` fail until the StatefulSet is deleted with
+## `--cascade=orphan` and recreated. The PVCs survive that, so no data is lost.
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
 persistence:
   enabled: false
@@ -175,8 +181,12 @@ persistence:
   ## `config.cache.max_size_bytes`.
   size: 100Gi
   accessMode: ReadWriteOnce
-  ## If unset, the cluster's default StorageClass is used. Set to "-" to
-  ## explicitly disable dynamic provisioning.
+  ## If unset, the cluster's default StorageClass is used -- which is usually
+  ## network-attached storage. Prefer a local SSD class: this is a cache, so
+  ## throughput and latency matter more than durability, and
+  ## `config.cache.distributed_cache.replication_factor` is a cheaper way to
+  ## survive losing a replica. Set to "-" to explicitly disable dynamic
+  ## provisioning.
   # storageClass: ""
   ## Annotations added to each provisioned PVC.
   # annotations: {}
