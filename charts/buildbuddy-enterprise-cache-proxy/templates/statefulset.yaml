@@ -1,3 +1,6 @@
+{{- if and .Values.persistence.enabled .Values.cacheProxyDataVolumeHostPath }}
+{{- fail "persistence.enabled and cacheProxyDataVolumeHostPath are mutually exclusive: the cache-proxy-data volume can be backed by a PersistentVolumeClaim or a node hostPath, but not both." }}
+{{- end }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -168,6 +171,7 @@ spec:
             {{- .Values.containerSecurityContext | toYaml | nindent 12 }}
           {{- end }}
       volumes:
+        {{- if not .Values.persistence.enabled }}
         - name: cache-proxy-data
           {{- if .Values.cacheProxyDataVolumeHostPath }}
           hostPath:
@@ -176,9 +180,47 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        {{- end }}
         - name: config
           secret:
             secretName: {{ include "buildbuddy.fullname" . }}-config
         {{- if .Values.extraVolumes }}
         {{- .Values.extraVolumes | toYaml | nindent 8 }}
         {{- end }}
+  {{- if .Values.persistence.enabled }}
+  {{- /*
+    Kubernetes forbids updating volumeClaimTemplates on an existing StatefulSet,
+    so everything below is frozen once a release is installed and any change
+    here makes `helm upgrade` fail. Keep this block free of values that move on
+    their own -- in particular do NOT add the `helm.sh/chart` label, which
+    carries the chart version and would break upgrades on every version bump.
+  */}}
+  volumeClaimTemplates:
+    - metadata:
+        name: cache-proxy-data
+        labels:
+          app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
+          app.kubernetes.io/instance: {{ .Release.Name }}
+          app.kubernetes.io/managed-by: {{ .Release.Service }}
+        {{- if .Values.persistence.annotations }}
+        annotations:
+          {{- .Values.persistence.annotations | toYaml | nindent 10 }}
+        {{- end }}
+      spec:
+        accessModes:
+          - {{ .Values.persistence.accessMode | default "ReadWriteOnce" | quote }}
+        resources:
+          requests:
+            storage: {{ required "persistence.size is required when persistence.enabled is true" .Values.persistence.size | quote }}
+        {{- if .Values.persistence.storageClass }}
+        {{- if eq "-" .Values.persistence.storageClass }}
+        storageClassName: ""
+        {{- else }}
+        storageClassName: {{ .Values.persistence.storageClass | quote }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.persistence.selector }}
+        selector:
+          {{- .Values.persistence.selector | toYaml | nindent 10 }}
+        {{- end }}
+  {{- end }}

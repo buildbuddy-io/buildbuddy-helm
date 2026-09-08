@@ -60,6 +60,9 @@ Some common ones:
 | `rbac.create`                                 | Create the Role/RoleBinding used for Kubernetes peer discovery       | `true`                                                           |
 | `serviceAccount.create`                       | Create the ServiceAccount used by cache-proxy pods                   | `true`                                                           |
 | `podDisruptionBudget.enabled`                 | Enable a PodDisruptionBudget                                         | `true`                                                           |
+| `persistence.enabled`                         | Back the cache-proxy data volume with a per-replica PVC              | `false`                                                          |
+| `persistence.size`                            | Size of each cache-proxy PVC                                         | `100Gi`                                                          |
+| `persistence.storageClass`                    | StorageClass for the cache-proxy PVCs (cluster default if unset)     | `nil`                                                            |
 
 Individual values can be overridden at install time with `--set`:
 
@@ -79,3 +82,44 @@ discovery is done via the Kubernetes API. The chart creates a `ServiceAccount`,
 If you prefer to manage RBAC yourself, set `rbac.create=false` and
 `serviceAccount.create=false`, and reference your existing ServiceAccount with
 `serviceAccount.name`.
+
+### Persistent storage
+
+By default the cache proxy writes its on-disk cache to an `emptyDir`, so the
+cache is cold again every time a pod restarts. To keep the cache across
+restarts and rescheduling, enable persistence:
+
+```bash
+helm install my-release buildbuddy/buildbuddy-enterprise-cache-proxy \
+  --set persistence.enabled=true \
+  --set persistence.size=250Gi \
+  --set persistence.storageClass=ssd
+```
+
+This adds a `volumeClaimTemplate` to the StatefulSet, so each replica gets its
+own PersistentVolumeClaim mounted at `/buildbuddy/` — the directory holding
+`config.cache.pebble.root_directory`. Size the volume comfortably above
+`config.cache.max_size_bytes`.
+
+Prefer a local SSD StorageClass over a network-attached one for the better
+performance charateristics of the former. Data lost due to node failures can be
+repopulated from the backing cache. If you want the proxy itself to survive
+losing a replica (during deployments, for example), set
+`config.cache.distributed_cache.replication_factor` so blobs are held on more
+than one pod. This is cheaper and faster than paying for replication in the
+storage layer.
+
+Pick these settings before you install. Kubernetes does not allow a
+StatefulSet's `volumeClaimTemplates` to change after creation, so later edits to
+any `persistence.*` value — including turning it back off — make `helm upgrade`
+fail with `updates to statefulset spec for fields other than ... are forbidden`.
+To change them, delete the StatefulSet with `kubectl delete statefulset
+<name> --cascade=orphan` and re-run the upgrade; the pods and PVCs will survive,
+so no cache data is lost.
+
+Kubernetes does not garbage-collect PVCs created from a `volumeClaimTemplate`:
+they outlive `helm uninstall` and scale-downs, and are reattached if a replica
+comes back. Delete them by hand when you no longer need the data.
+
+As an alternative, `cacheProxyDataVolumeHostPath` mounts a path on the node
+(useful for local SSDs). The two options are mutually exclusive.
