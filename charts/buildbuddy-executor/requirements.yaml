@@ -1,7 +1,7 @@
 dependencies:
   - name: buildbuddy-enterprise-cache-proxy
     alias: proxy
-    version: 0.0.26
+    version: 0.0.41
     repository: https://helm.buildbuddy.io
     condition: proxy.enabled
   - name: metrics-server
