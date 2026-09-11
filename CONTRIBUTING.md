@@ -25,3 +25,21 @@ Thank you for your interest in contributing! Please see the [BuildBuddy Contribu
 * Any change to a chart requires a version bump following [semver](https://semver.org/) principles
 
 Once changes have been merged, the release job will automatically run to package and release changed charts.
+
+### Checking release versions
+
+The release workflow runs a read-only validator using Bazelisk. Its Bazel target
+fetches a pinned `mikefarah/yq` v4 binary, so `yq` does not need to be installed
+on the host. To run it locally:
+
+```bash
+bazelisk run //scripts:validate_release_versions
+```
+
+The validator checks the release-critical relationships that have broken before:
+chart `appVersion` must match the default image tag, and each managed dependency
+must match its lock file and checked-in package. The enterprise package is also
+checked recursively through its executor and cache-proxy dependencies.
+
+When changing a dependency, run `helm dependency update <chart-directory>` and
+commit the requirement, lock file, and vendored chart together.

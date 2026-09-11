@@ -1,0 +1,7 @@
+module(name = "buildbuddy_helm")
+
+bazel_dep(name = "rules_shell", version = "0.8.0")
+bazel_dep(name = "yq.bzl", version = "0.4.0")
+
+yq = use_extension("@yq.bzl//yq:extensions.bzl", "yq")
+use_repo(yq, "yq")

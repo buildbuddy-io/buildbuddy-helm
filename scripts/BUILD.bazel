@@ -1,0 +1,8 @@
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+sh_binary(
+    name = "validate_release_versions",
+    srcs = ["validate_release_versions.sh"],
+    data = ["@yq"],
+    env = {"YQ": "$(rootpath @yq)"},
+)
