@@ -57,9 +57,22 @@ data:
   {{- $_ := set $c.cache "redis_target" "redis:6379" }}
   {{- end }}
 
-  {{- if .Values.ingress.controller.extraVolumeMounts }}
+  {{- if .Values.certmanager.enabled }}
+  {{- range .Values.ingress.controller.extraVolumeMounts }}
+  {{- if eq (trimSuffix "/" .mountPath) "/client-ca" }}
   {{- $_ := set $c.ssl "client_ca_cert_file" "/client-ca/tls.crt" }}
   {{- $_ := set $c.ssl "client_ca_key_file" "/client-ca/tls.key" }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+
+  {{- if .Values.internalTLS.enabled }}
+  {{- $_ := set $c.ssl "enable_ssl" true }}
+  {{- $_ := set $c.ssl "cert_file" "/internal-tls/tls.crt" }}
+  {{- $_ := set $c.ssl "key_file" "/internal-tls/tls.key" }}
+  {{- $_ := set $c "ssl_port" (.Values.service.internalHTTPSPort | int) }}
+  {{- $_ := set $c "grpcs_port" (.Values.service.internalGRPCSPort | int) }}
+  {{- $_ := set $c.remote_execution "scheduler_rpc_scheme" .Values.internalTLS.schedulerRPCScheme }}
   {{- end }}
 
   {{- /* Render the processed config as an encoded YAML string */}}

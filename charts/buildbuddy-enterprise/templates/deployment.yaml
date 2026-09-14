@@ -1,3 +1,11 @@
+{{- $internalCAMounts := list }}
+{{- if .Values.internalTLS.enabled }}
+{{- range .Values.ingress.controller.extraVolumeMounts }}
+{{- if eq (trimSuffix "/" .mountPath) "/internal-ca" }}
+{{- $internalCAMounts = append $internalCAMounts .name }}
+{{- end }}
+{{- end }}
+{{- end }}
 apiVersion: apps/v1
 {{ if .Values.distributed.enabled }}
 kind: StatefulSet
@@ -119,6 +127,10 @@ spec:
               value: "$(MY_HOSTNAME)"
             - name: MALLOC_ARENA_MAX
               value: "8"
+          {{- if .Values.internalTLS.enabled }}
+            - name: SSL_CERT_DIR
+              value: {{ printf "%s:/internal-ca" .Values.internalTLS.systemCertDirectories | quote }}
+          {{- end }}
           {{- if .Values.extraEnvVars }}
             {{- .Values.extraEnvVars | toYaml | nindent 12 }}
           {{- end }}
@@ -172,11 +184,23 @@ spec:
             - mountPath: /config.yaml
               name: config
               subPath: config.yaml
+            {{- if .Values.internalTLS.enabled }}
+            - name: internal-tls
+              mountPath: /internal-tls
+              readOnly: true
+            - name: internal-ca
+              mountPath: /internal-ca
+              readOnly: true
+            {{- end }}
             {{- if .Values.extraVolumeMounts -}}
             {{ .Values.extraVolumeMounts | toYaml | nindent 12 }}
             {{- end }}
-            {{- if and .Values.certmanager.enabled .Values.ingress.controller.extraVolumeMounts -}}
-            {{ .Values.ingress.controller.extraVolumeMounts | toYaml | nindent 12 }}
+            {{- if .Values.certmanager.enabled }}
+            {{- range .Values.ingress.controller.extraVolumeMounts }}
+            {{- if not (has .name $internalCAMounts) }}
+            {{ list . | toYaml | nindent 12 }}
+            {{- end }}
+            {{- end }}
             {{- end }}
       volumes:
         - name: config
@@ -191,11 +215,31 @@ spec:
           emptyDir: {}
           {{ end }}
         {{ end }}
+        {{- if .Values.internalTLS.enabled }}
+        - name: internal-tls
+          secret:
+            secretName: {{ .Values.internalTLS.existingSecret | quote }}
+            items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+        - name: internal-ca
+          secret:
+            secretName: {{ .Values.internalTLS.caSecret | quote }}
+            items:
+              - key: ca.crt
+                path: ca.crt
+        {{- end }}
         {{- if .Values.extraVolumes -}}
         {{ .Values.extraVolumes | toYaml | nindent 8 }}
         {{- end }}
-        {{- if and .Values.certmanager.enabled .Values.ingress.controller.extraVolumes -}}
-        {{ .Values.ingress.controller.extraVolumes | toYaml | nindent 8 }}
+        {{- if .Values.certmanager.enabled }}
+        {{- range .Values.ingress.controller.extraVolumes }}
+        {{- if not (has .name $internalCAMounts) }}
+        {{ list . | toYaml | nindent 8 }}
+        {{- end }}
+        {{- end }}
         {{- end }}
       {{- if .Values.extraPodSpec }}
       {{- .Values.extraPodSpec | toYaml | nindent 6 }}

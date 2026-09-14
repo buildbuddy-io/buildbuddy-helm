@@ -44,7 +44,7 @@ resources:
     memory: "4Gi"
 
 ## Arguments to pass directly to the buildbuddy binary
-#args:
+# args:
 #  - "--auto_migrate_db=false"
 
 # Enables distributed disk caching configuration.
@@ -78,6 +78,23 @@ disk:
     # storageClass:
     accessMode: ReadWriteOnce
   # existingClaim: ""
+
+## Separate internal app certificates (see README for prerequisites and rollout).
+## Requires an app image with scheduler endpoint advertisement support.
+internalTLS:
+  enabled: false
+  # Existing Secret containing tls.crt and tls.key; never a CA signing key.
+  existingSecret: ""
+  # Stage with grpc until all app pods have TLS listeners and CA trust.
+  schedulerRPCScheme: grpcs
+  # Stage with false until every app pod serves HTTPS/GRPCS.
+  ingressTLS: true
+  # Separately managed Secret containing ca.crt (PEM trust bundle, no key).
+  caSecret: ""
+  # Must match a DNS SAN on the app certificate (normally the Service FQDN).
+  serverName: ""
+  # Linux Go trust directories retained alongside the mounted internal CA.
+  systemCertDirectories: "/etc/ssl/certs:/etc/pki/tls/certs"
 
 ## Exposes the BuildBuddy service via a LoadBalancer on the given ports.
 service:
@@ -127,7 +144,7 @@ ingress:
   ## To enable SSL, either enable certmanager below or specify a
   ## clusterIssuer that's already installed in the cluster.
   sslEnabled: false
-  #clusterIssuer: "letsencrypt-prod"
+  # clusterIssuer: "letsencrypt-prod"
 
   httpHost: buildbuddy.example.com
   grpcHost: buildbuddy-grpc.example.com
@@ -142,7 +159,7 @@ ingress:
           secretName: buildbuddy-client-ca
     extraVolumeMounts:
       - name: client-ca-volume
-        mountPath: /client-ca/ # Client CA must be mounted in the directory /client-ca/
+        mountPath: /client-ca/  # Client CA must be mounted in the directory /client-ca/
         readOnly: true
     # This is needed for nginx.ingress.kubernetes.io/configuration-snippet to work
     allowSnippetAnnotations: true
@@ -300,8 +317,8 @@ prometheus-adapter:
       - seriesQuery: 'buildbuddy_remote_execution_queue_length{pod!="",namespace!=""}'
         resources:
           overrides:
-            namespace: { resource: "namespace" }
-            pod: { resource: "pod" }
+            namespace: {resource: "namespace"}
+            pod: {resource: "pod"}
         metricsQuery: sum (<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
         name:
           matches: "^(.*)$"
@@ -356,24 +373,24 @@ config:
   olap_database:
     ## Use an external database connection string here, or deploy clickhouse using this chart with clickhouse.enabled
     ##   "clickhouse://<USERNAME>:<PASSWORD>@(<HOST>:9000)/<DATABASE_NAME>"
-    data_source: "" # Either set this or clickhouse.enabled, not both!
+    data_source: ""  # Either set this or clickhouse.enabled, not both!
   database:
     ## Use an external database connection string here, or deploy mysql using this chart with mysql.enabled
     ## mysql:     "mysql://<USERNAME>:<PASSWORD>@tcp(<HOST>:3306)/<DATABASE_NAME>"
     ## sqlite:    "sqlite3:///tmp/buildbuddy-enterprise.db"
-    data_source: "" # Either set this or mysql.enabled, not both!
+    data_source: ""  # Either set this or mysql.enabled, not both!
   storage:
-    ttl_seconds: 2592000 # 30 days
+    ttl_seconds: 2592000  # 30 days
     # ttl_seconds: 0  # Do not TTL build events.
-    chunk_file_size_bytes: 3000000 # 3 MB
+    chunk_file_size_bytes: 3000000  # 3 MB
     disk:
-      root_directory: "/data/buildbuddy/blobs/" # Enabled disk.data volume above to use
+      root_directory: "/data/buildbuddy/blobs/"  # Enabled disk.data volume above to use
     # gcs:
     #   bucket: "buildbuddy_blobs"
     #   project_id: "my-gc-project"
     #   credentials_file: "my-volume/my-google-credentials.json"
   cache:
-    max_size_bytes: 10000000000 # 10 GB
+    max_size_bytes: 10000000000  # 10 GB
     pebble:
       root_directory: /data/buildbuddy/pebble-cache/
     ## Distributed cache (requires distributed.enabled above). With
@@ -386,8 +403,8 @@ config:
     #   kubernetes_discovery: true
   ssl:
     enable_ssl: false
-    client_ca_cert_file: "" # DO NOT EDIT: Automatically configured using certmanager
-    client_ca_key_file: "" # DO NOT EDIT: Automatically configured using certmanager
+    client_ca_cert_file: ""  # DO NOT EDIT: Automatically configured using certmanager
+    client_ca_key_file: ""  # DO NOT EDIT: Automatically configured using certmanager
     # use_acme: true # Use acme for letsencrypt ssl certs if you point your domains at LoadBalancer without an ingress.
     # host_whitelist: # Host whitelist to enable acme for
     #   - buildbuddy.example.com
@@ -411,8 +428,8 @@ config:
   #   client_id: MY_CLIENT_ID
   #   client_secret: MY_CLIENT_SECRET
   remote_execution:
-    enable_remote_exec: false # Set to true to enable remote build execution (RBE)
-    use_measured_task_sizes: true # Enable auto-sizing for tasks
+    enable_remote_exec: false  # Set to true to enable remote build execution (RBE)
+    use_measured_task_sizes: true  # Enable auto-sizing for tasks
 
 grafana:
   enabled: false

@@ -1,0 +1,73 @@
+{{- if .Values.internalTLS.enabled }}
+{{- if not .Values.distributed.enabled }}
+{{- fail "internalTLS requires distributed.enabled=true for resolvable pod-specific scheduler DNS identities" }}
+{{- end }}
+{{- $_ := required "internalTLS.existingSecret is required" .Values.internalTLS.existingSecret }}
+{{- $_ := required "internalTLS.caSecret is required" .Values.internalTLS.caSecret }}
+{{- if eq .Values.internalTLS.existingSecret .Values.internalTLS.caSecret }}
+{{- fail "internalTLS.caSecret must be separate from the server certificate Secret" }}
+{{- end }}
+{{- if or (not .Values.service.internalHTTPSPort) (not .Values.service.internalGRPCSPort) }}
+{{- fail "internalTLS requires service.internalHTTPSPort and service.internalGRPCSPort" }}
+{{- end }}
+{{- if .Values.config.ssl.use_acme }}
+{{- fail "internalTLS uses a supplied certificate; disable config.ssl.use_acme" }}
+{{- end }}
+{{- range .Values.extraEnvVars }}
+{{- if has .name (list "SSL_CERT_DIR" "MY_HOSTNAME" "MY_CLUSTER_HOSTNAME") }}
+{{- fail (printf "internalTLS manages %s; remove the extraEnvVars override" .name) }}
+{{- end }}
+{{- end }}
+{{- if not (has .Values.internalTLS.schedulerRPCScheme (list "grpc" "grpcs")) }}
+{{- fail "internalTLS.schedulerRPCScheme must be grpc or grpcs" }}
+{{- end }}
+{{- if and .Values.ingress.enabled .Values.internalTLS.ingressTLS }}
+{{- if eq .Values.ingress.class "alb" }}
+{{- fail "internalTLS ingress support requires ingress-nginx, not ALB" }}
+{{- end }}
+{{- if or (not .Values.service.externalHTTPSPort) (not .Values.service.externalGRPCSPort) }}
+{{- fail "internalTLS ingress requires service.externalHTTPSPort and service.externalGRPCSPort" }}
+{{- end }}
+{{- if not (regexMatch "^[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?$" .Values.internalTLS.serverName) }}
+{{- fail "internalTLS.serverName must be a DNS hostname matching the app certificate SAN" }}
+{{- end }}
+{{- range $key, $value := .Values.ingress.annotations }}
+{{- if or (has $key (list "nginx.ingress.kubernetes.io/backend-protocol" "nginx.ingress.kubernetes.io/configuration-snippet" "nginx.ingress.kubernetes.io/ssl-passthrough")) (hasPrefix "nginx.ingress.kubernetes.io/proxy-ssl-" $key) }}
+{{- fail (printf "internalTLS manages upstream TLS; remove ingress annotation %s" $key) }}
+{{- end }}
+{{- end }}
+{{- if not (eq (.Values.ingress.controller.enabled | toString) "false") }}
+{{- if not .Values.ingress.controller.allowSnippetAnnotations }}
+{{- fail "internalTLS requires ingress.controller.allowSnippetAnnotations=true" }}
+{{- end }}
+{{- if ne (index .Values.ingress.controller.config "annotations-risk-level") "Critical" }}
+{{- fail "internalTLS requires ingress.controller.config.annotations-risk-level=Critical" }}
+{{- end }}
+{{- if .Values.certmanager.enabled }}
+{{- $clientCAMounted := false }}
+{{- range .Values.ingress.controller.extraVolumeMounts }}
+{{- if eq (trimSuffix "/" .mountPath) "/client-ca" }}
+{{- $clientCAMounted = true }}
+{{- end }}
+{{- end }}
+{{- if not $clientCAMounted }}
+{{- fail "certmanager.enabled requires retaining the controller /client-ca mount alongside the internal CA mount" }}
+{{- end }}
+{{- end }}
+{{- $mounted := false }}
+{{- range .Values.ingress.controller.extraVolumes }}
+{{- if and .secret (eq .secret.secretName $.Values.internalTLS.caSecret) }}
+{{- $name := .name }}
+{{- range $.Values.ingress.controller.extraVolumeMounts }}
+{{- if and (eq .name $name) (eq .mountPath "/internal-ca") (not .subPath) }}
+{{- $mounted = true }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if not $mounted }}
+{{- fail "internalTLS requires the CA Secret mounted at /internal-ca in ingress.controller.extraVolumes and extraVolumeMounts (see README)" }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
