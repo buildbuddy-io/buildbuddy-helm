@@ -107,6 +107,7 @@ ingress:
 #
 # See https://www.buildbuddy.io/docs/config for the full list of config options.
 config:
+  file_writer_sync_on_commit: true
   cache_proxy:
     proxy_type: "customer"
     # API key the cache proxy uses to authenticate to the upstream BuildBuddy
