@@ -118,6 +118,9 @@ config:
     max_size_bytes: 10000000000 # 10 GB
     pebble:
       root_directory: /buildbuddy/pebble_disk_cache/
+      # Allow capacity-based eviction without a minimum idle age.
+      # Evicted blobs can be fetched again from the upstream cache.
+      min_eviction_age: 0h
     distributed_cache:
       listen_addr: 0.0.0.0:5151
       cluster_size: 1
