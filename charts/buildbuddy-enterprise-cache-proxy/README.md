@@ -47,22 +47,23 @@ helm delete my-release
 See [values.yaml](./values.yaml) for the full list of configurable parameters.
 Some common ones:
 
-| Parameter                                     | Description                                                          | Default                                                          |
-| --------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `image.repository`                            | Container image repository                                           | `buildbuddy.bbcr.io/public/buildbuddy-proxy-enterprise`          |
-| `image.tag`                                   | Container image tag                                                  | `enterprise-v2.310.0`                                            |
-| `replicas`                                    | Number of cache-proxy replicas                                       | `3`                                                              |
-| `cacheTarget`                                 | Upstream BuildBuddy cache the proxy sits in front of                 | `grpcs://remote.buildbuddy.io`                                   |
-| `config.auth.reparse_jwts`                    | Disable process-local JWT reparsing for remote-authenticated proxies | `false`                                                          |
-| `resources`                                   | Pod CPU/memory requests and limits                                   | `4 CPU / 16Gi`                                                   |
-| `config`                                      | The `config.yaml` contents passed to the cache proxy                 | See [values.yaml](./values.yaml)                                 |
-| `ingress.annotations`                         | Extra annotations merged into the cache-proxy gRPC Ingress           | `proxy-body-size: "0"`                                           |
-| `rbac.create`                                 | Create the Role/RoleBinding used for Kubernetes peer discovery       | `true`                                                           |
-| `serviceAccount.create`                       | Create the ServiceAccount used by cache-proxy pods                   | `true`                                                           |
-| `podDisruptionBudget.enabled`                 | Enable a PodDisruptionBudget                                         | `true`                                                           |
-| `persistence.enabled`                         | Back the cache-proxy data volume with a per-replica PVC              | `false`                                                          |
-| `persistence.size`                            | Size of each cache-proxy PVC                                         | `100Gi`                                                          |
-| `persistence.storageClass`                    | StorageClass for the cache-proxy PVCs (cluster default if unset)     | `nil`                                                            |
+| Parameter                              | Description                                                              | Default                                                 |
+| -------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------- |
+| `image.repository`                     | Container image repository                                               | `buildbuddy.bbcr.io/public/buildbuddy-proxy-enterprise` |
+| `image.tag`                            | Container image tag                                                      | `enterprise-v2.310.0`                                   |
+| `replicas`                             | Number of cache-proxy replicas                                           | `3`                                                     |
+| `cacheTarget`                          | Upstream BuildBuddy cache the proxy sits in front of                     | `grpcs://remote.buildbuddy.io`                          |
+| `config.auth.reparse_jwts`             | Disable process-local JWT reparsing for remote-authenticated proxies     | `false`                                                 |
+| `config.cache.pebble.min_eviction_age` | Minimum idle time before an entry can be evicted under capacity pressure | `0h`                                                    |
+| `resources`                            | Pod CPU/memory requests and limits                                       | `4 CPU / 16Gi`                                          |
+| `config`                               | The `config.yaml` contents passed to the cache proxy                     | See [values.yaml](./values.yaml)                        |
+| `ingress.annotations`                  | Extra annotations merged into the cache-proxy gRPC Ingress               | `proxy-body-size: "0"`                                  |
+| `rbac.create`                          | Create the Role/RoleBinding used for Kubernetes peer discovery           | `true`                                                  |
+| `serviceAccount.create`                | Create the ServiceAccount used by cache-proxy pods                       | `true`                                                  |
+| `podDisruptionBudget.enabled`          | Enable a PodDisruptionBudget                                             | `true`                                                  |
+| `persistence.enabled`                  | Back the cache-proxy data volume with a per-replica PVC                  | `false`                                                 |
+| `persistence.size`                     | Size of each cache-proxy PVC                                             | `100Gi`                                                 |
+| `persistence.storageClass`             | StorageClass for the cache-proxy PVCs (cluster default if unset)         | `nil`                                                   |
 
 Individual values can be overridden at install time with `--set`:
 
