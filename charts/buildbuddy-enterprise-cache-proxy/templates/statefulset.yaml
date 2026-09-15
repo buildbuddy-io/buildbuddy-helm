@@ -121,6 +121,8 @@ spec:
               valueFrom:
                 resourceFieldRef:
                   resource: limits.cpu
+            - name: MALLOC_ARENA_MAX
+              value: "8"
           {{- if .Values.extraEnvVars }}
             {{- .Values.extraEnvVars | toYaml | nindent 12 }}
           {{- end }}

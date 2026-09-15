@@ -117,6 +117,8 @@ spec:
           {{- end }}
             - name: MY_CLUSTER_HOSTNAME
               value: "$(MY_HOSTNAME)"
+            - name: MALLOC_ARENA_MAX
+              value: "8"
           {{- if .Values.extraEnvVars }}
             {{- .Values.extraEnvVars | toYaml | nindent 12 }}
           {{- end }}
