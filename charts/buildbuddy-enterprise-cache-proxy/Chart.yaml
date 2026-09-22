@@ -1,8 +1,8 @@
 apiVersion: v1
 description: BuildBuddy Enterprise Cache Proxy
 name: buildbuddy-enterprise-cache-proxy
-version: 0.0.45 # Chart version
-appVersion: 2.308.0 # Version of deployed cache proxy
+version: 0.0.46 # Chart version
+appVersion: 2.309.0 # Version of deployed cache proxy
 keywords:
   - buildbuddy
   - bazel
