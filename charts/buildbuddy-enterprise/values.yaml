@@ -346,7 +346,6 @@ executor:
 # Helm template value. Since it is an object, the object you provide will merge
 # with these defaults.
 config:
-  file_writer_sync_on_commit: true
   app:
     # build_buddy_url: "https://buildbuddy.example.com"
     # events_api_url: "grpcs://buildbuddy-grpc.example.com"
