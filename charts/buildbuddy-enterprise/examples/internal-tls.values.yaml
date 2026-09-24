@@ -1,0 +1,31 @@
+# Supply an image containing scheduler endpoint advertisement support first.
+# Configure your shared database and storage separately for multiple replicas.
+distributed:
+  enabled: true
+service:
+  type: ClusterIP
+internalTLS:
+  enabled: true
+  existingSecret: buildbuddy-internal-tls
+  caSecret: buildbuddy-internal-ca
+  serverName: buildbuddy-enterprise.buildbuddy.svc.cluster.local
+certmanager:
+  enabled: false
+ingress:
+  enabled: true
+  sslEnabled: true
+  httpHost: buildbuddy.example.com
+  grpcHost: buildbuddy-grpc.example.com
+  controller:
+    # Helm replaces lists. Retain any other mounts your controller requires.
+    extraVolumes:
+      - name: internal-upstream-ca
+        secret:
+          secretName: buildbuddy-internal-ca
+          items:
+            - key: ca.crt
+              path: ca.crt
+    extraVolumeMounts:
+      - name: internal-upstream-ca
+        mountPath: /internal-ca
+        readOnly: true

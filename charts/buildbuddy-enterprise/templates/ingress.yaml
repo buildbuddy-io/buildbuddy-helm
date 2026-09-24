@@ -18,11 +18,18 @@ metadata:
     {{- if lt .Capabilities.KubeVersion.Minor "18" }}
     kubernetes.io/ingress.class: {{ .Values.ingress.class }}
     {{- end }}
-    nginx.ingress.kubernetes.io/backend-protocol: "grpc"
+    nginx.ingress.kubernetes.io/backend-protocol: {{ ternary "GRPCS" "grpc" (and .Values.internalTLS.enabled .Values.internalTLS.ingressTLS) | quote }}
     nginx.ingress.kubernetes.io/configuration-snippet: |
       grpc_set_header x-ssl-cert $ssl_client_escaped_cert;
       grpc_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504 non_idempotent;
       grpc_next_upstream_tries 3;
+      {{- if (and .Values.internalTLS.enabled .Values.internalTLS.ingressTLS) }}
+      grpc_ssl_trusted_certificate /internal-ca/ca.crt;
+      grpc_ssl_verify on;
+      grpc_ssl_verify_depth 3;
+      grpc_ssl_server_name on;
+      grpc_ssl_name {{ .Values.internalTLS.serverName }};
+      {{- end }}
     {{- if .Values.certmanager.enabled }}
     nginx.ingress.kubernetes.io/server-snippet: |
       ssl_verify_client optional;
@@ -52,7 +59,7 @@ spec:
           service:
             name: {{ include "buildbuddy.name" . }}
             port:
-              name: grpc
+              name: {{ ternary "grpcs" "grpc" (and .Values.internalTLS.enabled .Values.internalTLS.ingressTLS) }}
   {{ if .Values.ingress.sslEnabled }}
   tls:
     - secretName: {{ .Values.ingress.grpcHost }}-tls
@@ -72,6 +79,15 @@ metadata:
   annotations:
     {{- if lt .Capabilities.KubeVersion.Minor "18" }}
     kubernetes.io/ingress.class: {{ .Values.ingress.class }}
+    {{- end }}
+    {{- if (and .Values.internalTLS.enabled .Values.internalTLS.ingressTLS) }}
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_ssl_trusted_certificate /internal-ca/ca.crt;
+      proxy_ssl_verify on;
+      proxy_ssl_verify_depth 3;
+      proxy_ssl_server_name on;
+      proxy_ssl_name {{ .Values.internalTLS.serverName }};
     {{- end }}
     {{- if .Values.ingress.sslEnabled }}
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -96,7 +112,7 @@ spec:
           service:
             name: {{ include "buildbuddy.name" . }}
             port:
-              name: http
+              name: {{ ternary "https" "http" (and .Values.internalTLS.enabled .Values.internalTLS.ingressTLS) }}
   {{ if .Values.ingress.sslEnabled }}
   tls:
     - secretName: {{ .Values.ingress.httpHost }}-tls

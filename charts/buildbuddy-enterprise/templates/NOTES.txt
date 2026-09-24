@@ -37,3 +37,21 @@ If you have any questions - join our Slack channel at:
     https://slack.buildbuddy.io/
 
 Happy Building!
+
+{{ if .Values.internalTLS.enabled }}
+Internal app TLS is enabled. Use an app image supporting scheduler endpoint
+advertisement, and upgrade all scheduler readers before enabling GRPCS records.
+Provision {{ .Values.internalTLS.existingSecret }} (server certificate/key) and
+{{ .Values.internalTLS.caSecret }} (ca.crt trust bundle) in {{ .Release.Namespace }}.
+The server certificate must cover each advertised pod DNS name.
+Scheduler transport advertisement is {{ .Values.internalTLS.schedulerRPCScheme }}.
+{{ if and .Values.ingress.enabled .Values.internalTLS.ingressTLS }}
+Ingress upstreams verify the internal certificate as {{ .Values.internalTLS.serverName }}.
+Ensure the ingress controller mounts the CA bundle at /internal-ca/ca.crt and
+permits configuration snippets. External TLS still uses the ingress Secrets.
+{{ end }}
+App images v2.309.0 and later reload server certificate/key files automatically
+(ssl.cert_reload_interval); older images require a rolling restart after renewal.
+Restart app pods after CA trust changes, and restart the ingress controller after
+its mounted CA changes. See the README for staged CA rotation and validation.
+{{ end }}

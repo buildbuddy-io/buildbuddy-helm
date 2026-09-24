@@ -388,3 +388,139 @@ $ helm install . \
     --set mysql.mysqlUser=sampleUser \
     --set mysql.mysqlPassword=samplePassword
 ```
+
+## Separate internal and external TLS certificates
+
+`internalTLS.enabled` configures the app's HTTPS and GRPCS listeners with an
+existing internal server certificate and advertises scheduler endpoints using
+`grpcs://`. External certificates remain on the ingress. This option requires
+an app image with scheduler endpoint advertisement support (BuildBuddy PR
+[#12574](https://github.com/buildbuddy-io/buildbuddy/pull/12574)). The default
+v2.309.0 image does not contain that support; explicitly select a supporting
+image before enabling this option. Certificate hot reload alone does not imply
+scheduler endpoint support.
+
+| Parameter | Description | Default |
+| --- | --- | --- |
+| `internalTLS.enabled` | Enable internal app TLS and scheduler GRPCS advertisement; requires `distributed.enabled` | `false` |
+| `internalTLS.existingSecret` | Existing Secret with server `tls.crt` (including intermediates) and `tls.key` | `""` |
+| `internalTLS.schedulerRPCScheme` | Scheduler transport to advertise; stage with `grpc` before switching to `grpcs` | `grpcs` |
+| `internalTLS.ingressTLS` | Use verified HTTPS/GRPCS ingress upstreams; stage with `false` until apps serve TLS | `true` |
+| `internalTLS.caSecret` | Separate existing Secret with a PEM trust bundle in `ca.crt`; no private key | `""` |
+| `internalTLS.serverName` | DNS SAN verified by ingress for both upstream protocols; required when ingress is enabled | `""` |
+| `internalTLS.systemCertDirectories` | Linux Go certificate directories retained alongside `/internal-ca` | `/etc/ssl/certs:/etc/pki/tls/certs` |
+
+Use [examples/internal-tls.values.yaml](examples/internal-tls.values.yaml) as an
+opt-in overlay. It assumes namespace `buildbuddy`, default chart naming, and an
+existing ingress-nginx controller or the chart's bundled controller. Provide
+external Secrets named `<ingress.httpHost>-tls` and `<ingress.grpcHost>-tls`, or
+use your existing cert-manager issuer for those names. TLS terminates at the
+ingress and is re-established to the app; TLS passthrough and ALB ingress are not
+supported by this option.
+
+Issue the internal server certificate with both of these DNS SANs (substitute
+your chart `nameOverride` and namespace):
+
+- `buildbuddy-enterprise.buildbuddy.svc.cluster.local`, for ingress verification.
+- `*.buildbuddy-enterprise-headless.buildbuddy.svc.cluster.local`, for scheduler
+  peers such as `bbe-buildbuddy-enterprise-0.buildbuddy-enterprise-headless.buildbuddy.svc.cluster.local`.
+
+The wildcard covers exactly one pod-name label. An explicit SAN for every pod
+is also valid, but must account for scaling. A service-only certificate does not
+cover scheduler peers. The chart currently uses `cluster.local` for advertised
+pod DNS. The opt-in requires `distributed.enabled=true`, whose StatefulSet and
+headless Service provide resolvable pod identities; do not switch an existing
+Deployment to a StatefulSet merely to turn on TLS without planning its storage
+and workload migration.
+
+For example, if cert-manager and your internal issuer already exist, issue the
+server Secret with the following resource in the app namespace. Replace the
+issuer reference with your existing issuer. This chart does not install or
+mount the issuer's CA private key.
+
+```yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: buildbuddy-internal
+  namespace: buildbuddy
+spec:
+  secretName: buildbuddy-internal-tls
+  dnsNames:
+    - buildbuddy-enterprise.buildbuddy.svc.cluster.local
+    - '*.buildbuddy-enterprise-headless.buildbuddy.svc.cluster.local'
+  usages:
+    - digital signature
+    - key encipherment
+    - server auth
+  issuerRef:
+    name: internal-issuer
+    kind: ClusterIssuer
+```
+
+Manage the trust bundle separately as `buildbuddy-internal-ca` with a `ca.crt`
+key, using your organization's CA distribution process. Do not treat the issued
+leaf Secret's `ca.crt` as the authoritative trust distribution mechanism. The app
+mounts only the server certificate/key and the separate CA bundle.
+`SSL_CERT_DIR` adds `/internal-ca` while retaining the listed Linux certificate
+directories; the default system certificate file is also still loaded. This
+extends process-wide outbound trust, including unrelated outbound connections.
+Preserve any custom root directories using `internalTLS.systemCertDirectories`.
+It does not configure client-certificate authentication: `ssl.client_ca_*` has a
+separate purpose and must not be used for peer server trust.
+
+The overlay also mounts the CA-only Secret into the ingress controller. Helm
+replaces `extraVolumes` and `extraVolumeMounts` lists, so retain existing mounts,
+including `/client-ca` if you use this chart's client-certificate issuance
+feature with `certmanager.enabled=true`. For an externally managed controller
+(`ingress.controller.enabled=false`), arrange the same CA mount at
+`/internal-ca/ca.crt` yourself and allow configuration snippets with the required
+risk level. The bundled controller's default snippet settings support this.
+Both ingress resources explicitly enable upstream certificate verification and
+SNI using `internalTLS.serverName`. GRPCS uses `grpc_ssl_*` directives; HTTPS
+uses `proxy_ssl_*` directives. Merely selecting the `GRPCS` protocol does not
+enable certificate verification. See the [NGINX gRPC TLS directives](https://nginx.org/en/docs/http/ngx_http_grpc_module.html#grpc_ssl_verify)
+and [ingress-nginx snippet configuration](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#configuration-snippet).
+
+Roll out all scheduler readers with endpoint advertisement support while still
+using plaintext, then provision certificates and trust. Enable this overlay
+with the supporting image, `internalTLS.schedulerRPCScheme=grpc`, and
+`internalTLS.ingressTLS=false` first. Wait until every app pod has its TLS
+listeners and CA trust, then switch `schedulerRPCScheme` to `grpcs` and
+`ingressTLS` to `true`. Old app versions cannot consume TLS endpoint records.
+Keep plaintext listeners reachable through the mixed rollout. The chart does
+not set `MY_PORT`; an explicit `extraEnvVars` override takes precedence over the
+scheme-selected port and must identify the reachable GRPCS port. Command-line
+`args` must not override the chart-managed SSL paths, TLS ports, or scheduler
+scheme. This option sets `ssl_port` and `grpcs_port` to the configured internal
+Service ports.
+
+BuildBuddy v2.309.0 and later reload file-based server certificates and keys
+automatically at `ssl.cert_reload_interval` (one minute by default). After leaf
+renewal, allow for Kubernetes Secret propagation plus that interval and verify
+the new certificate on a fresh connection. These mounts deliberately do not use
+`subPath`, so Secret updates can propagate. Older images require a rolling app
+restart after leaf renewal.
+
+Server certificate reload does not refresh Go outbound root pools. During CA
+rotation, distribute a bundle containing both old and new roots and restart app
+readers before switching server certificates. Restart the ingress controller
+after changing its mounted CA bundle: the static snippet path does not itself
+trigger a config reload. Remove old roots only after all serving certificates
+have rotated, then restart readers/controllers again to load the reduced bundle.
+
+To roll back, restore plaintext advertisement on the supporting image first and allow executor
+registrations to refresh before downgrading readers. See [cert-manager renewal
+behavior](https://cert-manager.io/docs/usage/certificate/).
+
+Validate an actual reservation forwarded between two scheduler replicas,
+including rejection of unknown CAs and incorrect DNS SANs, verified HTTPS and
+GRPCS ingress upstreams, leaf-certificate reload, and CA rotation before
+production use. Helm rendering does not prove these runtime properties. This
+option does not encrypt distributed-cache traffic, Redis, database connections,
+health probes, or every executor connection; configure those paths separately.
+
+Run the focused render regression checks from the repository root with
+`python scripts/test_internal_tls.py` (requires Helm and Python with PyYAML).
+The checks use synthetic Secret names, decode generated app configuration only
+in memory, and do not access a Kubernetes cluster or print rendered Secrets.
