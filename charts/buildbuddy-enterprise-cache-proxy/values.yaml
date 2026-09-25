@@ -5,7 +5,7 @@
 ## The BuildBuddy Enterprise Cache Proxy container image to use.
 image:
   repository: buildbuddy.bbcr.io/public/buildbuddy-proxy-enterprise
-  tag: enterprise-v2.309.0
+  tag: enterprise-v2.310.0
   imagePullPolicy: IfNotPresent
 
 ## The number of cache-proxy replicas to run.
@@ -115,9 +115,12 @@ config:
     # .Values.cacheTarget.
     # api_key: "YOUR_API_KEY"
   cache:
-    max_size_bytes: 10000000000 # 10 GB
+    max_size_bytes: 10000000000  # 10 GB
     pebble:
       root_directory: /buildbuddy/pebble_disk_cache/
+      # Allow capacity-based eviction without a minimum idle age.
+      # Evicted blobs can be fetched again from the upstream cache.
+      min_eviction_age: 0h
     distributed_cache:
       listen_addr: 0.0.0.0:5151
       cluster_size: 1
