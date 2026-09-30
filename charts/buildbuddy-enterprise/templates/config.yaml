@@ -51,12 +51,6 @@ data:
   {{- end }}
   {{- end }}
 
-  {{- if .Values.distributed.enabled }}
-  {{- $_ := set $c.cache "redis_target" "" }}
-  {{- else if (and .Values.redis.enabled (or $c.cache.gcs $c.cache.s3)) }}
-  {{- $_ := set $c.cache "redis_target" "redis:6379" }}
-  {{- end }}
-
   {{- if .Values.ingress.controller.extraVolumeMounts }}
   {{- $_ := set $c.ssl "client_ca_cert_file" "/client-ca/tls.crt" }}
   {{- $_ := set $c.ssl "client_ca_key_file" "/client-ca/tls.key" }}

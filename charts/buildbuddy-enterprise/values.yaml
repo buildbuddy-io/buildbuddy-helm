@@ -269,9 +269,9 @@ mysql:
 
 redis:
   enabled: false
-  # If enabled, the bundled Redis chart deploys a StatefulSet with one Redis
-  # instance per shard. The BuildBuddy app will use app.default_sharded_redis
-  # to talk to the shards.
+  # Enables bundled Redis for shared state using app.default_redis_target.
+  # With sharded: true, deploys a StatefulSet with one Redis instance per shard
+  # and configures app.default_sharded_redis.shards instead.
   # sharded: false
   # replicas: 3
 
