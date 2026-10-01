@@ -1,8 +1,8 @@
 apiVersion: v1
 description: BuildBuddy Executor
 name: buildbuddy-executor
-version: 0.0.475 # Chart version
-appVersion: 2.311.0 # Version of deployed executor
+version: 0.0.476 # Chart version
+appVersion: 2.312.0 # Version of deployed executor
 keywords:
   - buildbuddy
   - bazel
