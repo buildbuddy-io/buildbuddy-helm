@@ -11,6 +11,9 @@ metadata:
     {{- .Values.extraPodLabels | toYaml | nindent 4 }}
     {{- end }}
 spec:
+  {{- if .Values.runtimeClassName }}
+  runtimeClassName: {{ .Values.runtimeClassName }}
+  {{- end }}
   {{- if not .Values.autoscaler.enabled }}
   replicas: {{ .Values.replicas | default 1 }}
   {{- end }}
