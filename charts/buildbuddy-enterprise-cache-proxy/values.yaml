@@ -110,9 +110,8 @@ config:
   cache_proxy:
     proxy_type: "customer"
     # API key the cache proxy uses to authenticate to the upstream BuildBuddy
-    # cache/app. Set this to an executor-enabled API key. The remote_cache,
-    # app_target, and remote_hit_tracker fields are auto-populated from
-    # .Values.cacheTarget.
+    # cache/app. Set this to an executor-enabled API key. The remote_cache and
+    # app_target fields are auto-populated from .Values.cacheTarget.
     # api_key: "YOUR_API_KEY"
   cache:
     max_size_bytes: 10000000000  # 10 GB
