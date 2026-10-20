@@ -109,6 +109,14 @@ ingress:
 config:
   cache_proxy:
     proxy_type: "customer"
+    # Registration labels shown in the cache proxy UI. If omitted, Helm uses
+    # {namespace: <release namespace>} when the namespace is at most 50 characters
+    # (the proxy's label value limit). Longer namespaces have no default label.
+    # Set a map to replace the default, or {} to disable it. Use a deployment
+    # label to distinguish releases sharing a namespace. Keys and values must
+    # each be at most 50 characters; at most 20 labels are supported.
+    # labels:
+    #   deployment: "cache-a"
     # API key the cache proxy uses to authenticate to the upstream BuildBuddy
     # cache/app. Set this to an executor-enabled API key. The remote_cache and
     # app_target fields are auto-populated from .Values.cacheTarget.

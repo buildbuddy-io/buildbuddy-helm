@@ -17,6 +17,14 @@ data:
   {{- if not $c.cache_proxy }}
   {{- $_ := set $c "cache_proxy" dict }}
   {{- end }}
+
+  {{- /* Default registration labels without changing explicit maps (including {}).
+       Proxy label values are limited to 50 characters; keep longer namespaces
+       unlabeled rather than truncate them or break proxy registration. */}}
+  {{- if and (not (hasKey $c.cache_proxy "labels")) (le (len .Release.Namespace) 50) }}
+  {{- $_ := set $c.cache_proxy "labels" (dict "namespace" .Release.Namespace) }}
+  {{- end }}
+
   {{- $_ := set $c.cache_proxy "remote_cache" $remoteCache }}
 
   {{- /* Set cache_proxy.app_target to cache_proxy.remote_cache. */}}
