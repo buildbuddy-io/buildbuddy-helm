@@ -53,6 +53,7 @@ Some common ones:
 | `image.tag`                            | Container image tag                                                      | `enterprise-v2.317.0`                                   |
 | `replicas`                             | Number of cache-proxy replicas                                           | `3`                                                     |
 | `cacheTarget`                          | Upstream BuildBuddy cache the proxy sits in front of                     | `grpcs://remote.buildbuddy.io`                          |
+| `config.cache_proxy.labels`            | Application registration labels shown in the proxy UI. An explicit map replaces the default; `{}` disables it. Use a short custom label for namespaces over 50 characters or to distinguish releases in the same namespace. At most 20 labels, with keys and values at most 50 characters each. | `{namespace: <release namespace>}` for namespaces up to 50 characters; otherwise none |
 | `config.auth.reparse_jwts`             | Disable process-local JWT reparsing for remote-authenticated proxies     | `false`                                                 |
 | `config.cache.pebble.min_eviction_age` | Minimum idle time before an entry can be evicted under capacity pressure | `0h`                                                    |
 | `resources`                            | Pod CPU/memory requests and limits                                       | `4 CPU / 16Gi`                                          |
