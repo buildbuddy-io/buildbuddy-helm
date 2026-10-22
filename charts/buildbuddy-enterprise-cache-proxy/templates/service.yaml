@@ -16,32 +16,48 @@ spec:
     app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
   type: {{ .Values.service.type }}
+  {{- $nodePorts := .Values.service.nodePorts | default dict }}
   ports:
     - name: http
       protocol: "TCP"
       port: {{ .Values.service.externalHTTPPort }}
       targetPort: {{ .Values.service.internalHTTPPort }}
+      {{- with $nodePorts.http }}
+      nodePort: {{ . }}
+      {{- end }}
     - name: grpc
       protocol: "TCP"
       port: {{ .Values.service.externalGRPCPort }}
       targetPort: {{ .Values.service.internalGRPCPort }}
+      {{- with $nodePorts.grpc }}
+      nodePort: {{ . }}
+      {{- end }}
     {{- if and .Values.service.externalHTTPSPort .Values.service.internalHTTPSPort }}
     - name: https
       protocol: "TCP"
       port: {{ .Values.service.externalHTTPSPort }}
       targetPort: {{ .Values.service.internalHTTPSPort }}
+      {{- with $nodePorts.https }}
+      nodePort: {{ . }}
+      {{- end }}
     {{- end }}
     {{- if and .Values.service.externalGRPCSPort .Values.service.internalGRPCSPort }}
     - name: grpcs
       protocol: "TCP"
       port: {{ .Values.service.externalGRPCSPort }}
       targetPort: {{ .Values.service.internalGRPCSPort }}
+      {{- with $nodePorts.grpcs }}
+      nodePort: {{ . }}
+      {{- end }}
     {{- end }}
     {{- if and .Values.service.externalMetricsPort .Values.service.internalMetricsPort }}
     - name: metrics
       protocol: "TCP"
       port: {{ .Values.service.externalMetricsPort }}
       targetPort: {{ .Values.service.internalMetricsPort }}
+      {{- with $nodePorts.metrics }}
+      nodePort: {{ . }}
+      {{- end }}
     {{- end }}
 ---
 {{- /* Headless service used by cache-proxy pods to reach each other directly
