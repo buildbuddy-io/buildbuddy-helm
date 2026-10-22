@@ -16,29 +16,29 @@ spec:
     app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
   type: {{ .Values.service.type }}
-  {{- $nodePorts := .Values.service.nodePorts | default dict }}
+  {{- $withNodePorts := has .Values.service.type (list "NodePort" "LoadBalancer") }}
   ports:
     - name: http
       protocol: "TCP"
       port: {{ .Values.service.externalHTTPPort }}
       targetPort: {{ .Values.service.internalHTTPPort }}
-      {{- with $nodePorts.http }}
-      nodePort: {{ . }}
+      {{- if and $withNodePorts .Values.service.nodePorts.http }}
+      nodePort: {{ .Values.service.nodePorts.http }}
       {{- end }}
     - name: grpc
       protocol: "TCP"
       port: {{ .Values.service.externalGRPCPort }}
       targetPort: {{ .Values.service.internalGRPCPort }}
-      {{- with $nodePorts.grpc }}
-      nodePort: {{ . }}
+      {{- if and $withNodePorts .Values.service.nodePorts.grpc }}
+      nodePort: {{ .Values.service.nodePorts.grpc }}
       {{- end }}
     {{- if and .Values.service.externalHTTPSPort .Values.service.internalHTTPSPort }}
     - name: https
       protocol: "TCP"
       port: {{ .Values.service.externalHTTPSPort }}
       targetPort: {{ .Values.service.internalHTTPSPort }}
-      {{- with $nodePorts.https }}
-      nodePort: {{ . }}
+      {{- if and $withNodePorts .Values.service.nodePorts.https }}
+      nodePort: {{ .Values.service.nodePorts.https }}
       {{- end }}
     {{- end }}
     {{- if and .Values.service.externalGRPCSPort .Values.service.internalGRPCSPort }}
@@ -46,8 +46,8 @@ spec:
       protocol: "TCP"
       port: {{ .Values.service.externalGRPCSPort }}
       targetPort: {{ .Values.service.internalGRPCSPort }}
-      {{- with $nodePorts.grpcs }}
-      nodePort: {{ . }}
+      {{- if and $withNodePorts .Values.service.nodePorts.grpcs }}
+      nodePort: {{ .Values.service.nodePorts.grpcs }}
       {{- end }}
     {{- end }}
     {{- if and .Values.service.externalMetricsPort .Values.service.internalMetricsPort }}
@@ -55,8 +55,8 @@ spec:
       protocol: "TCP"
       port: {{ .Values.service.externalMetricsPort }}
       targetPort: {{ .Values.service.internalMetricsPort }}
-      {{- with $nodePorts.metrics }}
-      nodePort: {{ . }}
+      {{- if and $withNodePorts .Values.service.nodePorts.metrics }}
+      nodePort: {{ .Values.service.nodePorts.metrics }}
       {{- end }}
     {{- end }}
 ---
