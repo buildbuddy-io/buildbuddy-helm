@@ -13,15 +13,22 @@ spec:
     app.kubernetes.io/name: {{ include "buildbuddy.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
   type: {{ .Values.service.type }}
+  {{- $withNodePorts := has .Values.service.type (list "NodePort" "LoadBalancer") }}
   ports:
     - name: http
       protocol: 'TCP'
       port: {{ .Values.service.externalHTTPPort }}
       targetPort: {{ .Values.service.internalHTTPPort }}
+      {{- if and $withNodePorts .Values.service.nodePorts.http }}
+      nodePort: {{ .Values.service.nodePorts.http }}
+      {{- end }}
     - name: grpc
       protocol: 'TCP'
       port: {{ .Values.service.externalGRPCPort }}
       targetPort: {{ .Values.service.internalGRPCPort }}
+      {{- if and $withNodePorts .Values.service.nodePorts.grpc }}
+      nodePort: {{ .Values.service.nodePorts.grpc }}
+      {{- end }}
       {{- if ge .Capabilities.KubeVersion.Minor "20" }}
       appProtocol: kubernetes.io/h2c
       {{- end }}
@@ -30,12 +37,18 @@ spec:
       protocol: 'TCP'
       port: {{ .Values.service.externalHTTPSPort }}
       targetPort: {{ .Values.service.internalHTTPSPort }}
+      {{- if and $withNodePorts .Values.service.nodePorts.https }}
+      nodePort: {{ .Values.service.nodePorts.https }}
+      {{- end }}
     {{- end }}
     {{- if and .Values.service.externalGRPCSPort .Values.service.internalGRPCSPort }}
     - name: grpcs
       protocol: 'TCP'
       port: {{ .Values.service.externalGRPCSPort }}
       targetPort: {{ .Values.service.internalGRPCSPort }}
+      {{- if and $withNodePorts .Values.service.nodePorts.grpcs }}
+      nodePort: {{ .Values.service.nodePorts.grpcs }}
+      {{- end }}
       {{- if ge .Capabilities.KubeVersion.Minor "20" }}
       appProtocol: kubernetes.io/h2c
       {{- end }}
@@ -45,6 +58,9 @@ spec:
       protocol: 'TCP'
       port: {{ .Values.service.externalMetricsPort }}
       targetPort: {{ .Values.service.internalMetricsPort }}
+      {{- if and $withNodePorts .Values.service.nodePorts.metrics }}
+      nodePort: {{ .Values.service.nodePorts.metrics }}
+      {{- end }}
     {{- end }}
 {{- if .Values.service.loadBalancerIP }}
   loadBalancerIP: {{ .Values.service.loadBalancerIP }}

@@ -38,6 +38,7 @@ resources:
 ## Ports exposed by the cache-proxy container.
 service:
   type: LoadBalancer
+  nodePorts: {}  # Only used when type is NodePort or LoadBalancer, e.g. {http: 30080, grpc: 31985}
   internalHTTPPort: 8080
   internalHTTPSPort: 8081
   internalGRPCPort: 1985

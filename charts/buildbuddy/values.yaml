@@ -35,6 +35,7 @@ disk:
 ## Exposes the BuildBuddy service via a LoadBalancer on the given ports.
 service:
   type: LoadBalancer
+  nodePorts: {}  # Only used when type is NodePort or LoadBalancer, e.g. {http: 30080, grpc: 31985}
 
   externalHTTPPort: 80
   externalGRPCPort: 1985
