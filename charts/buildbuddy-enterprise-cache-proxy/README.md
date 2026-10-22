@@ -56,6 +56,7 @@ Some common ones:
 | `config.cache_proxy.labels`            | Application registration labels shown in the proxy UI. An explicit map replaces the default; `{}` disables it. Use a short custom label for namespaces over 50 characters or to distinguish releases in the same namespace. At most 20 labels, with keys and values at most 50 characters each. | `{namespace: <release namespace>}` for namespaces up to 50 characters; otherwise none |
 | `config.auth.reparse_jwts`             | Disable process-local JWT reparsing for remote-authenticated proxies     | `false`                                                 |
 | `config.cache.pebble.min_eviction_age` | Minimum idle time before an entry can be evicted under capacity pressure | `0h`                                                    |
+| `config.cache.distributed_cache.listen_addr` | Distributed-cache address; must match the discovered peer address for local reads | `${MY_IP}:5151` (IPv4) |
 | `resources`                            | Pod CPU/memory requests and limits                                       | `4 CPU / 16Gi`                                          |
 | `config`                               | The `config.yaml` contents passed to the cache proxy                     | See [values.yaml](./values.yaml)                        |
 | `ingress.annotations`                  | Extra annotations merged into the cache-proxy gRPC Ingress               | `proxy-body-size: "0"`                                  |
@@ -80,6 +81,15 @@ The Cache Proxy uses consistent hashing to shard replicas across pods. Peer
 discovery is done via the Kubernetes API. The chart creates a `ServiceAccount`,
 `Role`, and `RoleBinding` granting the minimum permissions needed
 (`get/list/watch pods`, `get replicasets` in the release namespace).
+
+For IPv6 pods, override the listener address to enclose the pod IP in brackets:
+
+```yaml
+config:
+  cache:
+    distributed_cache:
+      listen_addr: "[${MY_IP}]:5151"
+```
 
 If you prefer to manage RBAC yourself, set `rbac.create=false` and
 `serviceAccount.create=false`, and reference your existing ServiceAccount with

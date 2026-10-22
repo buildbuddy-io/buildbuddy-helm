@@ -220,10 +220,13 @@ serviceAccount:
 config:
   cache:
     distributed_cache:
-      listen_addr: "0.0.0.0:5151"
+      listen_addr: "${MY_IP}:5151"
       replication_factor: 2
       kubernetes_discovery: true
 ```
+
+For IPv6 pods, set `config.cache.distributed_cache.listen_addr` to
+`"[${MY_IP}]:5151"` instead so the pod IP is enclosed in brackets.
 
 If you prefer to manage RBAC yourself, leave `rbac.create` and
 `serviceAccount.create` set to `false`, and reference your existing

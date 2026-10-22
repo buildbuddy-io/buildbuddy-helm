@@ -380,7 +380,9 @@ config:
     ## API instead of Redis; this requires the RBAC permissions granted by
     ## rbac.create and serviceAccount.create below.
     # distributed_cache:
-    #   listen_addr: "0.0.0.0:5151"
+    #   # Match the pod IP advertised by Kubernetes discovery for local reads.
+    #   # For IPv6 pod IPs, use "[${MY_IP}]:5151" instead.
+    #   listen_addr: "${MY_IP}:5151"
     #   replication_factor: 2
     #   kubernetes_discovery: true
   ssl:
