@@ -50,7 +50,7 @@ Some common ones:
 | Parameter                              | Description                                                              | Default                                                 |
 | -------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------- |
 | `image.repository`                     | Container image repository                                               | `buildbuddy.bbcr.io/public/buildbuddy-proxy-enterprise` |
-| `image.tag`                            | Container image tag                                                      | `enterprise-v2.320.0`                                   |
+| `image.tag`                            | Container image tag                                                      | `enterprise-v2.321.0`                                   |
 | `replicas`                             | Number of cache-proxy replicas                                           | `3`                                                     |
 | `cacheTarget`                          | Upstream BuildBuddy cache the proxy sits in front of                     | `grpcs://remote.buildbuddy.io`                          |
 | `config.cache_proxy.labels`            | Application registration labels shown in the proxy UI. An explicit map replaces the default; `{}` disables it. Use a short custom label for namespaces over 50 characters or to distinguish releases in the same namespace. At most 20 labels, with keys and values at most 50 characters each. | `{namespace: <release namespace>}` for namespaces up to 50 characters; otherwise none |
