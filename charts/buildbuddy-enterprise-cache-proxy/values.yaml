@@ -109,6 +109,10 @@ ingress:
 config:
   cache_proxy:
     proxy_type: "customer"
+    # Chunk large uploads before storing them locally and sending them upstream,
+    # even when the client does not use CDC. Client-to-proxy traffic is unchanged.
+    # Requires an upstream cache that supports CDC; set to false otherwise.
+    intercept_and_chunk_large_writes: true
     # Registration labels shown in the cache proxy UI. If omitted, Helm uses
     # {namespace: <release namespace>} when the namespace is at most 50 characters
     # (the proxy's label value limit). Longer namespaces have no default label.
@@ -122,6 +126,8 @@ config:
     # app_target fields are auto-populated from .Values.cacheTarget.
     # api_key: "YOUR_API_KEY"
   cache:
+    # Configure chunking.ac_key_salt with a stable random secret shared by all
+    # app servers and cache proxies. Changing it invalidates existing manifests.
     max_size_bytes: 10000000000 # 10 GB
     pebble:
       root_directory: /buildbuddy/pebble_disk_cache/

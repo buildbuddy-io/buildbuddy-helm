@@ -413,6 +413,10 @@ config:
   #   client_secret: MY_CLIENT_SECRET
   remote_execution:
     enable_remote_exec: false # Set to true to enable remote build execution (RBE)
+    # The app sends CDC settings to executors with each task.
+    # Configure cache.chunking.ac_key_salt with a stable random secret shared by
+    # all app servers and cache proxies. Changing it invalidates existing manifests.
+    chunking_enabled: true
     use_measured_task_sizes: true # Enable auto-sizing for tasks
 
 grafana:
