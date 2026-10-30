@@ -155,6 +155,14 @@ its in-cluster gRPC Service. An explicit `config.executor.cache_target` takes
 precedence over the generated target. The cache proxy must use its own Cache
 proxy key rather than the executor-enabled API key.
 
+The bundled proxy chunks large uploads by default and requires a CDC-capable
+upstream. Set `proxy.config.cache_proxy.intercept_and_chunk_large_writes: false`
+to disable this behavior. Configure a stable shared manifest-key salt through
+`proxy.config.cache.chunking.ac_key_salt` as described in the
+[proxy configuration](../buildbuddy-enterprise-cache-proxy#configuration).
+Executor input/output chunking is controlled by the app's
+`remote_execution.chunking_enabled` setting and needs no separate executor flag.
+
 ```yaml
 config:
   executor:
