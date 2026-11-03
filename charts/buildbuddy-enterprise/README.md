@@ -124,6 +124,13 @@ The following table lists the configurable parameters of the BuildBuddy Open Sou
 | `initContainerImage.tag`             | Init container image tag                                                                                                                                                                                                                                                                                                    | `latest`                                                                                                                             |
 | `initContainerImage.imagePullPolicy` | Container image pull policy                                                                                                                                                                                                                                                                                                 | `IfNotPresent`                                                                                                                       |
 | `executor.enabled`                   | Enables deployment of [BuildBuddy executors](https://github.com/buildbuddy-io/buildbuddy-helm/tree/master/charts/buildbuddy-executor). Any buildbuddy-executor chart configuration options can be passed into the `executor` block.                                                                                         | `false`                                                                                                                              |
+| `config.remote_execution.chunking_enabled` | Use content-defined chunks for executor input/output transfers when RBE is enabled; no separate executor CDC flag is needed | `true` |
+
+For CDC, we recommend that server operators configure
+`config.cache.chunking.ac_key_salt` with a stable random secret shared by all
+app servers and cache proxies, as described in the
+[CDC configuration guide](https://www.buildbuddy.io/docs/config-rbe#content-defined-chunking).
+Changing or removing it makes existing chunked-only manifests unavailable.
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
