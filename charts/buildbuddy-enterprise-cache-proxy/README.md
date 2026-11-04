@@ -42,6 +42,27 @@ See [Configuration](#configuration) below for values you may want to override.
 helm delete my-release
 ```
 
+## Telemetry
+
+When the Cache Proxy registers with the BuildBuddy backend, it appears on the
+Cache Proxies page of the BuildBuddy UI. It also keeps a connection open to and
+reports the following information:
+
+- **Identity:** hostname, a randomly generated proxy ID, a persistent host ID,
+  version, OS, architecture, start time, and the labels configured in
+  `config.cache_proxy.labels`.
+- **Resources:** allocated CPU and memory.
+- **Configuration:** flags set to non-default values. The values of secret
+  flags (such as API keys) are redacted.
+- **Statistics:** cumulative cache hit, miss, and write counts and byte totals.
+
+This information is only visible to organization and server admins. Admins can
+also gather Go runtime profiles (CPU, heap, and goroutine) from running proxies
+using the BuildBuddy UI. Profiles are only collected when requested. Profiles
+show which code is running, where memory is allocated, and what goroutines are
+running. Profiles never include cached blobs. These remotely-gathered profiles
+can be disabled by setting `--cache_proxy.allow_remote_profiling=false`.
+
 ## Configuration
 
 See [values.yaml](./values.yaml) for the full list of configurable parameters.
