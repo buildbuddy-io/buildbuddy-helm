@@ -1,7 +1,7 @@
 dependencies:
 - name: buildbuddy-enterprise-cache-proxy
   repository: https://helm.buildbuddy.io
-  version: 0.0.66
+  version: 0.0.67
 - name: metrics-server
   repository: https://kubernetes-sigs.github.io/metrics-server/
   version: 3.11.0
@@ -11,5 +11,5 @@ dependencies:
 - name: prometheus-adapter
   repository: https://prometheus-community.github.io/helm-charts
   version: 3.4.0
-digest: sha256:61d4181a691760e540e7c42ee4c094c9d990d957943a351ea3ac28677cc57e8b
-generated: "2026-11-03T19:27:16.512730886+01:00"
+digest: sha256:c1f93f32961546a71b10aa02110254de15eca4b3b8b0c6ed98fbe29dbfc04ead
+generated: "2026-11-04T03:06:14.376469679Z"
