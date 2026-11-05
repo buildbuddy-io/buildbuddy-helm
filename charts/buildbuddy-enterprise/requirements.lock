@@ -26,8 +26,11 @@ dependencies:
 - name: grafana
   repository: https://grafana.github.io/helm-charts
   version: 8.8.2
+- name: clickhouse-operator-helm
+  repository: oci://ghcr.io/clickhouse
+  version: 0.0.8
 - name: clickhouse
   repository: https://charts.bitnami.com/bitnami
   version: 9.4.4
-digest: sha256:7b13ba8bf58ac44a1f1c7f78b5fdd82daf3ad88794582f72164d5f5185a7427c
-generated: "2026-11-06T07:07:20.732808557+01:00"
+digest: sha256:bc635fc8c4a2f59110b1f3010ba74d7d29c0db4a8caf8bfc8aeb8c2b248ce73c
+generated: "2026-11-06T07:08:23.528893649+01:00"

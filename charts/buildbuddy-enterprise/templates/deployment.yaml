@@ -63,6 +63,28 @@ spec:
         command: ["sh", "-c", "until nc -z {{ .Release.Name }}-mysql 3306; do echo waiting for {{ .Release.Name }}-mysql service; sleep 5; done;"]
       {{- end }}
       {{- if .Values.clickhouse.enabled }}
+      - name: init-clickhouse
+        image: "{{ .Values.clickhouse.spec.containerTemplate.image.repository }}:{{ .Values.clickhouse.spec.containerTemplate.image.tag }}"
+        command: ["/bin/sh", "-ec"]
+        args:
+          - |
+            until clickhouse client --host "$CLICKHOUSE_HOST" --user default --password "$CLICKHOUSE_PASSWORD" --query 'SELECT 1' >/dev/null 2>&1; do
+              echo waiting for ClickHouse
+              sleep 5
+            done
+            clickhouse client --host "$CLICKHOUSE_HOST" --user default --password "$CLICKHOUSE_PASSWORD" --query "CREATE DATABASE IF NOT EXISTS $CLICKHOUSE_DATABASE"
+        env:
+          - name: CLICKHOUSE_HOST
+            value: {{ include "buildbuddy.clickhouse.service" . | quote }}
+          - name: CLICKHOUSE_DATABASE
+            value: {{ .Values.clickhouse.auth.database | quote }}
+          - name: CLICKHOUSE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "buildbuddy.clickhouse.secret" . }}
+                key: password
+      {{- end }}
+      {{- if .Values.clickhouse_legacy.enabled }}
       - name: "init-clickhouse"
         image: "{{ .Values.initContainerImage.repository }}:{{ .Values.initContainerImage.tag }}"
         imagePullPolicy: {{ .Values.initContainerImage.imagePullPolicy }}
