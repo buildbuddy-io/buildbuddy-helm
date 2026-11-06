@@ -1,4 +1,37 @@
 {{- if .Values.clickhouse.enabled }}
+{{- $name := include "buildbuddy.clickhouse.name" . }}
+{{- $secret := include "buildbuddy.clickhouse.secret" . }}
+{{- if not .Values.clickhouse.auth.existingSecret }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secret }}
+type: Opaque
+stringData:
+  password: {{ .Values.clickhouse.auth.password | quote }}
+---
+{{- end }}
+apiVersion: clickhouse.com/v1alpha1
+kind: KeeperCluster
+metadata:
+  name: {{ $name }}
+spec:
+  {{- toYaml .Values.clickhouse.keeper.spec | nindent 2 }}
+---
+apiVersion: clickhouse.com/v1alpha1
+kind: ClickHouseCluster
+metadata:
+  name: {{ $name }}
+spec:
+  {{- $spec := deepCopy .Values.clickhouse.spec }}
+  {{- $_ := set $spec "keeperClusterRef" (dict "name" $name) }}
+  {{- $settings := $spec.settings | default dict }}
+  {{- $_ := set $settings "defaultUserPassword" (dict "passwordType" "password" "secret" (dict "name" $secret "key" "password")) }}
+  {{- $_ := set $spec "settings" $settings }}
+  {{- toYaml $spec | nindent 2 }}
+{{- end }}
+
+{{- if .Values.clickhouse_legacy.enabled }}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -9,7 +42,7 @@ stringData:
   init-buildbuddy-db.sh: |
     #!/bin/bash
     set -e
-    clickhouse client --user {{ .Values.clickhouse.auth.username }} --password {{ .Values.clickhouse.auth.password }} -n <<-EOSQL
-      CREATE DATABASE IF NOT EXISTS {{ .Values.clickhouse.auth.database }};
+    clickhouse client --user {{ .Values.clickhouse_legacy.auth.username }} --password {{ .Values.clickhouse_legacy.auth.password }} -n <<-EOSQL
+      CREATE DATABASE IF NOT EXISTS {{ .Values.clickhouse_legacy.auth.database }};
     EOSQL
 {{- end }}

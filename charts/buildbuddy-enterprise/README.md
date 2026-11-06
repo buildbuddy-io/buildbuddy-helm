@@ -398,3 +398,19 @@ $ helm install . \
     --set mysql.mysqlUser=sampleUser \
     --set mysql.mysqlPassword=samplePassword
 ```
+
+## Operator-managed ClickHouse
+
+Requires Kubernetes 1.28+ and independently installed cert-manager. Install the
+[official operator](https://github.com/ClickHouse/clickhouse-operator) once per
+cluster: enable `clickhouse_operator.enabled` first, wait for its CRDs and webhook
+to be ready, then enable `clickhouse.enabled` in a second Helm upgrade. If the
+operator already exists, leave `clickhouse_operator.enabled=false`.
+
+Set `clickhouse.auth.password` and `clickhouse.auth.database` for the OLAP
+connection. `clickhouse.auth.existingSecret` selects a Secret with key `password`
+and requires an explicit `config.olap_database.data_source`. The chart does not
+read Secret contents. Native initialization uses plaintext TCP, not TLS-only mode.
+`clickhouse.spec` and `clickhouse.keeper.spec` configure the operator resources;
+the chart owns the Keeper reference and default-user password selector. Defaults
+are one ClickHouse and one Keeper replica, not a highly available topology.

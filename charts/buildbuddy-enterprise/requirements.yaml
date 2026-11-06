@@ -39,7 +39,13 @@ dependencies:
     version: 8.8.2
     repository: https://grafana.github.io/helm-charts
     condition: grafana.enabled
+  - name: clickhouse-operator-helm
+    alias: clickhouse_operator
+    version: 0.0.8
+    repository: oci://ghcr.io/clickhouse
+    condition: clickhouse_operator.enabled
   - name: clickhouse
+    alias: clickhouse_legacy
     version: 9.4.4
     repository: https://charts.bitnami.com/bitnami
-    condition: clickhouse.enabled
+    condition: clickhouse_legacy.enabled
