@@ -5,7 +5,7 @@
 ## The Redis container image to use.
 image:
   repository: redis
-  tag: 5.0.4
+  tag: "8.10.3"
   imagePullPolicy: IfNotPresent
 
 # Whether to create a sharded deployment using a StatefulSet.
