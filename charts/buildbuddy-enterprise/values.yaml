@@ -259,8 +259,8 @@ mysql:
     mysql.cnf: |-
       [mysqld]
       max_connections=4000
-  repository: mysql
-  imageTag: "8.0.18"
+  image: mysql
+  imageTag: "9.7.4"
   # metrics:
   #   enabled: true
   #   annotations:
