@@ -170,6 +170,13 @@ spec:
               name: user-config-buildbuddy
             - mountPath: /buildbuddy/
               name: executor-data
+              {{- $mountPropagation := .Values.executorDataMountPropagation }}
+              {{- if and (not $mountPropagation) .Values.config.executor.enable_firecracker }}
+              {{- $mountPropagation = "Bidirectional" }}
+              {{- end }}
+              {{- if $mountPropagation }}
+              mountPropagation: {{ $mountPropagation }}
+              {{- end }}
             - mountPath: /config.yaml
               name: config
               subPath: config.yaml
