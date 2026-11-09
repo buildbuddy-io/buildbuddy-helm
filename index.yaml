@@ -52253,6 +52253,51 @@ entries:
   buildbuddy-executor:
   - apiVersion: v1
     appVersion: 2.323.0
+    created: "2026-11-09T21:02:09.106157712Z"
+    dependencies:
+    - alias: proxy
+      condition: proxy.enabled
+      name: buildbuddy-enterprise-cache-proxy
+      repository: https://helm.buildbuddy.io
+      version: 0.0.68
+    - condition: prometheus.enabled
+      name: metrics-server
+      repository: https://kubernetes-sigs.github.io/metrics-server/
+      version: 3.11.0
+    - condition: prometheus.enabled
+      name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 15.14.0
+    - condition: prometheus.enabled
+      name: prometheus-adapter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 3.4.0
+    description: BuildBuddy Executor
+    digest: 025509ebb4a2afbee1f28ba15891c2057694fbd496089d2d53e810b28f56ce5d
+    home: https://buildbuddy.io
+    icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
+    keywords:
+    - buildbuddy
+    - bazel
+    - build
+    - test
+    - remote-cache
+    - rbe
+    - enterprise
+    maintainers:
+    - email: siggi@buildbuddy.io
+      name: siggisim
+    - email: tyler@buildbuddy.io
+      name: tylerwilliams
+    name: buildbuddy-executor
+    sources:
+    - https://github.com/buildbuddy-io/buildbuddy
+    - https://github.com/buildbuddy-io/buildbuddy-helm
+    urls:
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-executor-0.0.491/buildbuddy-executor-0.0.491.tgz
+    version: 0.0.491
+  - apiVersion: v1
+    appVersion: 2.323.0
     created: "2026-11-06T03:11:02.844175523Z"
     dependencies:
     - alias: proxy
