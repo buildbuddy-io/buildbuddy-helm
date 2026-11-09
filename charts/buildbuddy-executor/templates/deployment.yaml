@@ -170,6 +170,9 @@ spec:
               name: user-config-buildbuddy
             - mountPath: /buildbuddy/
               name: executor-data
+              {{- if .Values.executorDataMountPropagation }}
+              mountPropagation: {{ .Values.executorDataMountPropagation }}
+              {{- end }}
             - mountPath: /config.yaml
               name: config
               subPath: config.yaml

@@ -49,6 +49,8 @@ resources:
 # Store executor data on node-local SSD. Verify this path is backed by the SSD
 # on every selected executor node before installing.
 executorDataVolumeHostPath: "/mnt/disks/local/0/buildbuddy"
+# Make FUSE mounts created by the executor visible outside the container.
+executorDataMountPropagation: Bidirectional
 
 config:
   executor:
