@@ -168,11 +168,11 @@ extraContainers: []
 # executorDataVolumeHostPath: ""
 
 ## Mount propagation mode for the 'executor-data' volume mount
-## (None, HostToContainer, or Bidirectional). Bidirectional is recommended for
-## Firecracker executors, so that FUSE mounts created by the executor are
-## visible outside the executor container. Bidirectional requires a privileged
-## container, which the chart sets up automatically when Firecracker, Podman,
-## or OCI isolation is enabled.
+## (None, HostToContainer, or Bidirectional). If unset, defaults to
+## Bidirectional when Firecracker is enabled, so that FUSE mounts created by
+## the executor are visible outside the executor container, and is otherwise
+## left unset. Bidirectional requires a privileged container, which the chart
+## sets up automatically when Firecracker, Podman, or OCI isolation is enabled.
 # executorDataMountPropagation: ""
 
 ## Path on the node to mount Podman 'containers-lib' volume,
