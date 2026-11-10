@@ -1,3 +1,4 @@
+{{- include "buildbuddy.clickhouse.validate" . }}
 apiVersion: v1
 kind: Secret
 type: Opaque
@@ -20,7 +21,15 @@ data:
   {{- end }}
 
   {{- if .Values.clickhouse.enabled }}
-  {{- $_ := set $c.olap_database "data_source" (print "clickhouse://" .Values.clickhouse.auth.username ":" .Values.clickhouse.auth.password "@" .Release.Name "-clickhouse:9000/" .Values.clickhouse.auth.database) }}
+  {{- if not $c.olap_database.data_source }}
+  {{- if .Values.clickhouse.auth.existingSecret }}
+  {{- fail "Set config.olap_database.data_source when clickhouse.auth.existingSecret is used." }}
+  {{- end }}
+  {{- $password := .Values.clickhouse.auth.password | urlquery | replace "+" "%20" }}
+  {{- $_ := set $c.olap_database "data_source" (printf "clickhouse://default:%s@%s:9000/%s" $password (include "buildbuddy.clickhouse.service" .) .Values.clickhouse.auth.database) }}
+  {{- end }}
+  {{- else if .Values.clickhouse_legacy.enabled }}
+  {{- $_ := set $c.olap_database "data_source" (print "clickhouse://" .Values.clickhouse_legacy.auth.username ":" .Values.clickhouse_legacy.auth.password "@" .Release.Name "-clickhouse:9000/" .Values.clickhouse_legacy.auth.database) }}
   {{- end }}
 
   {{- if .Values.mysql.enabled }}

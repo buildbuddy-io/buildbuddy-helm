@@ -212,11 +212,74 @@ certmanager:
   ## Email address to use for letsencrypt certs
   emailAddress: your-email@gmail.com
 
-## Either enable clickhouse here, or use your own data_source connection string
-## in the config block below.
-## TODO(sluongng): migrate off bitnami chart and image
+## Official ClickHouse, Inc. operator. Requires Kubernetes >=1.28 and an
+## independently installed cert-manager. Bootstrap the operator first; see README.
+## Install one operator release per cluster, or reuse an existing official operator.
+clickhouse_operator:
+  enabled: false
+  nameOverride: clickhouse-operator
+
+## New operator-managed OLAP cluster. Not a Bitnami PVC/data migration.
 clickhouse:
   enabled: false
+  # Optional CR name; at most 40 lowercase DNS-label characters.
+  nameOverride: ""
+  auth:
+    # The official operator configures the default user from this password Secret.
+    password: buildbuddy
+    database: buildbuddy
+    # Existing Secret must have a password key; also set the explicit OLAP DSN.
+    existingSecret: ""
+  # ClickHouseCluster.spec, with image and storage pinned explicitly.
+  # keeperClusterRef and settings.defaultUserPassword are managed by this chart.
+  spec:
+    shards: 1
+    replicas: 1
+    containerTemplate:
+      image:
+        repository: docker.io/clickhouse/clickhouse-server
+        tag: "26.10.3.7"
+      resources:
+        requests:
+          cpu: "2"
+          memory: "4Gi"
+        limits:
+          cpu: "2"
+          memory: "4Gi"
+    dataVolumeClaimSpec:
+      accessModes: [ReadWriteOnce]
+      resources:
+        requests:
+          storage: 8Gi
+    settings:
+      logger:
+        level: warning
+  # Keeper is required by the official operator, including for a single server.
+  keeper:
+    spec:
+      replicas: 1
+      containerTemplate:
+        image:
+          repository: docker.io/clickhouse/clickhouse-keeper
+          tag: "26.10.3.7"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: "1"
+            memory: 512Mi
+      dataVolumeClaimSpec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 8Gi
+
+## Existing Bitnami deployments: move the old clickhouse values here unchanged.
+## Keep nameOverride to preserve the old Service, StatefulSet and PVC identities.
+clickhouse_legacy:
+  enabled: false
+  nameOverride: clickhouse
   image:
     repository: bitnamilegacy/clickhouse
     tag: "25.3.3"
