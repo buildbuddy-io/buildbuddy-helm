@@ -71,7 +71,7 @@ Some common ones:
 | Parameter                              | Description                                                              | Default                                                 |
 | -------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------- |
 | `image.repository`                     | Container image repository                                               | `buildbuddy.bbcr.io/public/buildbuddy-proxy-enterprise` |
-| `image.tag`                            | Container image tag                                                      | `enterprise-v2.323.0`                                   |
+| `image.tag`                            | Container image tag                                                      | `enterprise-v2.324.0`                                   |
 | `replicas`                             | Number of cache-proxy replicas                                           | `3`                                                     |
 | `cacheTarget`                          | Upstream BuildBuddy cache the proxy sits in front of                     | `grpcs://remote.buildbuddy.io`                          |
 | `config.cache_proxy.intercept_and_chunk_large_writes` | Chunk large client uploads for local storage and upstream transfer; requires a CDC-capable upstream. Client-to-proxy traffic is unchanged | `true` |
