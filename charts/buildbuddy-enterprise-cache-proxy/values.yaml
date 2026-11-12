@@ -108,7 +108,6 @@ ingress:
 # See https://www.buildbuddy.io/docs/config for the full list of config options.
 config:
   cache_proxy:
-    proxy_type: "customer"
     # Chunk large uploads before storing them locally and sending them upstream,
     # even when the client does not use CDC. Client-to-proxy traffic is unchanged.
     # Requires an upstream cache that supports CDC; set to false otherwise.
