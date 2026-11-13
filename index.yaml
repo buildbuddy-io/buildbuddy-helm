@@ -50577,6 +50577,33 @@ entries:
   buildbuddy-enterprise-cache-proxy:
   - apiVersion: v1
     appVersion: 2.324.1
+    created: "2026-11-13T19:41:00.978919396Z"
+    description: BuildBuddy Enterprise Cache Proxy
+    digest: a97b13f8bf20c4400718fa47bab11e751b5b06aeb76da485201ade04ff96c783
+    home: https://buildbuddy.io
+    icon: https://uploads-ssl.webflow.com/5eeba6a68ba54530ffd09006/5eeba8935be5c67625f86a3a_buildbuddy.svg
+    keywords:
+    - buildbuddy
+    - bazel
+    - build
+    - test
+    - remote-cache
+    - cache-proxy
+    - enterprise
+    maintainers:
+    - email: siggi@buildbuddy.io
+      name: siggisim
+    - email: tyler@buildbuddy.io
+      name: tylerwilliams
+    name: buildbuddy-enterprise-cache-proxy
+    sources:
+    - https://github.com/buildbuddy-io/buildbuddy
+    - https://github.com/buildbuddy-io/buildbuddy-helm
+    urls:
+    - https://github.com/buildbuddy-io/buildbuddy-helm/releases/download/buildbuddy-enterprise-cache-proxy-0.0.72/buildbuddy-enterprise-cache-proxy-0.0.72.tgz
+    version: 0.0.72
+  - apiVersion: v1
+    appVersion: 2.324.1
     created: "2026-11-13T16:14:53.638010413Z"
     description: BuildBuddy Enterprise Cache Proxy
     digest: c5f106bcdc1d747193c5c97b5e155e32b4c2ff34bbc5792f62fbf7387303efcf
