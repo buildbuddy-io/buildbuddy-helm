@@ -195,6 +195,12 @@ extraEnvVars: []
 ## Additional init containers
 extraInitContainers: []
 
+## Node selector, tolerations and affinity (optional) for the BuildBuddy pod,
+## e.g. to run it on dedicated or tainted nodes with local storage.
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
 # Add additional volumes and mounts
 extraVolumes: []
 extraVolumeMounts: []
